@@ -43,8 +43,8 @@ namespace UBT
         stream << "include_directories(Engine/ThirdParty/yaml/include/yaml-cpp)" << std::endl;
         stream << "include_directories(Engine/ThirdParty/logger/)" << std::endl;
 
-        stream << "file(GLOB_RECURSE " << name << "Src \"Source/*.cpp" "Source/*.hpp" "Engine/Audio/*.cpp" "Engine/Audio/*.hpp" "Engine/Core/*.cpp" "Engine/Core/*.hpp" "Engine/Renderer/*.hpp" "Engine/Renderer/*.cpp" "Engine/GameFramework/*.cpp" "Engine/GameFramework/*.hpp\")" << std::endl;
-        stream << "add_executable(UVKGame ${" << name << "Src} Engine/ThirdParty/logger/UVKLog.h main.cpp)" << std::endl;
+        stream << "file(GLOB_RECURSE " << name << "Src \"Source/*.cpp\" \"Source/*.hpp\" \"Engine/Audio/*.cpp\" \"Engine/Audio/*.hpp\" \"Engine/Core/*.cpp\" \"Engine/Core/*.hpp\" \"Engine/Renderer/*.hpp\" \"Engine/Renderer/*.cpp\" \"Engine/GameFramework/*.cpp\" \"Engine/GameFramework/*.hpp\")" << std::endl;
+        stream << "add_executable(" << name << " ${" << name << "Src} Engine/ThirdParty/logger/UVKLog.h main.cpp)" << std::endl;
         stream << "set_target_properties(" << name << " PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
 
         stream << "if (WIN32)" << std::endl;
@@ -67,8 +67,12 @@ namespace UBT
         {
             case 1:
                 stream2 << std::endl;
+                break;
             case 2:
                 stream2 << "#undef Legacy" << std::endl;
+                break;
+            default:
+                stream2 << std::endl;
         }
 
         if(bIsInProduction)

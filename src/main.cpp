@@ -1,6 +1,6 @@
 #include "Utility.h"
 
-int main() {
+int main(int argc, char** argv) {
     YAML::Node config = YAML::LoadFile("../../uvproj.yaml");
 
     bool bIsInProduction = true;
