@@ -20,7 +20,7 @@ namespace UBT
         stream << "project(" << name << ")" << std::endl;
 
         stream << "set(CMAKE_CXX_STANDARD 17)" << std::endl;
-
+	stream << "find_package(OpenGL REQUIRED)" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/glm/)" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/glfw/)" << std::endl;
         stream << "if(MINGW)" << std::endl;
@@ -49,12 +49,12 @@ namespace UBT
 
         stream << "if (WIN32)" << std::endl;
         stream << "     if (MINGW)" << std::endl;
-        stream << "        target_link_libraries(" << name << " pthread glfw opengl32 glew32 yaml-cpp)" << std::endl;
+        stream << "         target_link_libraries(" << name << " pthread glfw opengl32 glew32 yaml-cpp)" << std::endl;
         stream << "     else()" << std::endl;
         stream << "         target_link_libraries(" << name << " pthread glfw OpenAL opengl32 glew32 yaml-cpp)" << std::endl;
         stream << "     endif()" << std::endl;
         stream << "elseif(APPLE)" << std::endl;
-        stream << "         target_link_libraries(" << name << " pthread glfw OpenAL opengl32 glew32 yaml-cpp)" << std::endl;
+        stream << "     target_link_libraries(" << name << " pthread glfw ${OPENGL_LIBRARIES} OpenAL glew32 yaml-cpp)" << std::endl;
         stream << "else()" << std::endl;
         stream << "     target_link_libraries(" << name << " glfw OpenGL GLEW OpenAL yaml-cpp)" << std::endl;
         stream << "endif ()" << std::endl;
