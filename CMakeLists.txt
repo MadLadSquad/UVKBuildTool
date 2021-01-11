@@ -9,4 +9,3 @@ include_directories(yaml-cpp/include/yaml-cpp)
 
 add_executable(UVKBuildTool src/main.cpp src/Utility.h)
 target_link_libraries(UVKBuildTool yaml-cpp)
-target_link_options(UVKBuildTool -framework OpenGL)
