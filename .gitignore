@@ -14,3 +14,4 @@ example.yaml
 _deps
 .idea/
 .vs/
+build/
