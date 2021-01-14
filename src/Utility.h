@@ -61,6 +61,8 @@ namespace UBT
         stream << "    else()" << std::endl;
         stream << "        target_link_libraries(" << name << " pthread glfw OpenAL opengl32 glew32 yaml-cpp vulkan-1)" << std::endl;
         stream << "    endif()" << std::endl;
+        stream << "elseif(APPLE)" << std::endl;
+        stream << "    target_link_libraries(" << name << " pthread glfw ${OPENGL_LIBRARIES} OpenAL GLEW yaml-cpp)" << std::endl;
         stream << "else()" << std::endl;
         stream << "    target_link_libraries(" << name << " glfw OpenGL GLEW OpenAL yaml-cpp vulkan)" << std::endl;
         stream << "endif ()" << std::endl;
