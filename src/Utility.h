@@ -23,6 +23,7 @@ namespace UBT
         stream << "execute_process(COMMAND powershell \"cd Engine/ThirdParty/glew/auto && mingw32-make && cd .. && mingw32-make && ../../../\")" << std::endl;
         stream << "else()" << std::endl;
         stream << "execute_process(COMMAND bash \"cd Engine/ThirdParty/glew/auto && make && cd .. && make && ../../../\")" << std::endl;
+        stream << "endif()" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/glm/)" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/glfw/)" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/vulkan/1.2.162.1/source/Vulkan-Headers/)" << std::endl;
