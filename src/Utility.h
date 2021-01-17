@@ -19,14 +19,10 @@ namespace UBT
         stream << "cmake_minimum_required(VERSION 3.17)" << std::endl;
         stream << "project(" << name << ")" << std::endl;
         stream << "set(CMAKE_CXX_STANDARD 17)" << std::endl;
-        stream << "if(WIN32)" << std::endl;
-        stream << "execute_process(COMMAND powershell \"cd Engine/ThirdParty/glew/auto && mingw32-make && cd .. && mingw32-make && ../../../\")" << std::endl;
-        stream << "else()" << std::endl;
-        stream << "execute_process(COMMAND bash \"cd Engine/ThirdParty/glew/auto && make && cd .. && make && ../../../\")" << std::endl;
-        stream << "endif()" << std::endl;
+
         stream << "add_subdirectory(Engine/ThirdParty/glm/)" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/glfw/)" << std::endl;
-        stream << "add_subdirectory(Engine/ThirdParty/vulkan/1.2.162.1/source/Vulkan-Headers/)" << std::endl;
+        stream << "add_subdirectory(Engine/ThirdParty/vulkan/headers)" << std::endl;
         stream << "if(MINGW)" << std::endl;
         stream << "else()" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/openal/)" << std::endl;
@@ -35,9 +31,9 @@ namespace UBT
         stream << "add_subdirectory(Engine/ThirdParty/entt/)" << std::endl;
         stream << "link_directories(Engine/ThirdParty/glew/lib)" << std::endl;
         stream << "if(WIN32)" << std::endl;
-        stream << "    link_directories(Engine/ThirdParty/vulkan/windows/)" << std::endl;
+        stream << "    link_directories(Engine/ThirdParty/vulkan/)" << std::endl;
         stream << "elseif(Linux)" << std::endl;
-        stream << "link_directories(Engine/ThirdParty/vulkan/1.2.162.1/x86_64/lib/)" << std::endl;
+        stream << "link_directories(Engine/ThirdParty/vulkan/)" << std::endl;
         stream << "endif()" << std::endl;
         stream << "include_directories(.)" << std::endl;
         stream << "include_directories(Engine/)" << std::endl;
@@ -51,7 +47,7 @@ namespace UBT
         stream << "include_directories(Engine/ThirdParty/logger/)" << std::endl;
         stream << "include_directories(Engine/ThirdParty/imgui/)" << std::endl;
         stream << "include_directories(Engine/ThirdParty/glfw/include/GLFW/)" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/vulkan/1.2.162.1/source/Vulkan-Headers/include/vulkan/)" << std::endl;
+        stream << "include_directories(Engine/ThirdParty/vulkan/headers/include/vulkan/)" << std::endl;
         stream << "include_directories(Engine/ThirdParty/stb/)" << std::endl;
         stream << "file(GLOB_RECURSE " <<  name << "Src \"Source/*.cpp\" \"Source/*.hpp\" \"Engine/Audio/*.cpp\" \"Engine/Audio/*.hpp\" \"Engine/Core/*.cpp\" \"Engine/Core/*.hpp\" \"Engine/Renderer/*.hpp\" \"Engine/Renderer/*.cpp\" \"Engine/GameFramework/*.cpp\" \"Engine/GameFramework/*.hpp\" \"Engine/ThirdParty/imgui/*.cpp\" \"Engine/ThirdParty/imgui/*.h\" \"Engine/ThirdParty/stb/*.h\")" << std::endl;
         stream << "add_executable(" << name << " ${" << name << "Src} Engine/ThirdParty/logger/UVKLog.h main.cpp)" << std::endl;
