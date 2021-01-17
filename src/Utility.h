@@ -47,7 +47,7 @@ namespace UBT
         stream << "include_directories(Engine/ThirdParty/logger/)" << std::endl;
         stream << "include_directories(Engine/ThirdParty/imgui/)" << std::endl;
         stream << "include_directories(Engine/ThirdParty/glfw/include/GLFW/)" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/vulkan/headers/include/vulkan/)" << std::endl;
+        stream << "include_directories(Engine/ThirdParty/vulkan/headers/include/)" << std::endl;
         stream << "include_directories(Engine/ThirdParty/stb/)" << std::endl;
         stream << "file(GLOB_RECURSE " <<  name << "Src \"Source/*.cpp\" \"Source/*.hpp\" \"Engine/Audio/*.cpp\" \"Engine/Audio/*.hpp\" \"Engine/Core/*.cpp\" \"Engine/Core/*.hpp\" \"Engine/Renderer/*.hpp\" \"Engine/Renderer/*.cpp\" \"Engine/GameFramework/*.cpp\" \"Engine/GameFramework/*.hpp\" \"Engine/ThirdParty/imgui/*.cpp\" \"Engine/ThirdParty/imgui/*.h\" \"Engine/ThirdParty/stb/*.h\")" << std::endl;
         stream << "add_executable(" << name << " ${" << name << "Src} Engine/ThirdParty/logger/UVKLog.h main.cpp)" << std::endl;
