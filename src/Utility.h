@@ -19,7 +19,10 @@ namespace UBT
         stream << "cmake_minimum_required(VERSION 3.17)" << std::endl;
         stream << "project(" << name << ")" << std::endl;
         stream << "set(CMAKE_CXX_STANDARD 17)" << std::endl;
+        stream << "if(APPLE)" << std::endl;
+        stream << "else()" << std::endl;
         stream << "find_package(Vulkan REQUIRED)" << std::endl;
+        stream << "endif()" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/glm/)" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/glfw/)" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/vulkan/headers)" << std::endl;
