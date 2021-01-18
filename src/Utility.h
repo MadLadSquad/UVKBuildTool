@@ -57,9 +57,9 @@ namespace UBT
         stream << "set_target_properties(Game PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
         stream << "if (WIN32)" << std::endl;
         stream << "    if (MINGW)" << std::endl;
-        stream << "        target_link_libraries(" << name << " pthread glfw opengl32 glew32 yaml-cpp vulkan-1)" << std::endl;
+        stream << "        target_link_libraries(" << name << " glfw opengl32 glew32 yaml-cpp vulkan-1)" << std::endl;
         stream << "    else()" << std::endl;
-        stream << "        target_link_libraries(" << name << " pthread glfw OpenAL opengl32 glew32 yaml-cpp vulkan-1)" << std::endl;
+        stream << "        target_link_libraries(" << name << " glfw OpenAL opengl32 glew32 yaml-cpp vulkan-1)" << std::endl;
         stream << "    endif()" << std::endl;
         stream << "elseif(APPLE)" << std::endl;
         stream << "    target_link_libraries(" << name << " pthread glfw ${OPENGL_LIBRARIES} OpenAL GLEW yaml-cpp)" << std::endl;
