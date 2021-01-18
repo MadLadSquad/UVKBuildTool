@@ -19,7 +19,7 @@ namespace UBT
         stream << "cmake_minimum_required(VERSION 3.17)" << std::endl;
         stream << "project(" << name << ")" << std::endl;
         stream << "set(CMAKE_CXX_STANDARD 17)" << std::endl;
-
+        stream << "find_package(Vulkan REQUIRED)" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/glm/)" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/glfw/)" << std::endl;
         stream << "add_subdirectory(Engine/ThirdParty/vulkan/headers)" << std::endl;
@@ -61,7 +61,7 @@ namespace UBT
         stream << "elseif(APPLE)" << std::endl;
         stream << "    target_link_libraries(" << name << " pthread glfw ${OPENGL_LIBRARIES} OpenAL GLEW yaml-cpp)" << std::endl;
         stream << "else()" << std::endl;
-        stream << "    target_link_libraries(" << name << " glfw OpenGL GLEW OpenAL yaml-cpp vulkan)" << std::endl;
+        stream << "    target_link_libraries(" << name << " glfw OpenGL GLEW OpenAL yaml-cpp Vulkan::Vulkan)" << std::endl;
         stream << "endif ()" << std::endl;
 
         stream.close();
