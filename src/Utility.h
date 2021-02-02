@@ -58,7 +58,7 @@ namespace UBT
         stream << std::endl;
         stream << "if (APPLE)" << std::endl;
         stream << "else()" << std::endl;
-        stream << "    include_directories(Engine/ThirdParty/vulkan/headers/include/vulkan/)" << std::endl;
+        stream << "    include_directories(Engine/ThirdParty/vulkan/headers/include)" << std::endl;
         stream << "endif ()" << std::endl;
         stream << "include_directories(Engine/ThirdParty/stb/)" << std::endl;
         stream << "if (APPLE)" << std::endl;
