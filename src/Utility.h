@@ -51,7 +51,7 @@ namespace UBT
         stream << "    include_directories(Engine/ThirdParty/imgui/backends/apple/)" << std::endl;
         stream << "else()" << std::endl;
         stream << "    include_directories(Engine/ThirdParty/imgui/backends/everything/)" << std::endl;
-        stream << "    include_directories(Engine/ThirdParty/imgui/backends/Vulkan/)"
+        stream << "    include_directories(Engine/ThirdParty/imgui/backends/Vulkan/)" << std::endl;
         stream << "endif()" << std::endl;
         stream << "include_directories(Engine/ThirdParty/imgui/misc/)" << std::endl;
         stream << "include_directories(Engine/ThirdParty/glfw/include/GLFW/)" << std::endl;
