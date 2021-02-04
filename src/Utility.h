@@ -80,7 +80,7 @@ namespace UBT
         stream << "elseif(APPLE)" << std::endl;
         stream << "    target_link_libraries("<< name << " glfw ${OPENGL_LIBRARIES} OpenAL GLEW yaml-cpp)" << std::endl;
         stream << "else()" << std::endl;
-        stream << "    target_link_libraries("<< name << " glfw OpenGL GLEW OpenAL yaml-cpp vulkan)" << std::endl;
+        stream << "    target_link_libraries("<< name << " glfw OpenGL OpenAL yaml-cpp vulkan)" << std::endl;
         stream << "endif()" << std::endl;
 
         stream.close();
