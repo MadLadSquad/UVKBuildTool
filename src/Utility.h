@@ -78,9 +78,9 @@ namespace UBT
         stream << "        target_link_libraries("<< name << " glfw OpenAL opengl32 glew32 yaml-cpp vulkan-1)" << std::endl;
         stream << "    endif()" << std::endl;
         stream << "elseif(APPLE)" << std::endl;
-        stream << "    target_link_libraries("<< name << " glfw ${OPENGL_LIBRARIES} OpenAL GLEW yaml-cpp)" << std::endl;
+        stream << "    target_link_libraries("<< name << " glfw ${OPENGL_LIBRARIES} OpenAL yaml-cpp)" << std::endl;
         stream << "else()" << std::endl;
-        stream << "    target_link_libraries("<< name << " glfw OpenGL OpenAL yaml-cpp vulkan)" << std::endl;
+        stream << "    target_link_libraries("<< name << " glfw GLEW OpenGL OpenAL yaml-cpp vulkan)" << std::endl;
         stream << "endif()" << std::endl;
 
         stream.close();
