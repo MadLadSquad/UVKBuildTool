@@ -33,8 +33,9 @@ namespace UBT
         stream << "add_subdirectory(Engine/ThirdParty/entt/)" << std::endl;
         stream << "link_directories(Engine/ThirdParty/glew/lib)" << std::endl;
         stream << "if(APPLE)" << std::endl;
-        stream << "        else()" << std::endl;
-        stream << "link_directories(Engine/ThirdParty/vulkan/)" << std::endl;
+        stream << "else()" << std::endl;
+        stream << "    link_directories(Engine/ThirdParty/vulkan/)" << std::endl;
+        stream << "    link_directories(Engine/ThirdParty/vulkan/lib)" << std::endl;
         stream << "endif()" << std::endl;
         stream << "include_directories(.)" << std::endl;
         stream << "include_directories(Engine/)" << std::endl;
