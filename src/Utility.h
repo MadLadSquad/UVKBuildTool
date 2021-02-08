@@ -73,7 +73,7 @@ namespace UBT
         stream << "    add_executable("<< name << " ${"<< name << "Src} Engine/ThirdParty/logger/UVKLog.h Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h main.cpp )" << std::endl;
         stream << "else()" << std::endl;
         stream << "    add_executable("<< name << " ${"<< name << "Src} Engine/ThirdParty/logger/UVKLog.h Engine/ThirdParty/stb/stb_image.h main.cpp )" << std::endl;
-        stream << "endif()"
+        stream << "endif()" << std::endl;
         stream << "set_target_properties("<< name << " PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
         stream << "if (WIN32)" << std::endl;
         stream << "    if (MINGW)" << std::endl;
