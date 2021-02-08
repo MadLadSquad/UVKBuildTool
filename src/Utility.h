@@ -76,12 +76,12 @@ namespace UBT
         stream << "    if (MINGW)" << std::endl;
         stream << "        target_link_libraries("<< name << " glfw opengl32 glew32 yaml-cpp vulkan-1)" << std::endl;
         stream << "    else()" << std::endl;
-        stream << "        target_link_libraries("<< name << " glfw OpenAL opengl32 glew32 yaml-cpp vulkan-1)" << std::endl;
+        stream << "        target_link_libraries("<< name << " glfw OpenAL opengl32 glew32 yaml-cpp vulkan-1 sndfile)" << std::endl;
         stream << "    endif()" << std::endl;
         stream << "elseif(APPLE)" << std::endl;
-        stream << "    target_link_libraries("<< name << " glfw ${OPENGL_LIBRARIES} OpenAL yaml-cpp)" << std::endl;
+        stream << "    target_link_libraries("<< name << " glfw ${OPENGL_LIBRARIES} OpenAL yaml-cpp sndfile)" << std::endl;
         stream << "else()" << std::endl;
-        stream << "    target_link_libraries("<< name << " glfw GLEW OpenGL OpenAL yaml-cpp vulkan)" << std::endl;
+        stream << "    target_link_libraries("<< name << " glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile)" << std::endl;
         stream << "endif()" << std::endl;
 
         stream.close();
