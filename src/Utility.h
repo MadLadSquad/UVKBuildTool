@@ -69,7 +69,7 @@ namespace UBT
         stream << "endif ()" << std::endl;
         stream << std::endl;
         stream << std::endl;
-        stream << "if(WIN32)"
+        stream << "if(WIN32)" << std::endl;
         stream << "    add_executable("<< name << " ${"<< name << "Src} Engine/ThirdParty/logger/UVKLog.h Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h main.cpp )" << std::endl;
         stream << "else()" << std::endl;
         stream << "    add_executable("<< name << " ${"<< name << "Src} Engine/ThirdParty/logger/UVKLog.h Engine/ThirdParty/stb/stb_image.h main.cpp )" << std::endl;
