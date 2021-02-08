@@ -61,7 +61,11 @@ namespace UBT
         stream << "else()" << std::endl;
         stream << "    include_directories(Engine/ThirdParty/vulkan/headers/include)" << std::endl;
         stream << "endif ()" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/stb/)" << std::endl;
+        stream << "if(WIN32)" << std::endl;
+        stream << "    include_directories(Engine/ThirdParty/stb)" << std::endl;
+        stream << "else()" << std::endl;
+        stream << "    include_directories(Engine/ThirdParty)" << std::endl;
+        stream << "endif()" << std::endl;
         stream << "if (APPLE)" << std::endl;
         stream << "    file(GLOB_RECURSE " << name << "Src" << R"( "Source/*.cpp" "Source/*.hpp" "Engine/Audio/*.cpp" "Engine/Audio/*.hpp" "Engine/Core/*.cpp" "Engine/Core/*.hpp" "Engine/Renderer/OpenGL/*.hpp" "Engine/Renderer/OpenGL/*.cpp" "Engine/Renderer/Vulkan/VulkanRenderer.hpp" "Engine/Renderer/Renderer.hpp" "Engine/GameFramework/*.cpp" "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/backends/apple/*.cpp" "Engine/ThirdParty/imgui/backends/apple/*.h" "Engine/ThirdParty/imgui/misc/*.cpp" "Engine/ThirdParty/imgui/misc/*.h"))" << std::endl;
         stream << "else()" << std::endl;
