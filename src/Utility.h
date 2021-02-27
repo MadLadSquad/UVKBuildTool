@@ -18,60 +18,57 @@ namespace UBT
         auto stream = std::ofstream("../../CMakeLists.txt");
         stream << "cmake_minimum_required(VERSION 3.17)" << std::endl;
         stream << "project(" << name << ")" << std::endl;
-        stream << "set(CMAKE_CXX_STANDARD 17)" << std::endl;
-        stream << "add_subdirectory(Engine/ThirdParty/glm/)" << std::endl;
-        stream << "add_subdirectory(Engine/ThirdParty/glfw/)" << std::endl;
-        stream << "if(APPLE)" << std::endl;
-        stream << "        else()" << std::endl;
-        stream << "add_subdirectory(Engine/ThirdParty/vulkan/headers/)" << std::endl;
-        stream << "endif()" << std::endl;
-        stream << "if(MINGW)" << std::endl;
-        stream << "else()" << std::endl;
-        stream << "    add_subdirectory(Engine/ThirdParty/openal/)" << std::endl;
-        stream << "endif()" << std::endl;
-        stream << "add_subdirectory(Engine/ThirdParty/yaml/)" << std::endl;
-        stream << "add_subdirectory(Engine/ThirdParty/entt/)" << std::endl;
-        stream << "link_directories(Engine/ThirdParty/glew/lib)" << std::endl;
-        stream << "if(APPLE)" << std::endl;
-        stream << "else()" << std::endl;
-        stream << "    link_directories(Engine/ThirdParty/vulkan/)" << std::endl;
-        stream << "    link_directories(Engine/ThirdParty/vulkan/lib)" << std::endl;
-        stream << "endif()" << std::endl;
-        stream << "include_directories(.)" << std::endl;
-        stream << "include_directories(Engine/)" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/entt/src/entt)" << std::endl;
-        stream << "include_directories(Engine/Core/)" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/glm)" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/)" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/glew/include)" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/yaml/include)" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/yaml/include/yaml-cpp)" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/logger/)" << std::endl;
-        stream << std::endl;
-        stream << "if(APPLE)" << std::endl;
-        stream << "    include_directories(Engine/ThirdParty/imgui/backends/apple/)" << std::endl;
-        stream << "else()" << std::endl;
-        stream << "    include_directories(Engine/ThirdParty/imgui/backends/everything/)" << std::endl;
-        stream << "    include_directories(Engine/ThirdParty/imgui/backends/Vulkan/)" << std::endl;
-        stream << "endif()" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/imgui/misc/)" << std::endl;
-        stream << "include_directories(Engine/ThirdParty/glfw/include/GLFW/)" << std::endl;
-        stream << std::endl;
-        stream << "if (APPLE)" << std::endl;
-        stream << "else()" << std::endl;
-        stream << "    include_directories(Engine/ThirdParty/vulkan/headers/include)" << std::endl;
-        stream << "endif ()" << std::endl;
-        stream << "if(WIN32)" << std::endl;
-        stream << "    include_directories(Engine/ThirdParty/stb)" << std::endl;
-        stream << "else()" << std::endl;
-        stream << "    include_directories(Engine/ThirdParty)" << std::endl;
-        stream << "endif()" << std::endl;
-        stream << "if (APPLE)" << std::endl;
+        stream << R"(set(CMAKE_CXX_STANDARD 17)
+        add_subdirectory(Engine/ThirdParty/glm/)
+        add_subdirectory(Engine/ThirdParty/glfw/)
+        if(APPLE)
+                else()
+        add_subdirectory(Engine/ThirdParty/vulkan/headers/)
+        endif()
+        if(MINGW)
+        else()
+            add_subdirectory(Engine/ThirdParty/openal/)
+        endif()
+        add_subdirectory(Engine/ThirdParty/yaml/)
+        add_subdirectory(Engine/ThirdParty/entt/)
+        link_directories(Engine/ThirdParty/glew/lib)
+        if(APPLE)
+        else()
+            link_directories(Engine/ThirdParty/vulkan/)
+            link_directories(Engine/ThirdParty/vulkan/lib)
+        endif()
+        include_directories(.)
+        include_directories(Engine/)
+        include_directories(Engine/ThirdParty/entt/src/entt)
+        include_directories(Engine/Core/)
+        include_directories(Engine/ThirdParty/glm)
+        include_directories(Engine/ThirdParty/)
+        include_directories(Engine/ThirdParty/glew/include)
+        include_directories(Engine/ThirdParty/yaml/include)
+        include_directories(Engine/ThirdParty/yaml/include/yaml-cpp)
+        include_directories(Engine/ThirdParty/logger/)
+        stream << "if(APPLE)
+            include_directories(Engine/ThirdParty/imgui/backends/apple/)
+        else()
+            include_directories(Engine/ThirdParty/imgui/backends/everything/)
+            include_directories(Engine/ThirdParty/imgui/backends/Vulkan/)
+        endif()
+        include_directories(Engine/ThirdParty/imgui/misc/)
+        include_directories(Engine/ThirdParty/glfw/include/GLFW/)
+        if (APPLE)
+        else()
+            include_directories(Engine/ThirdParty/vulkan/headers/include)
+        endif ()
+        if(WIN32)
+            include_directories(Engine/ThirdParty/stb)
+        else()
+            include_directories(Engine/ThirdParty)
+        endif()
+        if (APPLE)" << std::endl;
         stream << "    file(GLOB_RECURSE " << name << "Src" << R"( "Source/*.cpp" "Source/*.hpp" "Engine/Audio/*.cpp" "Engine/Audio/*.hpp" "Engine/Core/*.cpp" "Engine/Core/*.hpp" "Engine/Renderer/OpenGL/*.hpp" "Engine/Renderer/OpenGL/*.cpp" "Engine/Renderer/Vulkan/VulkanRenderer.hpp" "Engine/Renderer/Renderer.hpp" "Engine/GameFramework/*.cpp" "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/backends/apple/*.cpp" "Engine/ThirdParty/imgui/backends/apple/*.h" "Engine/ThirdParty/imgui/misc/*.cpp" "Engine/ThirdParty/imgui/misc/*.h"))" << std::endl;
         stream << "else()" << std::endl;
         stream << "    file(GLOB_RECURSE " << name << "Src" << R"( "Source/*.cpp" "Source/*.hpp" "Engine/Audio/*.cpp" "Engine/Audio/*.hpp" "Engine/Core/*.cpp" "Engine/Core/*.hpp" "Engine/Renderer/*.hpp" "Engine/Renderer/*.cpp" "Engine/GameFramework/*.cpp" "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/backends/everything/*.cpp" "Engine/ThirdParty/imgui/misc/*.cpp" "Engine/ThirdParty/imgui/misc/*.h" "Engine/ThirdParty/imgui/backends/everything/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.cpp"))" << std::endl;
         stream << "endif ()" << std::endl;
-        stream << std::endl;
         stream << std::endl;
         stream << "if(WIN32)" << std::endl;
         stream << "    add_executable("<< name << " ${"<< name << "Src} Engine/ThirdParty/logger/UVKLog.h Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h main.cpp )" << std::endl;
