@@ -43,13 +43,19 @@ int main(int argc, char** argv) {
     }
     else if (argv[1] == UBT::toLower("--generate"))
     {
-        bool bIsInProduction;
+        bool bStartupLevelExists;
         const char* name;
+        const char* startupLevelName;
         auto config = YAML::LoadFile("../../uvproj.yaml");
 
-        if (config["production"])
+        if (config["startup-level-exists"])
         {
-            bIsInProduction = config["production"].as<bool>();
+            bStartupLevelExists = config["startup-level-exists"].as<bool>();
+        }
+
+        if (config["startup-level"])
+        {
+            startupLevelName = config["startup-level"].as<std::string>().c_str();
         }
 
         if (config["name"])
@@ -57,23 +63,7 @@ int main(int argc, char** argv) {
             name = config["name"].as<std::string>().c_str();
         }
 
-        if (config["renderer-subsystem"])
-        {
-            std::string str = UBT::toLower(config["renderer-subsystem"].as<std::string>());
-
-            if (str == "legacy")
-            {
-                UBT::GenerateFiles(1, bIsInProduction, name);
-            }
-            else if (str == "modern")
-            {
-                UBT::GenerateFiles(2, bIsInProduction, name);
-            }
-            else
-            {
-                std::cout << "You are trying to use an invalid subsystem! You can only submit legacy or modern as a renderer subsystem! Please fix your uvproj.yaml file!" << std::endl;
-            }
-        }
+        UBT::GenerateFiles(bStartupLevelExists, startupLevelName, name);
 
         return 0;
     }
