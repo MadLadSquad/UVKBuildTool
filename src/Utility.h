@@ -155,7 +155,7 @@ int main(int argc, char** argv)
     }
     StartupLevel st;
 
-    StartupLevel::open(")" << startupLevelName << "\")" << std::endl;
+    StartupLevel::open(")" << startupLevelName << "\");" << std::endl;
         mainStream << R"(
 	UVK::Renderer(&st, bUsesEditor);
 })" << std::endl;
