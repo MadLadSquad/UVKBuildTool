@@ -39,7 +39,7 @@ namespace UBT
         stream2 << std::endl;
         stream2 << "namespace UVK" << std::endl;
         stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : UVK::Level" << std::endl;
+        stream2 << "    class " << name << " : public UVK::Level" << std::endl;
         stream2 << "    {" << std::endl;
         stream2 << "    public:" << std::endl;
         stream2 << "        " << name << "();" << std::endl;
@@ -198,7 +198,7 @@ int main(int argc, char** argv)
         stream2 << std::endl;
         stream2 << "namespace UVK" << std::endl;
         stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : UVK::ScriptableObject" << std::endl;
+        stream2 << "    class " << name << " : public UVK::ScriptableObject" << std::endl;
         stream2 << "    {" << std::endl;
         stream2 << "    public:" << std::endl;
         stream2 << "        " << name << "();" << std::endl;
@@ -241,7 +241,7 @@ int main(int argc, char** argv)
         stream2 << std::endl;
         stream2 << "namespace UVK" << std::endl;
         stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : UVK::APawn" << std::endl;
+        stream2 << "    class " << name << " : public UVK::APawn" << std::endl;
         stream2 << "    {" << std::endl;
         stream2 << "    public:" << std::endl;
         stream2 << "        " << name << "();" << std::endl;
@@ -279,7 +279,7 @@ int main(int argc, char** argv)
         stream2 << std::endl;
         stream2 << "namespace UVK" << std::endl;
         stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : UVK::GameMode" << std::endl;
+        stream2 << "    class " << name << " : public UVK::GameMode" << std::endl;
         stream2 << "    {" << std::endl;
         stream2 << "    public:" << std::endl;
         stream2 << "        " << name << "();" << std::endl;
@@ -317,7 +317,7 @@ int main(int argc, char** argv)
         stream2 << std::endl;
         stream2 << "namespace UVK" << std::endl;
         stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : UVK::GameState" << std::endl;
+        stream2 << "    class " << name << " : public UVK::GameState" << std::endl;
         stream2 << "    {" << std::endl;
         stream2 << "    public:" << std::endl;
         stream2 << "        " << name << "();" << std::endl;
@@ -355,7 +355,7 @@ int main(int argc, char** argv)
         stream2 << std::endl;
         stream2 << "namespace UVK" << std::endl;
         stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : UVK::PlayerState" << std::endl;
+        stream2 << "    class " << name << " : public UVK::PlayerState" << std::endl;
         stream2 << "    {" << std::endl;
         stream2 << "    public:" << std::endl;
         stream2 << "        " << name << "();" << std::endl;
@@ -393,7 +393,7 @@ int main(int argc, char** argv)
         stream2 << std::endl;
         stream2 << "namespace UVK" << std::endl;
         stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : UVK::PlayerController" << std::endl;
+        stream2 << "    class " << name << " : public UVK::PlayerController" << std::endl;
         stream2 << "    {" << std::endl;
         stream2 << "    public:" << std::endl;
         stream2 << "        " << name << "();" << std::endl;
@@ -431,7 +431,7 @@ int main(int argc, char** argv)
         stream2 << std::endl;
         stream2 << "namespace UVK" << std::endl;
         stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : UVK::GameInstance" << std::endl;
+        stream2 << "    class " << name << " : public UVK::GameInstance" << std::endl;
         stream2 << "    {" << std::endl;
         stream2 << "    public:" << std::endl;
         stream2 << "        " << name << "();" << std::endl;
