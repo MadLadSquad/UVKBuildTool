@@ -42,7 +42,7 @@ namespace UBT
         stream2 << "    class " << name << " : public UVK::Level" << std::endl;
         stream2 << "    {" << std::endl;
         stream2 << "    public:" << std::endl;
-        stream2 << "        " << name << "();" << std::endl;
+        stream2 << "        " << name << "() {}" << std::endl;
         stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
         stream2 << "        virtual void endPlay() override;" << std::endl;
         stream2 << "        virtual void beginPlay() override;" << std::endl;
