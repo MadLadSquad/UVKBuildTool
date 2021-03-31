@@ -139,7 +139,7 @@ if (APPLE))" << std::endl;
         auto mainStream = std::ofstream("../../main.cpp");
         mainStream << R"(
 #include <Engine.hpp>
-#include <Source/StartupLevel.hpp>
+#include "Source/StartupLevel.hpp"
 
 int main(int argc, char** argv)
 {
