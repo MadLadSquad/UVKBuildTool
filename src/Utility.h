@@ -154,9 +154,9 @@ int main(int argc, char** argv)
             bUsesEditor = true;
         }
     }
-    StartupLevel st;
+    UVK::StartupLevel st;
 
-    StartupLevel::open(")" << startupLevelName << "\");" << std::endl;
+    UVK::StartupLevel::open(")" << startupLevelName << "\");" << std::endl;
         mainStream << R"(
 	UVK::Renderer(&st, bUsesEditor);
 })" << std::endl;
