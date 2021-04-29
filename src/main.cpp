@@ -1,6 +1,36 @@
 #include "Utility.h"
 
 int main(int argc, char** argv) {
+    YAML::Node config;
+
+    try
+    {
+        config = YAML::LoadFile("../../uvproj.yaml");
+        UBT::path = "../../";
+    }
+    catch (YAML::BadFile&)
+    {
+        try
+        {
+            config = YAML::LoadFile("../../../uvproj.yaml");
+            UBT::path = "../../../";
+        }
+        catch (YAML::BadFile&)
+        {
+            try
+            {
+                config = YAML::LoadFile("../../../../uvproj.yaml");
+                UBT::path = "../../../../";
+            }
+            catch (YAML::BadFile&)
+            {
+                std::cout << "Could not locate file" << std::endl;
+
+                std::terminate();
+            }
+        }
+    }
+
     if (argv[1] == UBT::toLower("--actor"))
     {
         UBT::GenActor(argv[2]);
@@ -43,10 +73,10 @@ int main(int argc, char** argv) {
     }
     else if (argv[1] == UBT::toLower("--generate"))
     {
-        bool bStartupLevelExists;
+        bool bStartupLevelExists = false;
         const char* name;
         const char* startupLevelName;
-        auto config = YAML::LoadFile("../../uvproj.yaml");
+
 
         if (config["startup-level-exists"])
         {
@@ -62,6 +92,7 @@ int main(int argc, char** argv) {
         {
             name = config["name"].as<std::string>().c_str();
         }
+
 
         UBT::GenerateFiles(bStartupLevelExists, startupLevelName, name);
 
