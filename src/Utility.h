@@ -145,8 +145,8 @@ if (APPLE))" << std::endl;
 
 int main(int argc, char** argv)
 {
-    ENABLE_FAST_IO(x);
-	bool bUsesEditor = false;
+    ENABLE_FAST_IO(true);
+    bool bUsesEditor = false;
 
     if (argv[1])
     {
@@ -161,7 +161,7 @@ int main(int argc, char** argv)
 
     UVK::StartupLevel::open(")" << startupLevelName << "\");" << std::endl;
         mainStream << R"(
-	UVK::Renderer(&st, bUsesEditor);
+    UVK::Renderer(&st, bUsesEditor);
 })" << std::endl;
         mainStream.close();
 
