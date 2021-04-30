@@ -15,7 +15,7 @@ namespace UBT
         return str;
     }
 
-    void GenLVL(const char* name)
+    void makeTemplate(const std::string& name, const std::string& type)
     {
         auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
 
@@ -41,7 +41,7 @@ namespace UBT
         stream2 << std::endl;
         stream2 << "namespace UVK" << std::endl;
         stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : public UVK::Level" << std::endl;
+        stream2 << "    class " << name << " : public " << type << std::endl;
         stream2 << "    {" << std::endl;
         stream2 << "    public:" << std::endl;
         stream2 << "        " << name << "() {}" << std::endl;
@@ -145,6 +145,7 @@ if (APPLE))" << std::endl;
 
 int main(int argc, char** argv)
 {
+    ENABLE_FAST_IO(x);
 	bool bUsesEditor = false;
 
     if (argv[1])
@@ -166,283 +167,7 @@ int main(int argc, char** argv)
 
         if (!bStartupLevelExists)
         {
-            UBT::GenLVL("StartupLevel");
+            UBT::makeTemplate("StartupLevel", "UVK::Level");
         }
-    }
-
-    void GenActor(char* name)
-    {
-        auto stream = std::ofstream(path + static_cast<std::string>(name) + ".cpp");
-
-        stream << "#include " << "\"" << name << ".hpp\"" << std::endl;
-        stream << std::endl;
-        stream << "UVK::" << name << "::" << name << "()" << std::endl;
-        stream << "{" << std::endl;
-        stream << "     auto& actor = registry.createActor(\"" << name << "\");" << std::endl;
-        stream << "}" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::beginPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::tick(float deltaTime)" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << "void UVK::" << name << "::endPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream.close();
-
-        auto stream2 = std::ofstream(path + static_cast<std::string>(name) + ".hpp");
-        stream2 << "#include \"Game.hpp\"" << std::endl;
-        stream2 << std::endl;
-        stream2 << "namespace UVK" << std::endl;
-        stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : public UVK::ScriptableObject" << std::endl;
-        stream2 << "    {" << std::endl;
-        stream2 << "    public:" << std::endl;
-        stream2 << "        " << name << "();" << std::endl;
-        stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
-        stream2 << "        virtual void endPlay() override;" << std::endl;
-        stream2 << "        virtual void beginPlay() override;" << std::endl;
-        stream2 << "    };" << std::endl;
-        stream2 << "}" << std::endl;
-        stream2.close();
-    }
-
-    void GenPawn(char* name)
-    {
-        auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
-
-        stream << "#include " << "\"" << name << ".hpp\"" << std::endl;
-        stream << std::endl;
-        stream << "UVK::" << name << "::" << name << "()" << std::endl;
-        stream << "{" << std::endl;
-        stream << "     auto& actor = registry.createActor(\"" << name << "\");" << std::endl;
-        stream << "}" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::beginPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::tick(float deltaTime)" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << "void UVK::" << name << "::endPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream.close();
-
-        auto stream2 = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".hpp");
-        stream2 << "#include \"Game.hpp\"" << std::endl;
-        stream2 << std::endl;
-        stream2 << "namespace UVK" << std::endl;
-        stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : public UVK::APawn" << std::endl;
-        stream2 << "    {" << std::endl;
-        stream2 << "    public:" << std::endl;
-        stream2 << "        " << name << "();" << std::endl;
-        stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
-        stream2 << "        virtual void endPlay() override;" << std::endl;
-        stream2 << "        virtual void beginPlay() override;" << std::endl;
-        stream2 << "    };" << std::endl;
-        stream2 << "}" << std::endl;
-        stream2.close();
-    }
-
-    void GenGM(char* name)
-    {
-        auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
-
-        stream << "#include " << "\"" << name << ".hpp\"" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::beginPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::tick(float deltaTime)" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << "void UVK::" << name << "::endPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream.close();
-
-        auto stream2 = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".hpp");
-        stream2 << "#include \"Game.hpp\"" << std::endl;
-        stream2 << std::endl;
-        stream2 << "namespace UVK" << std::endl;
-        stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : public UVK::GameMode" << std::endl;
-        stream2 << "    {" << std::endl;
-        stream2 << "    public:" << std::endl;
-        stream2 << "        " << name << "();" << std::endl;
-        stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
-        stream2 << "        virtual void endPlay() override;" << std::endl;
-        stream2 << "        virtual void beginPlay() override;" << std::endl;
-        stream2 << "    };" << std::endl;
-        stream2 << "}" << std::endl;
-        stream2.close();
-    }
-
-    void GenGS(char* name)
-    {
-        auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
-
-        stream << "#include " << "\"" << name << ".hpp\"" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::beginPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::tick(float deltaTime)" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << "void UVK::" << name << "::endPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream.close();
-
-        auto stream2 = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".hpp");
-        stream2 << "#include \"Game.hpp\"" << std::endl;
-        stream2 << std::endl;
-        stream2 << "namespace UVK" << std::endl;
-        stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : public UVK::GameState" << std::endl;
-        stream2 << "    {" << std::endl;
-        stream2 << "    public:" << std::endl;
-        stream2 << "        " << name << "();" << std::endl;
-        stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
-        stream2 << "        virtual void endPlay() override;" << std::endl;
-        stream2 << "        virtual void beginPlay() override;" << std::endl;
-        stream2 << "    };" << std::endl;
-        stream2 << "}" << std::endl;
-        stream2.close();
-    }
-
-    void GenPS(char* name)
-    {
-        auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
-
-        stream << "#include " << "\"" << name << ".hpp\"" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::beginPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::tick(float deltaTime)" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << "void UVK::" << name << "::endPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream.close();
-
-        auto stream2 = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".hpp");
-        stream2 << "#include \"Game.hpp\"" << std::endl;
-        stream2 << std::endl;
-        stream2 << "namespace UVK" << std::endl;
-        stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : public UVK::PlayerState" << std::endl;
-        stream2 << "    {" << std::endl;
-        stream2 << "    public:" << std::endl;
-        stream2 << "        " << name << "();" << std::endl;
-        stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
-        stream2 << "        virtual void endPlay() override;" << std::endl;
-        stream2 << "        virtual void beginPlay() override;" << std::endl;
-        stream2 << "    };" << std::endl;
-        stream2 << "}" << std::endl;
-        stream2.close();
-    }
-
-    void GenPC(char* name)
-    {
-        auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
-
-        stream << "#include " << "\"" << name << ".hpp\"" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::beginPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::tick(float deltaTime)" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << "void UVK::" << name << "::endPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream.close();
-
-        auto stream2 = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".hpp");
-        stream2 << "#include \"Game.hpp\"" << std::endl;
-        stream2 << std::endl;
-        stream2 << "namespace UVK" << std::endl;
-        stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : public UVK::PlayerController" << std::endl;
-        stream2 << "    {" << std::endl;
-        stream2 << "    public:" << std::endl;
-        stream2 << "        " << name << "();" << std::endl;
-        stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
-        stream2 << "        virtual void endPlay() override;" << std::endl;
-        stream2 << "        virtual void beginPlay() override;" << std::endl;
-        stream2 << "    };" << std::endl;
-        stream2 << "}" << std::endl;
-        stream2.close();
-    }
-
-    void GenGI(char* name)
-    {
-        auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
-
-        stream << "#include " << "\"" << name << ".hpp\"" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::beginPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << std::endl;
-        stream << "void UVK::" << name << "::tick(float deltaTime)" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream << "void UVK::" << name << "::endPlay()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-        stream.close();
-
-        auto stream2 = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".hpp");
-        stream2 << "#include \"Game.hpp\"" << std::endl;
-        stream2 << std::endl;
-        stream2 << "namespace UVK" << std::endl;
-        stream2 << "{" << std::endl;
-        stream2 << "    class " << name << " : public UVK::GameInstance" << std::endl;
-        stream2 << "    {" << std::endl;
-        stream2 << "    public:" << std::endl;
-        stream2 << "        " << name << "();" << std::endl;
-        stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
-        stream2 << "        virtual void endPlay() override;" << std::endl;
-        stream2 << "        virtual void beginPlay() override;" << std::endl;
-        stream2 << "    };" << std::endl;
-        stream2 << "}" << std::endl;
-        stream2.close();
     }
 }
