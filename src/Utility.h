@@ -127,7 +127,7 @@ if (APPLE))" << std::endl;
         stream << "elseif(APPLE)" << std::endl;
         stream << "    target_link_libraries("<< name << " glfw ${OPENGL_LIBRARIES} OpenAL yaml-cpp sndfile)" << std::endl;
         stream << "else()" << std::endl;
-        stream << "    target_link_libraries("<< name << " glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile util)" << std::endl;
+        stream << "    target_link_libraries("<< name << " glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile util pthread)" << std::endl;
         stream << "endif()" << std::endl;
 
         stream.close();
