@@ -72,6 +72,8 @@ endif()
 add_subdirectory(Engine/ThirdParty/yaml/)
 add_subdirectory(Engine/ThirdParty/entt/)
 link_directories(Engine/ThirdParty/glew/lib)
+add_subdirectory(Engine/ThirdParty/assimp)
+include_directories(Engine/ThirdParty/assimp/include)
 if(APPLE)
 else()
     link_directories(Engine/ThirdParty/vulkan/)
@@ -120,14 +122,14 @@ if (APPLE))" << std::endl;
         stream << "set_target_properties("<< name << " PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
         stream << "if (WIN32)" << std::endl;
         stream << "    if (MINGW)" << std::endl;
-        stream << "        target_link_libraries("<< name << " glfw opengl32 glew32 yaml-cpp vulkan-1)" << std::endl;
+        stream << "        target_link_libraries("<< name << " glfw opengl32 glew32 yaml-cpp vulkan-1 assimp)" << std::endl;
         stream << "    else()" << std::endl;
-        stream << "        target_link_libraries("<< name << " glfw OpenAL opengl32 glew32 yaml-cpp vulkan-1 sndfile)" << std::endl;
+        stream << "        target_link_libraries("<< name << " glfw OpenAL opengl32 glew32 yaml-cpp vulkan-1 sndfile assimp)" << std::endl;
         stream << "    endif()" << std::endl;
         stream << "elseif(APPLE)" << std::endl;
-        stream << "    target_link_libraries("<< name << " glfw ${OPENGL_LIBRARIES} OpenAL yaml-cpp sndfile)" << std::endl;
+        stream << "    target_link_libraries("<< name << " glfw ${OPENGL_LIBRARIES} OpenAL yaml-cpp sndfile assimp)" << std::endl;
         stream << "else()" << std::endl;
-        stream << "    target_link_libraries("<< name << " glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile util pthread)" << std::endl;
+        stream << "    target_link_libraries("<< name << " glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile util pthread assimp)" << std::endl;
         stream << "endif()" << std::endl;
 
         stream.close();
@@ -139,13 +141,13 @@ if (APPLE))" << std::endl;
         stream2.close();
 
         auto mainStream = std::ofstream(path + "main.cpp");
-        mainStream << R"(
-#include <Engine.hpp>
+        mainStream << R"(#include <Engine.hpp>
 #include "Source/StartupLevel.hpp"
 
 int main(int argc, char** argv)
 {
     ENABLE_FAST_IO(true);
+    UVK::AudioManager manager;
     bool bUsesEditor = false;
 
     if (argv[1])
