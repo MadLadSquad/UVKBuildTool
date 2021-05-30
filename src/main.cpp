@@ -29,28 +29,10 @@ int main(int argc, char** argv) {
     try
     {
         config = YAML::LoadFile("../../uvproj.yaml");
-        UBT::path = "../../";
     }
     catch (YAML::BadFile&)
     {
-        try
-        {
-            config = YAML::LoadFile("../../../uvproj.yaml");
-            UBT::path = "../../../";
-        }
-        catch (YAML::BadFile&)
-        {
-            try
-            {
-                config = YAML::LoadFile("../../../../uvproj.yaml");
-                UBT::path = "../../../../";
-            }
-            catch (YAML::BadFile&)
-            {
-                std::cout << "Could not locate file" << std::endl;
-                return 0;
-            }
-        }
+        std::cout << "Could not locate file" << std::endl;
     }
 
     if (argv[1] == UBT::toLower("--generate"))
