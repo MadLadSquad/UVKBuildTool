@@ -5,7 +5,7 @@
 #include <fstream>
 #include <ostream>
 
-#define path "../../"
+const std::string path = "../../";
 
 namespace UBT
 {
