@@ -29,8 +29,12 @@ void UBT::addClass(const std::string& str)
         className.erase(0, className.find_last_of('/') + 1);
     }
 
-    // The cryptic 5 here is to account that std::string::size is the actual size + 1
-    loc.erase(0, path.size() + 5);
+    std::string toErase = path + "Source/";
+    auto a = loc.find(toErase);
+    if (a != std::string::npos)
+    {
+        loc.erase(a, toErase.length());
+    }
 
     auto stream = std::ifstream(path + "Source/ActorList.hpp");
     while (std::getline(stream, it))
@@ -80,7 +84,12 @@ void UBT::removeClass(const std::string& str)
         className.erase(0, className.find_last_of('/') + 1);
     }
 
-    loc.erase(0, path.size() + 5);
+    std::string toErase = path + "Source/";
+    auto a = loc.find(toErase);
+    if (a != std::string::npos)
+    {
+        loc.erase(a, toErase.length());
+    }
 
     std::ifstream in(path + "Source/ActorList.hpp");
 
