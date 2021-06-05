@@ -1,6 +1,13 @@
 #include "Utility.h"
+#include "ActorListGenerator.hpp"
+#include "CMakeGenerator.hpp"
+#include "FileGenerator.hpp"
+#include "SourceGenerator.hpp"
 
-int main(int argc, char** argv) {
+
+
+int main(int argc, char** argv)
+{
     if (argc < 2)
     {
         std::cout << "Not enough arguments passed into the generator!" << std::endl;
@@ -38,8 +45,12 @@ int main(int argc, char** argv) {
     if (argv[1] == UBT::toLower("--generate"))
     {
         bool bStartupLevelExists = false;
+        bool bSetReadable = false;
         const char* name;
         const char* startupLevelName;
+
+        std::ifstream i(path + "Source/ActorSet.hpp");
+        if (i.is_open()) bSetReadable = true;
 
         if (config["startup-level-exists"])
         {
@@ -56,21 +67,36 @@ int main(int argc, char** argv) {
             name = config["name"].as<std::string>().c_str();
         }
 
-        UBT::GenerateFiles(bStartupLevelExists, startupLevelName, name);
+        if (!bSetReadable) UBT::generateSet();
+        UBT::generateCmake(name);
+        UBT::generateGame();
+        UBT::generateMain(startupLevelName);
+        UBT::makeTemplate("StartupLevel", "UVK::Level");
+
+        if (!bStartupLevelExists)
+        {
+            UBT::makeTemplate("StartupLevel", "UVK::Level");
+        }
 
         return 0;
     }
 
-    if (argc < 3)
+    if (argc < 4)
     {
         std::cout << "Not enough arguments passed into the generator!" << std::endl;
         return 0;
     }
     else
     {
-        if (argv[1] == UBT::toLower("--actor"))
+        if (argv[1] == UBT::toLower("--actor") && argv[3] == UBT::toLower("--add"))
         {
             UBT::makeTemplate(std::string(argv[2]), "UVK::ScriptableObject");
+            UBT::addClass("Source/" + std::string(argv[2]) + ".hpp");
+            return 0;
+        }
+        else if (argv[1] == UBT::toLower("--actor") && argv[3] == UBT::toLower("--remove"))
+        {
+            UBT::removeClass("Source/" + std::string(argv[2]) + ".hpp");
             return 0;
         }
         else if (argv[1] == UBT::toLower("--pawn"))

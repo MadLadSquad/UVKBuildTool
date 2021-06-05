@@ -7,5 +7,7 @@ add_subdirectory(yaml-cpp)
 include_directories(yaml-cpp/include)
 include_directories(yaml-cpp/include/yaml-cpp)
 
-add_executable(UVKBuildTool src/main.cpp src/Utility.h)
+file(GLOB_RECURSE SRC "src/*.cpp" "src/*.hpp")
+
+add_executable(UVKBuildTool ${SRC})
 target_link_libraries(UVKBuildTool yaml-cpp)
