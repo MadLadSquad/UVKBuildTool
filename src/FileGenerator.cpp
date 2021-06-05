@@ -34,7 +34,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
         virtual void tick(float deltaTime) override;
         virtual void endPlay() override;
         virtual void beginPlay() override;
-        virtual ~)" << name << "() override {}" << R"("
+        virtual ~)" << name << "() override {}" << R"(
     };
 })";
     stream2.close();
