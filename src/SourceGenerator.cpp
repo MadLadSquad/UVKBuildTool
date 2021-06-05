@@ -19,6 +19,7 @@ void UBT::generateMain(const char* startupLevelName)
 int main(int argc, char** argv)
 {
     ENABLE_FAST_IO(true);
+    actorManager.init();
     UVK::AudioManager manager;
     bool bUsesEditor = false;
 
@@ -34,7 +35,8 @@ int main(int argc, char** argv)
     UVK::StartupLevel st;
 
     UVK::StartupLevel::open(")" << startupLevelName << "\");" << std::endl;
-    main << "   UVK::Renderer(&st, bUsesEditor);" << std::endl;
+    main << "    UVK::Renderer(&st, bUsesEditor);" << std::endl;
+    main << "    actorManager.destroy();" << std::endl;
     main << "}" << std::endl;
     main.close();
 }

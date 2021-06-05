@@ -30,10 +30,12 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
     stream2 << "    {" << std::endl;
     stream2 << "    public:" << std::endl;
     stream2 << "        " << name << "() {}" << std::endl;
-    stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
-    stream2 << "        virtual void endPlay() override;" << std::endl;
-    stream2 << "        virtual void beginPlay() override;" << std::endl;
-    stream2 << "    };" << std::endl;
-    stream2 << "}" << std::endl;
+    stream2 << R"(
+        virtual void tick(float deltaTime) override;
+        virtual void endPlay() override;
+        virtual void beginPlay() override;
+        virtual ~)" << name << "() override {}" << R"("
+    };
+})";
     stream2.close();
 }
