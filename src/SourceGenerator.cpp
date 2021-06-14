@@ -32,8 +32,10 @@ int main(int argc, char** argv)
             bUsesEditor = true;
         }
     }
+    
+    UVK::rendererResources.bEditor = bUsesEditor;
     UVK::StartupLevel st;
-
+    
     UVK::StartupLevel::open(")" << startupLevelName << "\");" << std::endl;
     main << "    UVK::Renderer(&st, bUsesEditor);" << std::endl;
     main << "    actorManager.destroy();" << std::endl;
