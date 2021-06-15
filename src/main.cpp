@@ -49,7 +49,7 @@ int main(int argc, char** argv)
         const char* name;
         const char* startupLevelName;
 
-        std::ifstream i(path + "Source/ActorSet.hpp");
+        std::ifstream i(path + "Generated/ActorSet.hpp");
         if (i.is_open()) bSetReadable = true;
 
         if (config["startup-level-exists"])
