@@ -3,7 +3,7 @@
 #include "CMakeGenerator.hpp"
 #include "FileGenerator.hpp"
 #include "SourceGenerator.hpp"
-
+#include "ReleaseBuild.hpp"
 
 
 int main(int argc, char** argv)
@@ -72,6 +72,7 @@ int main(int argc, char** argv)
         UBT::generateGame();
         UBT::generateMain(startupLevelName);
         UBT::makeTemplate("StartupLevel", "UVK::Level");
+        UBT::generateSet();
 
         if (!bStartupLevelExists)
         {
@@ -123,6 +124,10 @@ int main(int argc, char** argv)
             UBT::makeTemplate(std::string(argv[2]), "UVK::Level");
             return 0;
         }
+        else if (argv[1] == UBT::toLower("--build"))
+        {
+            UBT::relBuild(std::atoi(argv[2]));
+        }
     }
 
     if (argc < 4)
@@ -143,5 +148,6 @@ int main(int argc, char** argv)
             UBT::removeClass("Source/" + std::string(argv[2]) + ".hpp");
             return 0;
         }
+
     }
 }

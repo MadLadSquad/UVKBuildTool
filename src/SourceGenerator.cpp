@@ -42,3 +42,11 @@ int main(int argc, char** argv)
     main << "}" << std::endl;
     main.close();
 }
+
+void UBT::generateDef()
+{
+    std::ofstream out2(path + "Generated/BuildDef.hpp");
+    out2 << "// Generated file, DO NOT TOUCH!" << std::endl;
+    out2 << "#undef PRODUCTION" << std::endl;
+    out2.close();
+}

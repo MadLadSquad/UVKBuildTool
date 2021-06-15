@@ -6,4 +6,6 @@ namespace UBT
     void generateMain(const char* startupLevelName);
 
     void generateGame();
+
+    void generateDef();
 }
