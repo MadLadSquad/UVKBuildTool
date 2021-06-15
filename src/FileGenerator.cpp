@@ -15,6 +15,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
     stream << "{" << std::endl;
     stream << std::endl;
     stream << "}" << std::endl;
+    stream << std::endl;
     stream << "void UVK::" << name << "::endPlay()" << std::endl;
     stream << "{" << std::endl;
     stream << std::endl;
@@ -29,8 +30,11 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
     stream2 << "    class " << name << " : public " << type << std::endl;
     stream2 << "    {" << std::endl;
     stream2 << "    public:" << std::endl;
-    stream2 << "        " << name << "() {}" << std::endl;
-    stream2 << R"(
+    stream2 << "        " << name << R"(() 
+        {
+    
+        }
+
         virtual void tick(float deltaTime) override;
         virtual void endPlay() override;
         virtual void beginPlay() override;
