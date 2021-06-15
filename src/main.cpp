@@ -71,8 +71,7 @@ int main(int argc, char** argv)
         UBT::generateCmake(name);
         UBT::generateGame();
         UBT::generateMain(startupLevelName);
-        UBT::makeTemplate("StartupLevel", "UVK::Level");
-        UBT::generateSet();
+        UBT::generateDef();
 
         if (!bStartupLevelExists)
         {
