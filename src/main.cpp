@@ -126,6 +126,7 @@ int main(int argc, char** argv)
         else if (argv[1] == UBT::toLower("--build"))
         {
             UBT::relBuild(std::atoi(argv[2]));
+            return 0;
         }
     }
 
