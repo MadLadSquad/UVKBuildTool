@@ -69,13 +69,17 @@ if (APPLE))" << std::endl;
     stream << "set_target_properties("<< name << " PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
     stream << "if (WIN32)" << std::endl;
     stream << "    if (MINGW)" << std::endl;
+    stream << "        target_compile_options("<< name << " PRIVATE \"-O3\")" << std::endl;
     stream << "        target_link_libraries("<< name << " glfw opengl32 glew32 yaml-cpp vulkan-1 assimp)" << std::endl;
     stream << "    else()" << std::endl;
+    stream << "        target_compile_options("<< name << " PRIVATE \"/O2bi\")" << std::endl;
     stream << "        target_link_libraries("<< name << " glfw OpenAL opengl32 glew32 yaml-cpp vulkan-1 sndfile assimp)" << std::endl;
     stream << "    endif()" << std::endl;
     stream << "elseif(APPLE)" << std::endl;
+    stream << "    target_compile_options("<< name << " PRIVATE \"-O3\")" << std::endl;
     stream << "    target_link_libraries("<< name << " glfw GLEW ${OPENGL_LIBRARIES} OpenAL yaml-cpp sndfile assimp)" << std::endl;
     stream << "else()" << std::endl;
+    stream << "    target_compile_options("<< name << " PRIVATE \"-O3\")" << std::endl;
     stream << "    target_link_libraries("<< name << " glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile util pthread assimp)" << std::endl;
     stream << "endif()" << std::endl;
 
