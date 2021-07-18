@@ -2,22 +2,36 @@
 
 void UBT::makeTemplate(const std::string& name, const std::string& type)
 {
+    bool bAddAutohandles = false;
+    if (type == "UVK::Level" || type == "UVK::GameMode") bAddAutohandles = true;
     auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
 
     stream << "#include " << "\"" << name << ".hpp\"" << std::endl;
     stream << std::endl;
     stream << "void UVK::" << name << "::beginPlay()" << std::endl;
     stream << "{" << std::endl;
+    if (bAddAutohandles)
+    {
+        stream << "    beginAutohandle();" << std::endl;
+    }
     stream << std::endl;
     stream << "}" << std::endl;
     stream << std::endl;
     stream << "void UVK::" << name << "::tick(float deltaTime)" << std::endl;
     stream << "{" << std::endl;
+    if (bAddAutohandles)
+    {
+        stream << "    tickAutohandle(deltaTime);" << std::endl;
+    }
     stream << std::endl;
     stream << "}" << std::endl;
     stream << std::endl;
     stream << "void UVK::" << name << "::endPlay()" << std::endl;
     stream << "{" << std::endl;
+    if (bAddAutohandles)
+    {
+        stream << "    endAutohandle();" << std::endl;
+    }
     stream << std::endl;
     stream << "}" << std::endl;
     stream.close();

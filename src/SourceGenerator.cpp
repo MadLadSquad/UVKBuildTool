@@ -33,11 +33,11 @@ int main(int argc, char** argv)
     }
     
     auto* st = new UVK::StartupLevel;
-    UVK::global.bEditor = bUsesEditor;
-    UVK::global.level = st;
+    UVK::global.getEditor() = bUsesEditor;
+    UVK::global.currentLevel = st;
     
-    UVK::StartupLevel::open(")" << startupLevelName << "\");" << std::endl;
-    main << "    UVK::Renderer(UVK::global.level, bUsesEditor);" << std::endl;
+    UVK::StartupLevel::openInternal(")" << startupLevelName << "\");" << std::endl;
+    main << "    UVK::Renderer(UVK::global.currentLevel, bUsesEditor);" << std::endl;
     main << "}" << std::endl;
     main.close();
 }

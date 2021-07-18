@@ -44,18 +44,12 @@ int main(int argc, char** argv)
 
     if (argv[1] == UBT::toLower("--generate"))
     {
-        bool bStartupLevelExists = false;
-        bool bSetReadable = false;
+        bool bSetReadable;
         const char* name;
         const char* startupLevelName;
 
         std::ifstream i(path + "Generated/ActorList.hpp");
         bSetReadable = i.is_open();
-
-        if (config["startup-level-exists"])
-        {
-            bStartupLevelExists = config["startup-level-exists"].as<bool>();
-        }
 
         if (config["startup-level"])
         {
@@ -73,12 +67,42 @@ int main(int argc, char** argv)
         UBT::generateMain(startupLevelName);
         UBT::generateDef();
 
-        if (!bStartupLevelExists)
+        /*if (!bStartupLevelExists)
         {
             UBT::makeTemplate("StartupLevel", "UVK::Level");
-        }
+        }*/
 
         return 0;
+    }
+    else if (argv[1] == UBT::toLower("--install"))
+    {
+        bool bSetReadable;
+        const char* name;
+        const char* startupLevelName;
+
+        std::ifstream i(path + "Generated/ActorList.hpp");
+        bSetReadable = i.is_open();
+
+        if (config["startup-level"])
+        {
+            startupLevelName = config["startup-level"].as<std::string>().c_str();
+        }
+
+        if (config["name"])
+        {
+            name = config["name"].as<std::string>().c_str();
+        }
+
+        if (!bSetReadable) UBT::generateSet();
+        UBT::generateCmake(name);
+        UBT::generateGame();
+        UBT::generateMain(startupLevelName);
+        UBT::generateDef();
+        UBT::makeTemplate("StartupLevel", "UVK::Level");
+    }
+    else
+    {
+        std::cout << "Not enough or wrong arguments passed!" << std::endl;
     }
 
     if (argc < 3)
