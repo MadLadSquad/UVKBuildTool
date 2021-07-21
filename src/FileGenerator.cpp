@@ -60,9 +60,9 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
         virtual void beginPlay() override;)" << std::endl;
 	if (!bGameInstance)
 	{
-		std::cout << "        virtual void tick(float deltaTime) override;" << std::endl;
+        stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
     }
-	std::cout << "        virtual ~" << name << "() override {}" << R"(
+    stream2 << "        virtual ~" << name << "() override {}" << R"(
     };
 })";
     stream2.close();
