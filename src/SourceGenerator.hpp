@@ -3,7 +3,7 @@
 
 namespace UBT
 {
-    void generateMain(const char* startupLevelName);
+    void generateMain(const char* startupLevelName, const char* gameName);
 
     void generateGame();
 

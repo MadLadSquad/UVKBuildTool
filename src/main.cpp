@@ -64,7 +64,7 @@ int main(int argc, char** argv)
         if (!bSetReadable) UBT::generateSet();
         UBT::generateCmake(name);
         UBT::generateGame();
-        UBT::generateMain(startupLevelName);
+        UBT::generateMain(startupLevelName, name);
         UBT::generateDef();
 
         return 0;
@@ -91,10 +91,11 @@ int main(int argc, char** argv)
         if (!bSetReadable) UBT::generateSet();
         UBT::generateCmake(name);
         UBT::generateGame();
-        UBT::generateMain(startupLevelName);
+        UBT::generateMain(startupLevelName, name);
         UBT::generateDef();
         UBT::makeTemplate("StartupLevel", "UVK::Level");
-		
+		UBT::makeTemplate(static_cast<std::string>(name + std::string("GameInstance")), "UVK::GameInstance");
+
 		return 0;
     }
     else

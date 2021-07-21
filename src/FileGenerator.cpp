@@ -3,8 +3,12 @@
 void UBT::makeTemplate(const std::string& name, const std::string& type)
 {
     bool bAddAutohandles = false;
-    if (type == "UVK::Level" || type == "UVK::GameMode") bAddAutohandles = true;
-    auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
+	bool bGameInstance = false;
+
+	if (type == "UVK::Level" || type == "UVK::GameMode") bAddAutohandles = true;
+	if (type == "UVK::GameInstance") bGameInstance = true;
+
+	auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
 
     stream << "#include " << "\"" << name << ".hpp\"" << std::endl;
     stream << std::endl;
@@ -17,14 +21,17 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
     stream << std::endl;
     stream << "}" << std::endl;
     stream << std::endl;
-    stream << "void UVK::" << name << "::tick(float deltaTime)" << std::endl;
-    stream << "{" << std::endl;
-    if (bAddAutohandles)
-    {
-        stream << "    tickAutohandle(deltaTime);" << std::endl;
+	if (!bGameInstance)
+	{
+		stream << "void UVK::" << name << "::tick(float deltaTime)" << std::endl;
+		stream << "{" << std::endl;
+		if (bAddAutohandles)
+		{
+			stream << "    tickAutohandle(deltaTime);" << std::endl;
+		}
+    	stream << std::endl;
     }
-    stream << std::endl;
-    stream << "}" << std::endl;
+	stream << "}" << std::endl;
     stream << std::endl;
     stream << "void UVK::" << name << "::endPlay()" << std::endl;
     stream << "{" << std::endl;
@@ -49,10 +56,13 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
     
         }
 
-        virtual void tick(float deltaTime) override;
         virtual void endPlay() override;
-        virtual void beginPlay() override;
-        virtual ~)" << name << "() override {}" << R"(
+        virtual void beginPlay() override;)" << std::endl;
+	if (!bGameInstance)
+	{
+		std::cout << "        virtual void tick(float deltaTime) override;" << std::endl;
+    }
+	std::cout << "        virtual ~" << name << "() override {}" << R"(
     };
 })";
     stream2.close();
