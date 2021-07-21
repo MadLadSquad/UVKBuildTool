@@ -30,9 +30,10 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
 			stream << "    tickAutohandle(deltaTime);" << std::endl;
 		}
     	stream << std::endl;
+
+	    stream << "}" << std::endl;
+	    stream << std::endl;
     }
-	stream << "}" << std::endl;
-    stream << std::endl;
     stream << "void UVK::" << name << "::endPlay()" << std::endl;
     stream << "{" << std::endl;
     if (bAddAutohandles)
