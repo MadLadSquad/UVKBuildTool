@@ -37,9 +37,9 @@ int main(int argc, char** argv)
     UVK::global.getEditor() = bUsesEditor;
     UVK::global.currentLevel = st;)";
     main << std::endl;
-    main << "auto* mode = new UVK::" << gameName << "GameInstance();" << R"(
+    main << "    auto* mode = new UVK::" << gameName << "GameInstance();" << R"(
     UVK::global.instance = mode;
-    UVK::StartupLevel::openInternal(")" << startupLevelName << "\");" << std::endl;
+    UVK::UVKGlobal::openLevelInternal(")" << startupLevelName << "\");" << std::endl;
     main << "    UVK::Renderer(UVK::global.currentLevel, bUsesEditor);" << std::endl;
     main << "}" << std::endl;
     main.close();
