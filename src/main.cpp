@@ -67,11 +67,6 @@ int main(int argc, char** argv)
         UBT::generateMain(startupLevelName);
         UBT::generateDef();
 
-        /*if (!bStartupLevelExists)
-        {
-            UBT::makeTemplate("StartupLevel", "UVK::Level");
-        }*/
-
         return 0;
     }
     else if (argv[1] == UBT::toLower("--install"))
@@ -99,6 +94,8 @@ int main(int argc, char** argv)
         UBT::generateMain(startupLevelName);
         UBT::generateDef();
         UBT::makeTemplate("StartupLevel", "UVK::Level");
+		
+		return 0;
     }
     else
     {
