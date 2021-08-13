@@ -46,26 +46,26 @@ int main(int argc, char** argv)
     if (argv[1] == UBT::toLower("--generate"))
     {
         bool bSetReadable;
-        const char* name;
-        const char* startupLevelName;
+        std::string name;
+        std::string startupLevelName;
 
         std::ifstream i(path + "Generated/ActorList.hpp");
         bSetReadable = i.is_open();
 
         if (config["startup-level"])
         {
-            startupLevelName = config["startup-level"].as<std::string>().c_str();
+            startupLevelName = config["startup-level"].as<std::string>();
         }
 
         if (config["name"])
         {
-            name = config["name"].as<std::string>().c_str();
+            name = config["name"].as<std::string>();
         }
 
         if (!bSetReadable) UBT::generateSet();
-        UBT::generateCmake(name);
+        UBT::generateCmake(name.c_str());
         UBT::generateGame();
-        UBT::generateMain(startupLevelName, name);
+        UBT::generateMain(startupLevelName.c_str(), name.c_str());
         UBT::generateDef();
 
         return 0;
@@ -73,26 +73,26 @@ int main(int argc, char** argv)
     else if (argv[1] == UBT::toLower("--install"))
     {
         bool bSetReadable;
-        const char* name;
-        const char* startupLevelName;
+        std::string name;
+        std::string startupLevelName;
 
         std::ifstream i(path + "Generated/ActorList.hpp");
         bSetReadable = i.is_open();
 
         if (config["startup-level"])
         {
-            startupLevelName = config["startup-level"].as<std::string>().c_str();
+            startupLevelName = config["startup-level"].as<std::string>();
         }
 
         if (config["name"])
         {
-            name = config["name"].as<std::string>().c_str();
+            name = config["name"].as<std::string>();
         }
 
         if (!bSetReadable) UBT::generateSet();
-        UBT::generateCmake(name);
+        UBT::generateCmake(name.c_str());
         UBT::generateGame();
-        UBT::generateMain(startupLevelName, name);
+        UBT::generateMain(startupLevelName.c_str(), name.c_str());
         UBT::generateDef();
         UBT::makeTemplate("StartupLevel", "UVK::Level");
 		UBT::makeTemplate(static_cast<std::string>(name + std::string("GameInstance")), "UVK::GameInstance");
