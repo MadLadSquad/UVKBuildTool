@@ -9,7 +9,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
 	if (type == "UVK::GameInstance") bGameInstance = true;
 
 	auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
-
+    
     stream << "#include " << "\"" << name << ".hpp\"" << std::endl;
     stream << std::endl;
     stream << "void UVK::" << name << "::beginPlay()" << std::endl;
@@ -45,6 +45,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
     stream.close();
 
     auto stream2 = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".hpp");
+    stream2 << "#pragma once" << std::endl;
     stream2 << "#include \"Game.hpp\"" << std::endl;
     stream2 << std::endl;
     stream2 << "namespace UVK" << std::endl;
