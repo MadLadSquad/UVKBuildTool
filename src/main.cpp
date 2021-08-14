@@ -69,7 +69,7 @@ int main(int argc, char** argv)
 
         return 0;
     }
-    else if (argv[1] == UBT::toLower("--install"))
+    else if (argv[1] == UBT::toLower("--install") && argc < 3)
     {
         bool bSetReadable;
         std::string name;
@@ -97,10 +97,6 @@ int main(int argc, char** argv)
 		UBT::makeTemplate(static_cast<std::string>(name + std::string("GameInstance")), "UVK::GameInstance");
 
 		return 0;
-    }
-    else
-    {
-        std::cout << "Not enough or wrong arguments passed!" << std::endl;
     }
 
     if (argc < 3)
