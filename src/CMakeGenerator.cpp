@@ -5,7 +5,7 @@ void UBT::generateCmake(const char* name)
     auto stream = std::ofstream(path + static_cast<std::string>("CMakeLists.txt"));
     stream << "cmake_minimum_required(VERSION 3.17)" << std::endl;
     stream << "project(" << name << ")" << std::endl;
-    stream << R"(set(CMAKE_CXX_STANDARD 17)
+    stream << R"(set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(Engine/ThirdParty/glm/)
 add_subdirectory(Engine/ThirdParty/glfw/)
 if(APPLE)
