@@ -108,7 +108,7 @@ int main(int argc, char** argv)
     {
         if (argv[1] == UBT::toLower("--pawn"))
         {
-            UBT::makeTemplate(std::string(argv[2]), "UVK::APawn");
+            UBT::makeTemplate(std::string(argv[2]), "UVK::Pawn");
             return 0;
         }
         else if (argv[1] == UBT::toLower("--game-mode"))
