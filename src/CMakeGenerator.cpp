@@ -21,6 +21,7 @@ add_subdirectory(Engine/ThirdParty/entt/)
 link_directories(Engine/ThirdParty/glew/lib)
 add_subdirectory(Engine/ThirdParty/assimp)
 include_directories(Engine/ThirdParty/assimp/include)
+add_subdirectory(Engine/ThirdParty/freetype)
 if(APPLE)
 else()
     link_directories(Engine/ThirdParty/vulkan/)
@@ -50,6 +51,7 @@ if (APPLE)
 else()
     include_directories(Engine/ThirdParty/vulkan/headers/include)
 endif ()
+include_directories(Engine/ThirdParty/freetype/include)
 if(WIN32)
     include_directories(Engine/ThirdParty/stb)
 else()
@@ -70,17 +72,17 @@ if (APPLE))" << std::endl;
     stream << "if (WIN32)" << std::endl;
     stream << "    if (MINGW)" << std::endl;
     stream << "        target_compile_options("<< name << " PRIVATE \"-O3\" \"-march=native\")" << std::endl;
-    stream << "        target_link_libraries("<< name << " glfw opengl32 glew32 yaml-cpp vulkan-1 assimp)" << std::endl;
+    stream << "        target_link_libraries("<< name << " glfw opengl32 glew32 yaml-cpp vulkan-1 assimp freetype)" << std::endl;
     stream << "    else()" << std::endl;
     stream << "        target_compile_options("<< name << " PRIVATE \"/O2bi\" \"/arch:AVX2\")" << std::endl;
-    stream << "        target_link_libraries("<< name << " glfw OpenAL opengl32 glew32 yaml-cpp vulkan-1 sndfile assimp)" << std::endl;
+    stream << "        target_link_libraries("<< name << " glfw OpenAL opengl32 glew32 yaml-cpp vulkan-1 sndfile assimp freetype)" << std::endl;
     stream << "    endif()" << std::endl;
     stream << "elseif(APPLE)" << std::endl;
     stream << "    target_compile_options("<< name << " PRIVATE \"-O3\" \"-march=native\")" << std::endl;
-    stream << "    target_link_libraries("<< name << " glfw GLEW ${OPENGL_LIBRARIES} OpenAL yaml-cpp sndfile assimp)" << std::endl;
+    stream << "    target_link_libraries("<< name << " glfw GLEW ${OPENGL_LIBRARIES} OpenAL yaml-cpp sndfile assimp freetype)" << std::endl;
     stream << "else()" << std::endl;
     stream << "    target_compile_options("<< name << " PRIVATE \"-O3\" \"-march=native\")" << std::endl;
-    stream << "    target_link_libraries("<< name << " glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile util pthread assimp)" << std::endl;
+    stream << "    target_link_libraries("<< name << " glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile util pthread assimp freetype)" << std::endl;
     stream << "endif()" << std::endl;
 
     stream.close();
