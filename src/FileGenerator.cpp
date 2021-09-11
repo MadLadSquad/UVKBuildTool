@@ -34,6 +34,14 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
 	    stream << "}" << std::endl;
 	    stream << std::endl;
     }
+    else
+    {
+    	    stream << "void UVK::" << name << "::onEventInitEditorModules()" << std::endl;
+	    stream << "{" << std::endl;
+    	    stream << std::endl;
+	    stream << "}" << std::endl;
+	    stream << std::endl;
+    }
     stream << "void UVK::" << name << "::endPlay()" << std::endl;
     stream << "{" << std::endl;
     if (bAddAutohandles)
@@ -60,9 +68,13 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
 
         virtual void endPlay() override;
         virtual void beginPlay() override;)" << std::endl;
-	if (!bGameInstance)
-	{
+    if (!bGameInstance)
+    {
         stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
+    }
+    else
+    {
+        stream2 << "        virtual void onEventInitEditorModules() override;" << std::endl;
     }
     stream2 << "        virtual ~" << name << "() override {}" << R"(
     };
