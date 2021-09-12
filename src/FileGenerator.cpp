@@ -4,9 +4,11 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
 {
     bool bAddAutohandles = false;
 	bool bGameInstance = false;
+    bool bScriptableObject = false;
 
 	if (type == "UVK::Level" || type == "UVK::GameMode") bAddAutohandles = true;
 	if (type == "UVK::GameInstance") bGameInstance = true;
+    if (type == "UVK::ScriptableObject") bScriptableObject = true;
 
 	auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
     
@@ -50,6 +52,24 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
     }
     stream << std::endl;
     stream << "}" << std::endl;
+
+    if (bScriptableObject)
+    {
+        stream << "void UVK::" << name << "::inactivebegin()" << std::endl;
+        stream << "{" << std::endl;
+        stream << std::endl;
+        stream << "}" << std::endl;
+
+        stream << "void UVK::" << name << "::inactivetick(float deltaTime)" << std::endl;
+        stream << "{" << std::endl;
+        stream << std::endl;
+        stream << "}" << std::endl;
+
+        stream << "void UVK::" << name << "::inactiveend()" << std::endl;
+        stream << "{" << std::endl;
+        stream << std::endl;
+        stream << "}" << std::endl;
+    }
     stream.close();
 
     auto stream2 = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".hpp");
@@ -76,6 +96,16 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
     {
         stream2 << "        virtual void onEventInitEditorModules() override;" << std::endl;
     }
+
+    if (bScriptableObject)
+    {
+        stream << R"(
+        virtual void inactivebegin() override;
+        virtual void inactivetick(float deltaTime) override;
+        virtual void inactiveend() override;
+)" << std::endl;
+    }
+
     stream2 << "        virtual ~" << name << "() override {}" << R"(
     };
 })";
