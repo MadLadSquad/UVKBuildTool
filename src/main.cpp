@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	    std::cout << "  --install - generates first time install project files" << std::endl;
         std::cout << "  --help - this help message" << std::endl;
         std::cout << "Commands bellow this line, generate project files, with the first argument specifying the type and the second the name!" << std::endl;
-        std::cout << "  --actor <name> <add or remove>" << std::endl;
+        std::cout << "  --scriptable-object <name> <add or remove>" << std::endl;
         std::cout << "  --pawn <name>" << std::endl;
         std::cout << "  --game-mode <name>" << std::endl;
         std::cout << "  --game-state <name>" << std::endl;
@@ -150,13 +150,13 @@ int main(int argc, char** argv)
     }
     else
     {
-        if (argv[1] == UBT::toLower("--actor") && argv[3] == UBT::toLower("--add"))
+        if (argv[1] == UBT::toLower("--scriptable-object") && argv[3] == UBT::toLower("--add"))
         {
             UBT::makeTemplate(std::string(argv[2]), "UVK::ScriptableObject");
             UBT::addClass("Source/" + std::string(argv[2]) + ".hpp");
             return 0;
         }
-        else if (argv[1] == UBT::toLower("--actor") && argv[3] == UBT::toLower("--remove"))
+        else if (argv[1] == UBT::toLower("--scriptable-object") && argv[3] == UBT::toLower("--remove"))
         {
             UBT::removeClass("Source/" + std::string(argv[2]) + ".hpp");
             return 0;
