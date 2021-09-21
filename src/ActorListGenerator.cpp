@@ -95,7 +95,7 @@ void UBT::removeClass(const std::string& str)
 
     while (std::getline(in, it))
     {
-        if (it.find("#include \"" + loc + "\"") != std::string::npos || it.find("a.emplace(" + className + "ABC)") != std::string::npos || it.find("UVK::" + className + "* " + className + "ABC = new UVK::") != std::string::npos)
+        if (it.find("#include \"" + loc + "\"") != std::string::npos || it.find("a.emplace_back(" + className + "ABC)") != std::string::npos || it.find("UVK::" + className + "* " + className + "ABC = new UVK::") != std::string::npos)
         {
             it.clear();
             buffer.append(it + '\n');
