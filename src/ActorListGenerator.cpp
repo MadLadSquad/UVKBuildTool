@@ -54,8 +54,8 @@ void UBT::addClass(const std::string& str)
         {
             auto a = className;
             className = "UVK::" + className;
-            it = className + "* " + a + "ABC = new " + className + R"((); \
-a.emplace()" + a + "ABC" + "); \\\n";
+            it = className + "* " + a + "ABC = new " + className + R"((); 
+a.emplace_back()" + a + "ABC" + "); \\\n";
             buffer.append(it + "\n");
             break;
         }
