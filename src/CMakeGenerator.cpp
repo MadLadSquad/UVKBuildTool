@@ -58,6 +58,13 @@ if(WIN32)
 else()
     include_directories(Engine/ThirdParty)
 endif()
+
+file(GLOB_RECURSE EngineHeaders "Engine/Core/Core/STL.hpp" "Engine/ThirdParty/glm/glm/glm.hpp"
+"Engine/ThirdParty/stb/*.h" "Engine/ThirdParty/yaml/include/yaml-cpp/*.h" "Engine/ThirdParty/glm/glm/*.h"
+"Engine/ThirdParty/logger/UVKLog.h" "Engine/ThirdParty/yaml/include/yaml-cpp/*.hpp"
+"Engine/ThirdParty/entt/*.h" "Engine/ThirdParty/freetype/include/freetype/freetype.h"
+"Engine/ThirdParty/vulkan/headers/include/vulkan/vulkan.h")
+
 if (APPLE))" << std::endl;
     stream << "    file(GLOB_RECURSE " << name << "Src" << R"( "Source/*.cpp" "Source/*.hpp" "Engine/Audio/*.cpp" "Engine/Audio/*.hpp" "Engine/Core/*.cpp" "Engine/Core/*.hpp" "Engine/Renderer/OpenGL/*.hpp" "Engine/Renderer/OpenGL/*.cpp" "Engine/Renderer/Vulkan/VulkanRenderer.hpp" "Engine/Renderer/Renderer.hpp" "Engine/GameFramework/*.cpp" "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/backends/apple/*.cpp" "Engine/ThirdParty/imgui/backends/apple/*.h" "Engine/ThirdParty/imgui/misc/*.cpp" "Engine/ThirdParty/imgui/misc/*.h" "Engine/ThirdParty/imguiex/*.cpp" "Engine/ThirdParty/imguiex/*.h" "Generated/*.cpp" "Generated/*.hpp" "Engine/ThirdParty/logger/*.h" "Engine/ThirdParty/logger/*.cpp"))" << std::endl;
     stream << "else()" << std::endl;
@@ -69,6 +76,7 @@ if (APPLE))" << std::endl;
     stream << "else()" << std::endl;
     stream << "    add_executable("<< name << " ${"<< name << "Src} Engine/ThirdParty/stb/stb_image.h)" << std::endl;
     stream << "endif()" << std::endl;
+    stream << "target_precompile_headers(Game PRIVATE ${EngineHeaders})" << std::endl;
     stream << "set_target_properties("<< name << " PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
     stream << "if (WIN32)" << std::endl;
     stream << "    if (MINGW)" << std::endl;
