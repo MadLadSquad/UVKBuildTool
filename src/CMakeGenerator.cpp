@@ -76,7 +76,7 @@ if (APPLE))" << std::endl;
     stream << "else()" << std::endl;
     stream << "    add_executable("<< name << " ${"<< name << "Src} Engine/ThirdParty/stb/stb_image.h)" << std::endl;
     stream << "endif()" << std::endl;
-    stream << "target_precompile_headers(Game PRIVATE ${EngineHeaders})" << std::endl;
+    stream << "target_precompile_headers(" << name << " PRIVATE ${EngineHeaders})" << std::endl;
     stream << "set_target_properties("<< name << " PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
     stream << "if (WIN32)" << std::endl;
     stream << "    if (MINGW)" << std::endl;
