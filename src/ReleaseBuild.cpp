@@ -1,19 +1,17 @@
 #include "ReleaseBuild.hpp"
 
-void UBT::relBuild(int jobs)
+void UBT::relBuild(const std::string& name)
 {
+    // TODO: Add archiving after we are out of Pre-Alpha
     std::ofstream out(path + "Generated/BuildDef.hpp");
     out << "#define PRODUCTION" << std::endl;
     out.close();
 
-    system(static_cast<std::string>("cd " + path + "Exported/ && cmake .. -G \"Unix Makefiles\" && make -j " + std::to_string(jobs) + " && cd ../").c_str());
-
-    system(static_cast<std::string>("cd " + path + "Exported/ && rm -rf CMake* Makefile *.cmake && cd ../").c_str());
-    system(static_cast<std::string>("cd " + path + R"(Exported/ && find . -name '*.cmake' -delete && find . -type d -name "CMakeFiles" -exec rm -rf {} \;)").c_str());
-    system(static_cast<std::string>("cd " + path + R"(Exported/ && find Engine/ -name "Makefile" -exec rm -rf {} \; && find Engine/ -name "*.h" -exec rm -rf {} \;)").c_str());
-    system(static_cast<std::string>("cd " + path + R"(Exported/ && find Engine/ -name "*.pc" -exec rm -rf {} \; && find . -type d -empty -exec rmdir {} \;)").c_str());
-    system(static_cast<std::string>("cd " + path + R"(Exported/ && find . -type d -name "docs" -exec rm -rf {} \; && find . -type d -empty -exec rmdir {} \; && cd ../)").c_str());
-
+#ifdef _WIN32
+    system(("cd ../../ && bash export.sh " + name).c_str());
+#else
+    system(("cd ../../ && ./export.sh " + name).c_str());
+#endif
     std::ofstream out2(path + "Generated/BuildDef.hpp");
     out2 << "// Generated file, DO NOT TOUCH!" << std::endl;
     out2 << "#undef PRODUCTION" << std::endl;

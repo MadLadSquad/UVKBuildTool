@@ -3,5 +3,5 @@
 
 namespace UBT
 {
-    void relBuild(int jobs);
+    void relBuild(const std::string& name);
 }

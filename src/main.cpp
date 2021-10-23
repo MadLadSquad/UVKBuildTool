@@ -5,7 +5,6 @@
 #include "SourceGenerator.hpp"
 #include "ReleaseBuild.hpp"
 
-
 int main(int argc, char** argv)
 {
     if (argc < 2)
@@ -98,6 +97,11 @@ int main(int argc, char** argv)
 
 		return 0;
     }
+    else if (argv[1] == UBT::toLower("--build"))
+    {
+        UBT::relBuild(config["name"].as<std::string>());
+        return 0;
+    }
 
     if (argc < 3)
     {
@@ -134,11 +138,6 @@ int main(int argc, char** argv)
         else if (argv[1] == UBT::toLower("--level"))
         {
             UBT::makeTemplate(std::string(argv[2]), "UVK::Level");
-            return 0;
-        }
-        else if (argv[1] == UBT::toLower("--build"))
-        {
-            UBT::relBuild(std::atoi(argv[2]));
             return 0;
         }
     }
