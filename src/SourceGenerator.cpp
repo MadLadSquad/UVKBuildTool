@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     ENABLE_FAST_IO(true);
     UVK::AudioManager manager;
     bool bUsesEditor = false;
-
+#ifndef PRODUCTION
     if (argv[1])
     {
         std::string cmd = argv[1];
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
             bUsesEditor = true;
         }
     }
-    
+#endif
     auto* st = new UVK::StartupLevel;
     UVK::global.getEditor() = bUsesEditor;
     UVK::global.currentLevel = st;)";
