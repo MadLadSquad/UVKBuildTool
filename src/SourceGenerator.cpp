@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     main << std::endl;
     main << "    auto* mode = new UVK::" << gameName << "GameInstance();" << R"(
     UVK::global.instance = mode;
-    UVK::UVKGlobal::openLevelInternal(")" << startupLevelName << "\");" << std::endl;
+    UVK::UVKGlobal::openLevelInternal(")" << startupLevelName << "\", true);" << std::endl;
     main << "    UVK::Renderer(UVK::global.currentLevel, bUsesEditor);" << std::endl;
     main << "}" << std::endl;
     main.close();
