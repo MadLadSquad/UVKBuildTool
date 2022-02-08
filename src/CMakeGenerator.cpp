@@ -168,7 +168,7 @@ else()
 
     target_compile_options()" << name << R"(Modded PRIVATE "-O3" "-march=native")
     target_link_libraries()" << name << " " << name << R"( UntitledVulkanGameEngine dl)
-endif()" << std::endl;
+endif())" << std::endl;
 
     stream.close();
 }
