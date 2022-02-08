@@ -120,7 +120,7 @@ set_target_properties(Modlib PROPERTIES LINKER_LANGUAGE CXX))" << std::endl;
 set_target_properties()" << name << R"( PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties()" << name << R"(Modded PROPERTIES LINKER_LANGUAGE CXX))" << std::endl;
 
-    stream << "target_compile_definitions(" << name << "Lib PRIVATE COMPILE_" << UBT::toUpper(name) << ")" << std::endl;
+    stream << "target_compile_definitions(" << name << "Lib PRIVATE \"COMPILE_" << UBT::toUpper(name) << "\")" << std::endl;
     stream << "target_compile_definitions(" << name << R"(Modded PRIVATE "UVK_COMPILING_WITH_MODS" "URLL_USE_FUNCTIONAL")
 target_compile_definitions(UntitledVulkanGameEngine PRIVATE "UVK_LIB_COMPILE")
 
