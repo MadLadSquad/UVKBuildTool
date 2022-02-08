@@ -151,7 +151,7 @@ if (WIN32)
         target_link_libraries()" << name << " " << name << R"(Lib UntitledVulkanGameEngine)
 
         target_compile_options()" << name << R"(Modded PRIVATE "/O2bi" "/arch:AVX2")
-        target_link_libraries()" << name << " " << name << R"(Lib UntitledVulkanGameEngine dl)
+        target_link_libraries()" << name << "Modded " << name << R"(Lib UntitledVulkanGameEngine dl)
     endif()
 else()
     target_compile_options(UntitledVulkanGameEngine PRIVATE "-O3" "-march=native")
