@@ -93,6 +93,7 @@ int main(int argc, char** argv)
         UBT::generateGame();
         UBT::generateMain(startupLevelName.c_str(), name.c_str());
         UBT::generateDef();
+        UBT::generateWrapperAndMod();
         UBT::makeTemplate("StartupLevel", "UVK::Level");
 		UBT::makeTemplate(static_cast<std::string>(name + std::string("GameInstance")), "UVK::GameInstance");
 
