@@ -18,4 +18,10 @@ namespace UBT
         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
         return str;
     }
+
+    static std::string toUpper(std::string str)
+    {
+        std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+        return str;
+    }
 }

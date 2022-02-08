@@ -41,11 +41,16 @@ int main(int argc, char** argv)
     {
         std::cout << "Could not locate file" << std::endl;
     }
+    std::string name;
+    if (config["name"])
+    {
+        name = config["name"].as<std::string>();
+    }
 
     if (argv[1] == UBT::toLower("--generate") && argc < 3)
     {
         bool bSetReadable;
-        std::string name;
+
         std::string startupLevelName;
 
         std::ifstream i(path + "Generated/ActorList.hpp");
@@ -56,14 +61,9 @@ int main(int argc, char** argv)
             startupLevelName = config["startup-level"].as<std::string>();
         }
 
-        if (config["name"])
-        {
-            name = config["name"].as<std::string>();
-        }
-
         if (!bSetReadable) UBT::generateSet();
         UBT::generateCmake(name.c_str());
-        UBT::generateGame();
+        UBT::generateGame(name.c_str());
         UBT::generateMain(startupLevelName.c_str(), name.c_str());
         UBT::generateDef();
 
@@ -72,7 +72,6 @@ int main(int argc, char** argv)
     else if (argv[1] == UBT::toLower("--install") && argc < 3)
     {
         bool bSetReadable;
-        std::string name;
         std::string startupLevelName;
 
         std::ifstream i(path + "Generated/ActorList.hpp");
@@ -90,12 +89,12 @@ int main(int argc, char** argv)
 
         if (!bSetReadable) UBT::generateSet();
         UBT::generateCmake(name.c_str());
-        UBT::generateGame();
+        UBT::generateGame(name.c_str());
         UBT::generateMain(startupLevelName.c_str(), name.c_str());
         UBT::generateDef();
         UBT::generateWrapperAndMod();
-        UBT::makeTemplate("StartupLevel", "UVK::Level");
-		UBT::makeTemplate(static_cast<std::string>(name + std::string("GameInstance")), "UVK::GameInstance");
+        UBT::makeTemplate("StartupLevel", "UVK::Level", name.c_str());
+		UBT::makeTemplate(static_cast<std::string>(name + std::string("GameInstance")), "UVK::GameInstance", name.c_str());
 
 		return 0;
     }
@@ -114,32 +113,32 @@ int main(int argc, char** argv)
     {
         if (argv[1] == UBT::toLower("--pawn"))
         {
-            UBT::makeTemplate(std::string(argv[2]), "UVK::Pawn");
+            UBT::makeTemplate(std::string(argv[2]), "UVK::Pawn", name.c_str());
             return 0;
         }
         else if (argv[1] == UBT::toLower("--game-mode"))
         {
-            UBT::makeTemplate(std::string(argv[2]), "UVK::GameMode");
+            UBT::makeTemplate(std::string(argv[2]), "UVK::GameMode", name.c_str());
             return 0;
         }
         else if (argv[1] == UBT::toLower("--game-state"))
         {
-            UBT::makeTemplate(std::string(argv[2]), "UVK::GameState");
+            UBT::makeTemplate(std::string(argv[2]), "UVK::GameState", name.c_str());
             return 0;
         }
         else if (argv[1] == UBT::toLower("--player-state"))
         {
-            UBT::makeTemplate(std::string(argv[2]), "UVK::PlayerState");
+            UBT::makeTemplate(std::string(argv[2]), "UVK::PlayerState", name.c_str());
             return 0;
         }
         else if (argv[1] == UBT::toLower("--player-controller"))
         {
-            UBT::makeTemplate(std::string(argv[2]), "UVK::PlayerController");
+            UBT::makeTemplate(std::string(argv[2]), "UVK::PlayerController", name.c_str());
             return 0;
         }
         else if (argv[1] == UBT::toLower("--level"))
         {
-            UBT::makeTemplate(std::string(argv[2]), "UVK::Level");
+            UBT::makeTemplate(std::string(argv[2]), "UVK::Level", name.c_str());
             return 0;
         }
     }
@@ -153,7 +152,7 @@ int main(int argc, char** argv)
     {
         if (argv[1] == UBT::toLower("--scriptable-object") && argv[3] == UBT::toLower("--add"))
         {
-            UBT::makeTemplate(std::string(argv[2]), "UVK::ScriptableObject");
+            UBT::makeTemplate(std::string(argv[2]), "UVK::ScriptableObject", name.c_str());
             UBT::addClass("Source/" + std::string(argv[2]) + ".hpp");
             return 0;
         }

@@ -1,6 +1,6 @@
 #include "FileGenerator.hpp"
 
-void UBT::makeTemplate(const std::string& name, const std::string& type)
+void UBT::makeTemplate(const std::string& name, const std::string& type, const char* prjname)
 {
     bool bAddAutohandles = false;
 	bool bGameInstance = false;
@@ -78,7 +78,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type)
     stream2 << std::endl;
     stream2 << "namespace UVK" << std::endl;
     stream2 << "{" << std::endl;
-    stream2 << "    class " << name << " : public " << type << std::endl;
+    stream2 << "    class " << UBT::toUpper(prjname) << "_PUBLIC_API " << name << " : public " << type << std::endl;
     stream2 << "    {" << std::endl;
     stream2 << "    public:" << std::endl;
     stream2 << "        " << name << R"(() 
