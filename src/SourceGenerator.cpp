@@ -17,7 +17,7 @@ void UBT::generateMain(const char* startupLevelName, const char* gameName)
 #include "Source/StartupLevel.hpp"
 #include "Source/)" << gameName << R"(GameInstance.hpp"
 #include <GameFramework/Components/Components.hpp>
-#include <WrapperSource/Functions.hpp>
+#include <WrapperSource/Wrapper.hpp>
 
 int main(int argc, char** argv)
 {
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     UVK::global.currentLevel = st;
     auto* mode = new UVK::)" << gameName << R"(GameInstance();
     UVK::global.instance = mode;
-    UVK::UVKGlobal::openLevelInternal(")" << startupLevelName << R"(, true);
+    UVK::UVKGlobal::openLevelInternal(")" << startupLevelName << R"(", true);
     UVK::Renderer(UVK::global.currentLevel, bUsesEditor);
     Wrapper::wend();
     if (bCanClose && URLL::dlclose(handle) != 0)
