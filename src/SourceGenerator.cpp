@@ -14,7 +14,7 @@ void UBT::generateGame(const char* name)
         #define )" << UBT::toUpper(name) << R"(_PUBLIC_API __declspec(dllimport)
     #endif
 #else
-    #define COMPILE_)" << UBT::toUpper(name) << "\n#endif" << std::endl;
+    #define )" << UBT::toUpper(name) << "_PUBLIC_API \n#endif" << std::endl;
 
     game << "" << std::endl;
     game << "" << std::endl;
