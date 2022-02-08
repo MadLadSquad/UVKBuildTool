@@ -167,7 +167,7 @@ else()
     target_link_libraries()" << name << " " << name << R"(Lib UntitledVulkanGameEngine)
 
     target_compile_options()" << name << R"(Modded PRIVATE "-O3" "-march=native")
-    target_link_libraries()" << name << "Modded " << name << R"( UntitledVulkanGameEngine dl)
+    target_link_libraries()" << name << "Modded " << name << R"(Lib UntitledVulkanGameEngine dl)
 endif())" << std::endl;
 
     stream.close();
