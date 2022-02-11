@@ -10,6 +10,7 @@ compile_commands.json
 CTestTestfile.cmake
 cmake-build-debug/
 cmake-build-release/
+cmake-build-relwithdebinfo/
 example.yaml
 _deps
 .idea/
