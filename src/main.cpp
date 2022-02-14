@@ -41,6 +41,7 @@ int main(int argc, char** argv)
     {
         std::cout << "Could not locate file" << std::endl;
     }
+
     std::string name;
     if (config["name"])
     {
@@ -61,8 +62,16 @@ int main(int argc, char** argv)
             startupLevelName = config["startup-level"].as<std::string>();
         }
 
+        UBT::CMakeInfoData data;
+
+        UBT::addIncludeDirectories(config, data);
+        UBT::addSubdirectories(config, data);
+        UBT::addLinkLibraries(config, data);
+        UBT::addHeaderLibraries(config, data);
+        UBT::addSourceLibraries(config, data);
+
         if (!bSetReadable) UBT::generateSet();
-        UBT::generateCmake(name.c_str());
+        UBT::generateCmake(name.c_str(), data);
         UBT::generateGame(name.c_str());
         UBT::generateMain(startupLevelName.c_str(), name.c_str());
         UBT::generateDef();
@@ -87,8 +96,16 @@ int main(int argc, char** argv)
             name = config["name"].as<std::string>();
         }
 
+        UBT::CMakeInfoData data;
+
+        UBT::addIncludeDirectories(config, data);
+        UBT::addSubdirectories(config, data);
+        UBT::addLinkLibraries(config, data);
+        UBT::addHeaderLibraries(config, data);
+        UBT::addSourceLibraries(config, data);
+
         if (!bSetReadable) UBT::generateSet();
-        UBT::generateCmake(name.c_str());
+        UBT::generateCmake(name.c_str(), data);
         UBT::generateGame(name.c_str());
         UBT::generateMain(startupLevelName.c_str(), name.c_str());
         UBT::generateDef();

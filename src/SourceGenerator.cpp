@@ -91,7 +91,6 @@ int main(int argc, char** argv)
     }
     else
         logger.consoleLog("Failed to load the mod library!", UVK_LOG_TYPE_WARNING);
-    UVK::global.modtick(1.0);
     Wrapper::wbegin();
     UVK::AudioManager manager;
 

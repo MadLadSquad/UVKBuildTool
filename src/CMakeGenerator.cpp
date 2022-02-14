@@ -1,6 +1,6 @@
 #include "CMakeGenerator.hpp"
 
-void UBT::generateCmake(const char* name)
+void UBT::generateCmake(const char* name, const CMakeInfoData& data)
 {
     auto stream = std::ofstream(path + static_cast<std::string>("CMakeLists.txt"));
     stream << R"(
@@ -67,25 +67,63 @@ include_directories(Engine/ThirdParty/vulkan/headers/include)
 include_directories(Engine/ThirdParty/freetype/include)
 if(WIN32)
     include_directories(Engine/ThirdParty/stb)
+)";
+    for (const auto& a : data.msvcIncludePaths)
+        stream << "    include_directories(" << a << ")\n";
+    for (const auto& a : data.msvcSubdirectories)
+        stream << "    add_subdirectory(" << a << ")\n";
+    stream << R"(
 else()
     include_directories(Engine/ThirdParty)
+)";
+    for (const auto& a : data.unixIncludePaths)
+        stream << "    include_directories(" << a << ")\n";
+    for (const auto& a : data.unixSubdirectories)
+        stream << "    add_subdirectory(" << a << ")\n";
+    stream << R"(
 endif()
 # Source code of the engine
-file(GLOB_RECURSE EngineSrc "Engine/Audio/*.cpp" "Engine/Audio/*.hpp" "Engine/Core/*.cpp" "Engine/Core/*.hpp"
+if(WIN32)
+    file(GLOB_RECURSE EngineSrc "Engine/Audio/*.cpp" "Engine/Audio/*.hpp" "Engine/Core/*.cpp" "Engine/Core/*.hpp"
         "Engine/Renderer/*.hpp" "Engine/Renderer/*.cpp" "Engine/GameFramework/*.cpp" "Engine/GameFramework/*.hpp"
         "Engine/ThirdParty/imgui/backends/everything/*.cpp" "Engine/ThirdParty/imgui/misc/*.cpp" "Engine/ThirdParty/imgui/misc/*.h"
         "Engine/ThirdParty/imgui/backends/everything/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.cpp"
         "Engine/ThirdParty/imguiex/*.cpp" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp" "Engine/ThirdParty/logger/*.h"
-        "Engine/ThirdParty/logger/*.cpp")
-
-# The headers of the engine library
-file(GLOB_RECURSE EngineHeaders "Engine/Audio/*.hpp" "Engine/Core/*.hpp" "Engine/Renderer/*.hpp" "Engine/GameFramework/*.hpp"
+        "Engine/ThirdParty/logger/*.cpp" )";
+    addFilesToStream(stream, data.msvcSources, LIB_FLAGS_LINK_TO_ENGINE);
+    stream << R"()
+    # The headers of the engine library
+    file(GLOB_RECURSE EngineHeaders "Engine/Audio/*.hpp" "Engine/Core/*.hpp" "Engine/Renderer/*.hpp" "Engine/GameFramework/*.hpp"
         "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/misc/*.h" "Engine/ThirdParty/imgui/backends/everything/*.h"
         "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp"
-        "Engine/ThirdParty/logger/*.h")
-
-# The source code for the executable
-file(GLOB_RECURSE ExecutableSrc "WrapperSource/*.cpp" "WrapperSource/*.hpp")
+        "Engine/ThirdParty/logger/*.h" )";
+    addFilesToStream(stream, data.msvcHeaders, LIB_FLAGS_LINK_TO_ENGINE);
+    stream << R"()
+    file(GLOB_RECURSE ExecutableSrc "WrapperSource/*.cpp" "WrapperSource/*.hpp" )";
+    addFilesToStream(stream, data.msvcSources, LIB_FLAGS_LINK_TO_WRAPPER);
+    addFilesToStream(stream, data.msvcHeaders, LIB_FLAGS_LINK_TO_WRAPPER);
+    stream << R"()
+else()
+    file(GLOB_RECURSE EngineSrc "Engine/Audio/*.cpp" "Engine/Audio/*.hpp" "Engine/Core/*.cpp" "Engine/Core/*.hpp"
+        "Engine/Renderer/*.hpp" "Engine/Renderer/*.cpp" "Engine/GameFramework/*.cpp" "Engine/GameFramework/*.hpp"
+        "Engine/ThirdParty/imgui/backends/everything/*.cpp" "Engine/ThirdParty/imgui/misc/*.cpp" "Engine/ThirdParty/imgui/misc/*.h"
+        "Engine/ThirdParty/imgui/backends/everything/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.cpp"
+        "Engine/ThirdParty/imguiex/*.cpp" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp" "Engine/ThirdParty/logger/*.h"
+        "Engine/ThirdParty/logger/*.cpp" )";
+    addFilesToStream(stream, data.unixSources, LIB_FLAGS_LINK_TO_ENGINE);
+    stream << R"()
+    # The headers of the engine library
+    file(GLOB_RECURSE EngineHeaders "Engine/Audio/*.hpp" "Engine/Core/*.hpp" "Engine/Renderer/*.hpp" "Engine/GameFramework/*.hpp"
+        "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/misc/*.h" "Engine/ThirdParty/imgui/backends/everything/*.h"
+        "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp"
+        "Engine/ThirdParty/logger/*.h" )";
+    addFilesToStream(stream, data.unixHeaders, LIB_FLAGS_LINK_TO_ENGINE);
+    stream << R"()
+    file(GLOB_RECURSE ExecutableSrc "WrapperSource/*.cpp" "WrapperSource/*.hpp" )";
+    addFilesToStream(stream, data.unixSources, LIB_FLAGS_LINK_TO_WRAPPER);
+    addFilesToStream(stream, data.unixHeaders, LIB_FLAGS_LINK_TO_WRAPPER);
+    stream << R"()
+endif()
 
 # Headers to precompile
 file(GLOB_RECURSE PrecompileEngineHeaders "Engine/Core/Core/STL.hpp" "Engine/ThirdParty/glm/glm/glm.hpp"
@@ -94,22 +132,37 @@ file(GLOB_RECURSE PrecompileEngineHeaders "Engine/Core/Core/STL.hpp" "Engine/Thi
 "Engine/ThirdParty/entt/*.h" "Engine/ThirdParty/freetype/include/freetype/freetype.h"
 "Engine/ThirdParty/vulkan/headers/include/vulkan/vulkan.h")
 )" << std::endl;
-
-    stream << "file(GLOB_RECURSE " << name << "Src \"Source/*.hpp\" \"Source/*.cpp\")" << std::endl;
     stream << R"(if(WIN32)
-    add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h ${EngineSrc})
-)" << std::endl;
-    stream << "    add_library(" << name << R"(Lib  SHARED ${GameSrc} Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h ${EngineHeaders})
+    add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h ${EngineSrc} )
+    add_library()" << name << R"(Lib SHARED ${GameSrc} Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h ${EngineHeaders} )
+    file(GLOB_RECURSE )" << name << R"(Src "Source/*.hpp" "Source/*.cpp" )";
+    addFilesToStream(stream, data.msvcSources, LIB_FLAGS_LINK_TO_GAME);
+    addFilesToStream(stream, data.msvcHeaders, LIB_FLAGS_LINK_TO_GAME);
+    stream << R"()
 else()
     add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h ${EngineSrc})
 )" << "    add_library(" << name << R"(Lib SHARED ${GameSrc} Engine/ThirdParty/stb/stb_image.h ${EngineHeaders})
+    file(GLOB_RECURSE )" << name << R"(Src "Source/*.hpp" "Source/*.cpp" )";
+    addFilesToStream(stream, data.unixSources, LIB_FLAGS_LINK_TO_GAME);
+    addFilesToStream(stream, data.unixHeaders, LIB_FLAGS_LINK_TO_GAME);
+    stream << R"()
 endif()
 
 add_library(Modlib SHARED Generated/ModEmpty.cpp Generated/ModEmpty.hpp)
 
 # Add the executable for the normal and modded game)" << std::endl;
-    stream << "add_executable(" << name << R"( ${ExecutableSrc} "Generated/main.cpp")
-add_executable()" << name << R"(Modded  ${ExecutableSrc} "Generated/mainmodded.cpp" "Engine/ThirdParty/urll/urll.h" "Engine/ThirdParty/urll/urll.cpp")
+    stream << "add_executable(" << name << R"( ${ExecutableSrc} "Generated/main.cpp" "Engine/ThirdParty/urll/urll.h" "Engine/ThirdParty/urll/urll.cpp")
+if(WIN32)
+    add_executable()" << name << R"(Modded ${ExecutableSrc} "Generated/mainmodded.cpp" "Engine/ThirdParty/urll/urll.h" "Engine/ThirdParty/urll/urll.cpp" )";
+    addFilesToStream(stream, data.msvcHeaders, LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
+    addFilesToStream(stream, data.msvcSources, LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
+    stream << R"()
+else()
+    add_executable()" << name << R"(Modded ${ExecutableSrc} "Generated/mainmodded.cpp" "Engine/ThirdParty/urll/urll.h" "Engine/ThirdParty/urll/urll.cpp" )";
+    addFilesToStream(stream, data.unixHeaders, LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
+    addFilesToStream(stream, data.unixSources, LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
+    stream << R"()
+endif()
 
 target_precompile_headers(UntitledVulkanGameEngine PRIVATE ${PrecompileEngineHeaders})
 set_target_properties(UntitledVulkanGameEngine PROPERTIES LINKER_LANGUAGE CXX)
@@ -140,36 +193,346 @@ if (WIN32)
         target_link_libraries()" << name << R"(Modded )" << name << R"(Lib UntitledVulkanGameEngine)
     else()
         target_compile_options(UntitledVulkanGameEngine PRIVATE "/O2bi" "/arch:AVX2")
-        target_link_libraries(UntitledVulkanGameEngine glfw OpenAL opengl32 libglew_static yaml-cpp vulkan-1 sndfile assimp freetype)
+        target_link_libraries(UntitledVulkanGameEngine glfw OpenAL opengl32 libglew_static yaml-cpp vulkan-1 sndfile assimp freetype )";
+        for (const auto& a : data.msvcLinkLibraries)
+        {
+            if (a.target & LIB_FLAGS_LINK_TO_ENGINE)
+            {
+                stream << a.val << " ";
+            }
+        }
+        stream << R"()
 
         target_compile_options(Modlib PRIVATE "/O2bi" "/arch:AVX2")
         target_link_libraries(Modlib)
 
         target_compile_options()" << name << R"(Lib PRIVATE "/O2bi" "/arch:AVX2")
-        target_link_libraries()" << name << R"(Lib UntitledVulkanGameEngine)
+        target_link_libraries()" << name << R"(Lib UntitledVulkanGameEngine )";
+        for (const auto& a : data.msvcLinkLibraries)
+        {
+            if (a.target & LIB_FLAGS_LINK_TO_GAME)
+            {
+                stream << a.val << " ";
+            }
+        }
+        stream << R"()
 
         target_compile_options()" << name << R"( PRIVATE "/O2bi" "/arch:AVX2")
-        target_link_libraries()" << name << " " << name << R"(Lib UntitledVulkanGameEngine)
+        target_link_libraries()" << name << " " << name << R"(Lib UntitledVulkanGameEngine )";
+        for (const auto& a : data.msvcLinkLibraries)
+        {
+            if (a.target & LIB_FLAGS_LINK_TO_WRAPPER)
+            {
+                stream << a.val << " ";
+            }
+        }
+        stream << R"()
 
         target_compile_options()" << name << R"(Modded PRIVATE "/O2bi" "/arch:AVX2")
-        target_link_libraries()" << name << "Modded " << name << R"(Lib UntitledVulkanGameEngine)
+        target_link_libraries()" << name << "Modded " << name << R"(Lib UntitledVulkanGameEngine )";
+        for (const auto& a : data.msvcLinkLibraries)
+        {
+            if (a.target & LIB_FLAGS_LINK_TO_WRAPPER_MODDED)
+            {
+                stream << a.val << " ";
+            }
+        }
+        stream << R"()
     endif()
 else()
     target_compile_options(UntitledVulkanGameEngine PRIVATE "-O3" "-march=native")
-    target_link_libraries(UntitledVulkanGameEngine glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile util pthread assimp freetype)
+    target_link_libraries(UntitledVulkanGameEngine glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile util pthread assimp freetype )";
+    for (const auto& a : data.unixLinkLibraries)
+    {
+        if (a.target & LIB_FLAGS_LINK_TO_ENGINE)
+        {
+            stream << a.val << " ";
+        }
+    }
+    stream << R"()
 
     target_compile_options(Modlib PRIVATE "-O3" "-march=native")
     target_link_libraries(Modlib)
 
     target_compile_options()" << name << R"(Lib PRIVATE "-O3" "-march=native")
-    target_link_libraries()" << name << R"(Lib UntitledVulkanGameEngine)
+    target_link_libraries()" << name << R"(Lib UntitledVulkanGameEngine )";
+    for (const auto& a : data.unixLinkLibraries)
+    {
+        if (a.target & LIB_FLAGS_LINK_TO_GAME)
+        {
+            stream << a.val << " ";
+        }
+    }
+    stream << R"()
 
     target_compile_options()" << name << R"( PRIVATE "-O3" "-march=native")
-    target_link_libraries()" << name << " " << name << R"(Lib UntitledVulkanGameEngine)
+    target_link_libraries()" << name << " " << name << R"(Lib UntitledVulkanGameEngine )";
+    for (const auto& a : data.unixLinkLibraries)
+    {
+        if (a.target & LIB_FLAGS_LINK_TO_WRAPPER)
+        {
+            stream << a.val << " ";
+        }
+    }
+    stream << R"()
 
-    target_compile_options()" << name << R"(Modded PRIVATE "-O3" "-march=native")
-    target_link_libraries()" << name << "Modded " << name << R"(Lib UntitledVulkanGameEngine dl)
+    target_compile_options()" << name << R"(Modded PRIVATE "-O3" "-march=native" )
+    target_link_libraries()" << name << "Modded " << name << R"(Lib UntitledVulkanGameEngine dl )";
+    for (const auto& a : data.unixLinkLibraries)
+    {
+        if (a.target & LIB_FLAGS_LINK_TO_WRAPPER_MODDED)
+        {
+            stream << a.val << " ";
+        }
+    }
+    stream << R"()
 endif())" << std::endl;
 
     stream.close();
+}
+
+void UBT::addHeaderLibraries(YAML::Node& config, CMakeInfoData& data)
+{
+    if (config["additional-header-libraries"])
+    {
+        auto includes = config["additional-header-libraries"];
+        if (includes["msvc"])
+        {
+            auto target = includes["msvc"];
+            data.msvcHeaders.push_back({
+                .prjtype = LIB_FLAGS_NONE,
+            });
+
+            if (target["engine"])
+            {
+                data.msvcHeaders.back().prjtype = static_cast<LibraryProjectType>(data.msvcHeaders.back().prjtype | LIB_FLAGS_LINK_TO_ENGINE);
+                auto engine = target["engine"];
+                accumulateHeaderLibraries(engine, data.msvcHeaders);
+            }
+            if (target["app"])
+            {
+                data.msvcHeaders.back().prjtype = static_cast<LibraryProjectType>(data.msvcHeaders.back().prjtype | LIB_FLAGS_LINK_TO_GAME);
+                auto engine = target["app"];
+                accumulateHeaderLibraries(engine, data.msvcHeaders);
+            }
+            if (target["wrapper"])
+            {
+                data.msvcHeaders.back().prjtype = static_cast<LibraryProjectType>(data.msvcHeaders.back().prjtype | LIB_FLAGS_LINK_TO_WRAPPER);
+                auto engine = target["wrapper"];
+                accumulateHeaderLibraries(engine, data.msvcHeaders);
+            }
+            if (target["modded-wrapper"])
+            {
+                data.msvcHeaders.back().prjtype = static_cast<LibraryProjectType>(data.msvcHeaders.back().prjtype | LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
+                auto engine = target["modded-wrapper"];
+                accumulateHeaderLibraries(engine, data.msvcHeaders);
+            }
+        }
+        if (includes["unix"])
+        {
+            auto target = includes["unix"];
+            data.unixHeaders.push_back({
+                .prjtype = LIB_FLAGS_NONE,
+            });
+
+            if (target["engine"])
+            {
+                data.unixHeaders.back().prjtype = static_cast<LibraryProjectType>(data.unixHeaders.back().prjtype | LIB_FLAGS_LINK_TO_ENGINE);
+                auto engine = target["engine"];
+                accumulateHeaderLibraries(engine, data.unixHeaders);
+            }
+            if (target["app"])
+            {
+                data.unixHeaders.back().prjtype = static_cast<LibraryProjectType>(data.unixHeaders.back().prjtype | LIB_FLAGS_LINK_TO_GAME);
+                auto engine = target["app"];
+                accumulateHeaderLibraries(engine, data.unixHeaders);
+            }
+            if (target["wrapper"])
+            {
+                data.unixHeaders.back().prjtype = static_cast<LibraryProjectType>(data.unixHeaders.back().prjtype | LIB_FLAGS_LINK_TO_WRAPPER);
+                auto engine = target["wrapper"];
+                accumulateHeaderLibraries(engine, data.unixHeaders);
+            }
+            if (target["modded-wrapper"])
+            {
+                data.unixHeaders.back().prjtype = static_cast<LibraryProjectType>(data.unixHeaders.back().prjtype | LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
+                auto engine = target["modded-wrapper"];
+                accumulateHeaderLibraries(engine, data.unixHeaders);
+            }
+        }
+    }
+}
+
+void UBT::addIncludeDirectories(YAML::Node& config, CMakeInfoData& data)
+{
+    if (config["additional-include-directories"])
+    {
+        auto includes = config["additional-include-directories"];
+        if (includes["msvc"])
+            for (const auto& a : includes["msvc"])
+                data.msvcIncludePaths.push_back(a.as<std::string>());
+        if (includes["unix"])
+            for (const auto& a : includes["unix"])
+                data.unixIncludePaths.push_back(a.as<std::string>());
+    }
+}
+
+void UBT::addLinkLibraries(YAML::Node& config, CMakeInfoData& data)
+{
+    if (config["additional-link-libraries"])
+    {
+        auto ll = config["additional-link-libraries"];
+        if (ll["msvc"])
+        {
+            for (const auto& target : ll["msvc"])
+            {
+                UBT::LibraryProjectType type = UBT::LIB_FLAGS_NONE;
+
+                if (target["engine"] && target["engine"].as<bool>())
+                    type = static_cast<UBT::LibraryProjectType>(type | UBT::LIB_FLAGS_LINK_TO_ENGINE);
+                if (target["app"] && target["app"].as<bool>())
+                    type = static_cast<UBT::LibraryProjectType>(type | UBT::LIB_FLAGS_LINK_TO_GAME);
+                if (target["wrapper"] && target["wrapper"].as<bool>())
+                    type = static_cast<UBT::LibraryProjectType>(type | UBT::LIB_FLAGS_LINK_TO_WRAPPER);
+                if (target["modded-wrapper"] && target["modded-wrapper"].as<bool>())
+                    type = static_cast<UBT::LibraryProjectType>(type | UBT::LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
+
+                data.msvcLinkLibraries.push_back({
+                    .target = type,
+                    .val = target["target"].as<std::string>()
+                });
+            }
+        }
+        if (ll["unix"])
+        {
+            for (const auto& target : ll["unix"])
+            {
+                UBT::LibraryProjectType type = UBT::LIB_FLAGS_NONE;
+
+                if (target["engine"] && target["engine"].as<bool>())
+                    type = static_cast<UBT::LibraryProjectType>(type | UBT::LIB_FLAGS_LINK_TO_ENGINE);
+                if (target["app"] && target["app"].as<bool>())
+                    type = static_cast<UBT::LibraryProjectType>(type | UBT::LIB_FLAGS_LINK_TO_GAME);
+                if (target["wrapper"] && target["wrapper"].as<bool>())
+                    type = static_cast<UBT::LibraryProjectType>(type | UBT::LIB_FLAGS_LINK_TO_WRAPPER);
+                if (target["modded-wrapper"] && target["modded-wrapper"].as<bool>())
+                    type = static_cast<UBT::LibraryProjectType>(type | UBT::LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
+
+                data.unixLinkLibraries.push_back({
+                    .target = type,
+                    .val = target["target"].as<std::string>()
+                });
+            }
+        }
+    }
+}
+
+void UBT::addSourceLibraries(YAML::Node& config, CMakeInfoData& data)
+{
+    if (config["additional-source-libraries"])
+    {
+        auto includes = config["additional-source-libraries"];
+        if (includes["msvc"])
+        {
+            auto target = includes["msvc"];
+            data.msvcSources.push_back({
+                .prjtype = LIB_FLAGS_NONE,
+            });
+
+            if (target["engine"])
+            {
+                data.msvcSources.back().prjtype = static_cast<LibraryProjectType>(data.msvcSources.back().prjtype | LIB_FLAGS_LINK_TO_ENGINE);
+                auto engine = target["engine"];
+                accumulateHeaderLibraries(engine, data.msvcSources);
+            }
+            if (target["app"])
+            {
+                data.msvcSources.back().prjtype = static_cast<LibraryProjectType>(data.msvcSources.back().prjtype | LIB_FLAGS_LINK_TO_GAME);
+                auto engine = target["app"];
+                accumulateHeaderLibraries(engine, data.msvcSources);
+            }
+            if (target["wrapper"])
+            {
+                data.msvcSources.back().prjtype = static_cast<LibraryProjectType>(data.msvcSources.back().prjtype | LIB_FLAGS_LINK_TO_WRAPPER);
+                auto engine = target["wrapper"];
+                accumulateHeaderLibraries(engine, data.msvcSources);
+            }
+            if (target["modded-wrapper"])
+            {
+                data.msvcSources.back().prjtype = static_cast<LibraryProjectType>(data.msvcSources.back().prjtype | LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
+                auto engine = target["modded-wrapper"];
+                accumulateHeaderLibraries(engine, data.msvcSources);
+            }
+        }
+        if (includes["unix"])
+        {
+            auto target = includes["unix"];
+            data.unixSources.push_back({
+                .prjtype = LIB_FLAGS_NONE,
+            });
+
+            if (target["engine"])
+            {
+                data.unixSources.back().prjtype = static_cast<LibraryProjectType>(data.unixSources.back().prjtype | LIB_FLAGS_LINK_TO_ENGINE);
+                auto engine = target["engine"];
+                accumulateHeaderLibraries(engine, data.unixSources);
+            }
+            if (target["app"])
+            {
+                data.unixSources.back().prjtype = static_cast<LibraryProjectType>(data.unixSources.back().prjtype | LIB_FLAGS_LINK_TO_GAME);
+                auto engine = target["app"];
+                accumulateHeaderLibraries(engine, data.unixSources);
+            }
+            if (target["wrapper"])
+            {
+                data.unixSources.back().prjtype = static_cast<LibraryProjectType>(data.unixSources.back().prjtype | LIB_FLAGS_LINK_TO_WRAPPER);
+                auto engine = target["wrapper"];
+                accumulateHeaderLibraries(engine, data.unixSources);
+            }
+            if (target["modded-wrapper"])
+            {
+                data.unixSources.back().prjtype = static_cast<LibraryProjectType>(data.unixSources.back().prjtype | LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
+                auto engine = target["modded-wrapper"];
+                accumulateHeaderLibraries(engine, data.unixSources);
+            }
+        }
+    }
+}
+
+void UBT::accumulateHeaderLibraries(YAML::Node& engine, std::vector<TargetSource>& headers)
+{
+    if (engine["glob"])
+        for (const auto& a : engine["glob"])
+            headers.back().glob.push_back(a.as<std::string>());
+    if (engine["individual"])
+        for (const auto& a : engine["individual"])
+            headers.back().glob.push_back(a.as<std::string>());
+}
+
+void UBT::addSubdirectories(YAML::Node& config, CMakeInfoData& data)
+{
+    if (config["additional-subdirectories"])
+    {
+        auto includes = config["additional-subdirectories"];
+        if (includes["msvc"])
+            for (const auto& a : includes["msvc"])
+                data.msvcSubdirectories.push_back(a.as<std::string>());
+        if (includes["unix"])
+            for (const auto& a : includes["unix"])
+                data.unixSubdirectories.push_back(a.as<std::string>());
+    }
+}
+
+void UBT::addFilesToStream(std::ofstream& stream, const std::vector<TargetSource>& src, LibraryProjectType type)
+{
+    for (const auto& a : src)
+    {
+        if (a.prjtype & type)
+        {
+            for (const auto& f : a.glob)
+                stream << "\"" << f << "\" ";
+            for (const auto& f : a.individual)
+                stream << "\"" << f << "\" ";
+        }
+    }
 }
