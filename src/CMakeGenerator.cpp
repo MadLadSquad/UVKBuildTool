@@ -133,19 +133,20 @@ file(GLOB_RECURSE PrecompileEngineHeaders "Engine/Core/Core/STL.hpp" "Engine/Thi
 "Engine/ThirdParty/vulkan/headers/include/vulkan/vulkan.h")
 )" << std::endl;
     stream << R"(if(WIN32)
-    add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h ${EngineSrc} )
-    add_library()" << name << R"(Lib SHARED ${GameSrc} Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h ${EngineHeaders} )
     file(GLOB_RECURSE )" << name << R"(Src "Source/*.hpp" "Source/*.cpp" )";
     addFilesToStream(stream, data.msvcSources, LIB_FLAGS_LINK_TO_GAME);
     addFilesToStream(stream, data.msvcHeaders, LIB_FLAGS_LINK_TO_GAME);
     stream << R"()
+    add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h ${EngineSrc} )
+    add_library()" << name << R"(Lib SHARED ${GameSrc} Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h ${EngineHeaders} )
 else()
-    add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h ${EngineSrc})
-)" << "    add_library(" << name << R"(Lib SHARED ${GameSrc} Engine/ThirdParty/stb/stb_image.h ${EngineHeaders})
     file(GLOB_RECURSE )" << name << R"(Src "Source/*.hpp" "Source/*.cpp" )";
-    addFilesToStream(stream, data.unixSources, LIB_FLAGS_LINK_TO_GAME);
-    addFilesToStream(stream, data.unixHeaders, LIB_FLAGS_LINK_TO_GAME);
+    addFilesToStream(stream, data.msvcSources, LIB_FLAGS_LINK_TO_GAME);
+    addFilesToStream(stream, data.msvcHeaders, LIB_FLAGS_LINK_TO_GAME);
     stream << R"()
+    add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h ${EngineSrc} )
+    add_library()" << name << R"(Lib SHARED ${GameSrc} Engine/ThirdParty/stb/stb_image.h${EngineHeaders} ))";
+    stream << R"(
 endif()
 
 add_library(Modlib SHARED Generated/ModEmpty.cpp Generated/ModEmpty.hpp)
