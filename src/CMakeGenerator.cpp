@@ -145,7 +145,7 @@ else()
     addFilesToStream(stream, data.msvcHeaders, LIB_FLAGS_LINK_TO_GAME);
     stream << R"()
     add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h ${EngineSrc} )
-    add_library()" << name << R"(Lib SHARED ${GameSrc} Engine/ThirdParty/stb/stb_image.h${EngineHeaders} ))";
+    add_library()" << name << R"(Lib SHARED ${GameSrc} Engine/ThirdParty/stb/stb_image.h ${EngineHeaders} ))";
     stream << R"(
 endif()
 
