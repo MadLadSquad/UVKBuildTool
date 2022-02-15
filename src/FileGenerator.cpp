@@ -55,17 +55,17 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
 
     if (bScriptableObject)
     {
-        stream << "void UVK::" << name << "::inactivebegin()" << std::endl;
+        stream << "void UVK::" << name << "::inactiveBegin()" << std::endl;
         stream << "{" << std::endl;
         stream << std::endl;
         stream << "}" << std::endl;
 
-        stream << "void UVK::" << name << "::inactivetick(float deltaTime)" << std::endl;
+        stream << "void UVK::" << name << "::inactiveTick(float deltaTime)" << std::endl;
         stream << "{" << std::endl;
         stream << std::endl;
         stream << "}" << std::endl;
 
-        stream << "void UVK::" << name << "::inactiveend()" << std::endl;
+        stream << "void UVK::" << name << "::inactiveEnd()" << std::endl;
         stream << "{" << std::endl;
         stream << std::endl;
         stream << "}" << std::endl;
@@ -99,10 +99,10 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
 
     if (bScriptableObject)
     {
-        stream << R"(
-        virtual void inactivebegin() override;
-        virtual void inactivetick(float deltaTime) override;
-        virtual void inactiveend() override;
+        stream2 << R"(
+        virtual void inactiveBegin() override;
+        virtual void inactiveTick(float deltaTime) override;
+        virtual void inactiveEnd() override;
 )" << std::endl;
     }
 
