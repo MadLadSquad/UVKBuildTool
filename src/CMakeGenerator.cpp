@@ -146,14 +146,14 @@ endif()
 add_library(Modlib SHARED Generated/ModEmpty.cpp Generated/ModEmpty.hpp)
 
 # Add the executable for the normal and modded game)" << std::endl;
-    stream << "add_executable(" << name << R"( ${ExecutableSrc} "Generated/main.cpp" "Engine/ThirdParty/urll/urll.h" "Engine/ThirdParty/urll/urll.cpp" ${)" << name << R"(Headers)
+    stream << "add_executable(" << name << R"( ${ExecutableSrc} "Generated/main.cpp" "Engine/ThirdParty/urll/urll.h" "Engine/ThirdParty/urll/urll.cpp" ${)" << name << R"(Headers})
 if(WIN32)
-    add_executable()" << name << R"(Modded ${ExecutableSrc} "Generated/mainmodded.cpp" "Engine/ThirdParty/urll/urll.h" "Engine/ThirdParty/urll/urll.cpp" ${)" << name << R"(Headers)";
+    add_executable()" << name << R"(Modded ${ExecutableSrc} "Generated/mainmodded.cpp" "Engine/ThirdParty/urll/urll.h" "Engine/ThirdParty/urll/urll.cpp" ${)" << name << R"(Headers} )";
     addFilesToStream(stream, data.msvcHeaders, LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
     addFilesToStream(stream, data.msvcSources, LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
     stream << R"()
 else()
-    add_executable()" << name << R"(Modded ${ExecutableSrc} "Generated/mainmodded.cpp" "Engine/ThirdParty/urll/urll.h" "Engine/ThirdParty/urll/urll.cpp" ${)" << name << R"(Headers)";
+    add_executable()" << name << R"(Modded ${ExecutableSrc} "Generated/mainmodded.cpp" "Engine/ThirdParty/urll/urll.h" "Engine/ThirdParty/urll/urll.cpp" ${)" << name << R"(Headers} )";
     addFilesToStream(stream, data.unixHeaders, LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
     addFilesToStream(stream, data.unixSources, LIB_FLAGS_LINK_TO_WRAPPER_MODDED);
     stream << R"()
