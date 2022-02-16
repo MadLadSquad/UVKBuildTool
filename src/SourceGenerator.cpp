@@ -33,7 +33,7 @@ void UBT::generateMain(const char* startupLevelName, const char* gameName)
 
 int main(int argc, char** argv)
 {
-    ENABLE_FAST_IO(true);
+    UVK_START(true);
     Wrapper::wbegin();
     UVK::AudioManager manager;
 
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
-    ENABLE_FAST_IO(true);
+    UVK_START(true);
     // load modded symbols
 #ifdef _WIN32
     void* handle = URLL::dlopen("Modlib.dll");
