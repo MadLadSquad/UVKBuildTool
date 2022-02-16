@@ -136,11 +136,11 @@ file(GLOB_RECURSE PrecompileEngineHeaders "Engine/Core/Core/STL.hpp" "Engine/Thi
     stream << R"(if(WIN32)
     file(GLOB_RECURSE )" << name << R"(Src "Source/*.hpp" "Source/*.cpp" )";
     stream << R"()
-    add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h ${EngineSrc} ${GameSrc})
+    add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h ${EngineSrc} ${)" << name << R"(Src})
 else()
     file(GLOB_RECURSE )" << name << R"(Src "Source/*.hpp" "Source/*.cpp" )";
     stream << R"()
-    add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h ${EngineSrc} ${GameSrc})
+    add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h ${EngineSrc} ${)" << name << R"(Src})
 endif()
 
 add_library(Modlib SHARED Generated/ModEmpty.cpp Generated/ModEmpty.hpp)
