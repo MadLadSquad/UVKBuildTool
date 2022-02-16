@@ -181,7 +181,7 @@ if (WIN32)
         target_compile_options()" << name << R"(Modded PRIVATE "-O3" "-march=native")
         target_link_libraries()" << name << R"(Modded )" << R"(UntitledVulkanGameEngine)
     else()
-        target_compile_options(UntitledVulkanGameEngine PRIVATE "/O2" "/Ob2" "/Oi" "/Ot" "/arch:AVX2")
+        target_compile_options(UntitledVulkanGameEngine PRIVATE "/O2" "/MP" "/Ob2" "/Oi" "/Ot" "/arch:AVX2")
         target_link_libraries(UntitledVulkanGameEngine glfw OpenAL opengl32 libglew_static yaml-cpp vulkan-1 sndfile assimp freetype )";
         for (const auto& a : data.msvcLinkLibraries)
         {
@@ -192,7 +192,7 @@ if (WIN32)
         }
         stream << R"()
 
-        target_compile_options(Modlib PRIVATE "/O2" "/Ob2" "/Oi" "/Ot" "/arch:AVX2")
+        target_compile_options(Modlib PRIVATE "/O2" "/MP" "/Ob2" "/Oi" "/Ot" "/arch:AVX2")
         target_link_libraries(Modlib)
 
         target_compile_options()" << name << R"( PRIVATE "/O2" "/Ob2" "/Oi" "/Ot" "/arch:AVX2")
@@ -206,7 +206,7 @@ if (WIN32)
         }
         stream << R"()
 
-        target_compile_options()" << name << R"(Modded PRIVATE "/O2" "/Ob2" "/Oi" "/Ot" "/arch:AVX2")
+        target_compile_options()" << name << R"(Modded PRIVATE "/O2" "/MP" "/Ob2" "/Oi" "/Ot" "/arch:AVX2")
         target_link_libraries()" << name << "Modded " << R"(UntitledVulkanGameEngine )";
         for (const auto& a : data.msvcLinkLibraries)
         {
