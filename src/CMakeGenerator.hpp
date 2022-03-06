@@ -12,20 +12,20 @@ namespace UBT
         LIB_FLAGS_LINK_TO_ALL = LIB_FLAGS_LINK_TO_ENGINE | LIB_FLAGS_LINK_TO_WRAPPER | LIB_FLAGS_LINK_TO_WRAPPER_MODDED
     };
 
-    struct LibSource
+    struct UBT_PUBLIC_API LibSource
     {
         LibraryProjectType target;
         std::string val;
     };
 
-    struct TargetSource
+    struct UBT_PUBLIC_API TargetSource
     {
         LibraryProjectType prjtype;
         std::vector<std::string> glob;
         std::vector<std::string> individual;
     };
 
-    struct CMakeInfoData
+    struct UBT_PUBLIC_API CMakeInfoData
     {
         std::vector<std::string> msvcIncludePaths;
         std::vector<std::string> unixIncludePaths;
@@ -43,15 +43,15 @@ namespace UBT
         std::vector<LibSource> unixLinkLibraries;
     };
 
-    void addFilesToStream(std::ofstream& stream, const std::vector<TargetSource>& src, LibraryProjectType type);
-    void addIncludeDirectories(YAML::Node& config, CMakeInfoData& data);
-    void addLinkLibraries(YAML::Node& config, CMakeInfoData& data);
-    void addHeaderLibraries(YAML::Node& config, CMakeInfoData& data);
-    void addSourceLibraries(YAML::Node& config, CMakeInfoData& data);
-    void addSubdirectories(YAML::Node& config, CMakeInfoData& data);
+    UBT_PUBLIC_API void addFilesToStream(std::ofstream& stream, const std::vector<TargetSource>& src, LibraryProjectType type);
+    UBT_PUBLIC_API void addIncludeDirectories(YAML::Node& config, CMakeInfoData& data);
+    UBT_PUBLIC_API void addLinkLibraries(YAML::Node& config, CMakeInfoData& data);
+    UBT_PUBLIC_API void addHeaderLibraries(YAML::Node& config, CMakeInfoData& data);
+    UBT_PUBLIC_API void addSourceLibraries(YAML::Node& config, CMakeInfoData& data);
+    UBT_PUBLIC_API void addSubdirectories(YAML::Node& config, CMakeInfoData& data);
 
-    void generateCmake(const char* name, const CMakeInfoData& data);
+    UBT_PUBLIC_API void generateCmake(const char* name, const CMakeInfoData& data);
 
-    void accumulateHeaderLibraries(YAML::Node& engine, std::vector<TargetSource>& headers);
+    UBT_PUBLIC_API void accumulateHeaderLibraries(YAML::Node& engine, std::vector<TargetSource>& headers);
 
 }

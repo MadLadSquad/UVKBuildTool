@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 project(UVKBuildTool)
+project(UVKBuildToolLib)
 
 set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(yaml-cpp)
@@ -7,7 +8,12 @@ add_subdirectory(yaml-cpp)
 include_directories(yaml-cpp/include)
 include_directories(yaml-cpp/include/yaml-cpp)
 
-file(GLOB_RECURSE SRC "src/*.cpp" "src/*.hpp")
+file(GLOB_RECURSE SRC "src/*.cpp")
+file(GLOB_RECURSE HEAD "src/*.hpp")
 
-add_executable(UVKBuildTool ${SRC})
-target_link_libraries(UVKBuildTool yaml-cpp)
+target_compile_definitions(UVKBuildToolLib PRIVATE "UBT_LIB_COMPILE")
+add_library(UVKBuildToolLib SHARED ${SRC} ${HEAD})
+target_link_libraries(UVKBuildToolLib yaml-cpp)
+
+add_executable(UVKBuildTool ${HEAD} main.cpp)
+target_link_libraries(UVKBuildTool UVKBuildToolLib)

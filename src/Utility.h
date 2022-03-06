@@ -4,22 +4,38 @@
 #include <algorithm>
 #include <fstream>
 #include <ostream>
-
-#ifndef DEBUG
-    static const std::string path = "../../";
+#ifdef _WIN32
+    #ifdef UBT_LIB_COMPILE
+        #define UBT_PUBLIC_API __declspec(dllexport)
+    #else
+        #define UBT_PUBLIC_API __declspec(dllimport)
+    #endif
 #else
-    static const std::string path = "./";
+    #define UBT_PUBLIC_API
 #endif
+
 
 namespace UBT
 {
-    static std::string toLower(std::string str)
+    inline std::string path = "../../";
+
+    UBT_PUBLIC_API static const std::string& getPath()
+    {
+        return path;
+    }
+
+    UBT_PUBLIC_API static void setPath(const char* pt)
+    {
+        path = pt;
+    }
+
+    UBT_PUBLIC_API static std::string toLower(std::string str)
     {
         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
         return str;
     }
 
-    static std::string toUpper(std::string str)
+    UBT_PUBLIC_API static std::string toUpper(std::string str)
     {
         std::transform(str.begin(), str.end(), str.begin(), ::toupper);
         return str;

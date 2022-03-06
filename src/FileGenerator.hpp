@@ -3,5 +3,5 @@
 
 namespace UBT
 {
-    void makeTemplate(const std::string& name, const std::string& type, const char* prjname);
+    UBT_PUBLIC_API void makeTemplate(const std::string& name, const std::string& type, const char* prjname);
 }

@@ -8,9 +8,9 @@ void UBT::relBuild(const std::string& name)
     out.close();
 
 #ifdef _WIN32
-    system(("cd ../../ && bash export.sh " + name).c_str());
+    system(("cd " + UBT::getPath() + " && bash export.sh " + name).c_str());
 #else
-    system(("cd ../../ && ./export.sh " + name).c_str());
+    system(("cd " + UBT::getPath() + " && ./export.sh " + name).c_str());
 #endif
     std::ofstream out2(path + "Generated/BuildDef.hpp");
     out2 << "// Generated file, DO NOT TOUCH!" << std::endl;
