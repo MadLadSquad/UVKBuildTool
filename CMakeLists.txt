@@ -22,6 +22,4 @@ set_target_properties(UVKBuildToolLib PROPERTIES LINKER_LANGUAGE CXX)
 target_compile_definitions(UVKBuildToolLib PRIVATE "UBT_LIB_COMPILE" "YAML_CPP_DLL")
 
 target_link_libraries(UVKBuildToolLib yaml-cpp)
-
-
-target_link_libraries(UVKBuildTool UVKBuildToolLib)
+target_link_libraries(UVKBuildTool UVKBuildToolLib yaml-cpp)
