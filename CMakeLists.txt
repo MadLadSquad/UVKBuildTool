@@ -4,7 +4,9 @@ project(UVKBuildToolLib)
 
 set(CMAKE_CXX_STANDARD 20)
 
+set(BUILD_SHARED_LIBS ON)
 add_subdirectory(yaml-cpp)
+set(BUILD_SHARED_LIBS OFF)
 
 include_directories(yaml-cpp/include)
 include_directories(yaml-cpp/include/yaml-cpp)
@@ -17,7 +19,7 @@ add_executable(UVKBuildTool ${HEAD} main.cpp)
 
 set_target_properties(UVKBuildTool PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(UVKBuildToolLib PROPERTIES LINKER_LANGUAGE CXX)
-target_compile_definitions(UVKBuildToolLib PRIVATE "UBT_LIB_COMPILE")
+target_compile_definitions(UVKBuildToolLib PRIVATE "UBT_LIB_COMPILE" "YAML_CPP_DLL")
 
 target_link_libraries(UVKBuildToolLib yaml-cpp)
 
