@@ -42,6 +42,8 @@ endif()
 link_directories(Engine/ThirdParty/vulkan/)
 link_directories(Engine/ThirdParty/vulkan/lib)
 link_directories(Engine/ThirdParty/glew/lib)
+link_directories(UVKShaderCompiler/build/)
+link_directories(UVKBuildTool/build/)
 
 # Include directories for everything really
 include_directories(Engine/ThirdParty/assimp/include)
@@ -97,7 +99,7 @@ if(WIN32)
     file(GLOB_RECURSE EngineHeaders "Engine/Audio/*.hpp" "Engine/Core/*.hpp" "Engine/Renderer/*.hpp" "Engine/GameFramework/*.hpp"
         "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/misc/*.h" "Engine/ThirdParty/imgui/backends/everything/*.h"
         "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp"
-        "Engine/ThirdParty/logger/*.h" )";
+        "Engine/ThirdParty/logger/*.h" "UVKShaderCompiler/Src/*.hpp" "UVKBuildTool/src/*.hpp" )";
     addFilesToStream(stream, data.msvcHeaders, LIB_FLAGS_LINK_TO_ENGINE);
     stream << R"()
     file(GLOB_RECURSE ExecutableSrc "WrapperSource/*.cpp" "WrapperSource/*.hpp" )";
@@ -117,7 +119,7 @@ else()
     file(GLOB_RECURSE EngineHeaders "Engine/Audio/*.hpp" "Engine/Core/*.hpp" "Engine/Renderer/*.hpp" "Engine/GameFramework/*.hpp"
         "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/misc/*.h" "Engine/ThirdParty/imgui/backends/everything/*.h"
         "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp"
-        "Engine/ThirdParty/logger/*.h" )";
+        "Engine/ThirdParty/logger/*.h" "UVKShaderCompiler/Src/*.hpp" "UVKBuildTool/src/*.hpp" )";
     addFilesToStream(stream, data.unixHeaders, LIB_FLAGS_LINK_TO_ENGINE);
     stream << R"()
     file(GLOB_RECURSE ExecutableSrc "WrapperSource/*.cpp" "WrapperSource/*.hpp" )";
@@ -170,7 +172,7 @@ target_compile_definitions(UntitledVulkanGameEngine PRIVATE "UVK_LIB_COMPILE" "Y
 if (WIN32)
     if (MINGW)
         target_compile_options(UntitledVulkanGameEngine PRIVATE "-O3" "-march=native")
-        target_link_libraries(UntitledVulkanGameEngine glfw opengl32 libglew_static yaml-cpp vulkan-1 assimp freetype)
+        target_link_libraries(UntitledVulkanGameEngine glfw opengl32 libglew_static yaml-cpp vulkan-1 assimp freetype UVKShaderCompilerLib )
 
         target_compile_options(Modlib PRIVATE "-O3" "-march=native")
         target_link_libraries(Modlib)
@@ -182,7 +184,7 @@ if (WIN32)
         target_link_libraries()" << name << R"(Modded )" << R"(UntitledVulkanGameEngine)
     else()
         target_compile_options(UntitledVulkanGameEngine PRIVATE "/O2" "/MP" "/Ob2" "/Oi" "/Ot" "/arch:AVX2")
-        target_link_libraries(UntitledVulkanGameEngine glfw OpenAL opengl32 libglew_static yaml-cpp vulkan-1 sndfile assimp freetype )";
+        target_link_libraries(UntitledVulkanGameEngine glfw OpenAL opengl32 libglew_static yaml-cpp vulkan-1 sndfile assimp freetype UVKShaderCompilerLib UVKBuildToolLib )";
         for (const auto& a : data.msvcLinkLibraries)
         {
             if (a.target & LIB_FLAGS_LINK_TO_ENGINE)
@@ -219,7 +221,7 @@ if (WIN32)
     endif()
 else()
     target_compile_options(UntitledVulkanGameEngine PRIVATE "-O3" "-march=native")
-    target_link_libraries(UntitledVulkanGameEngine glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile util pthread assimp freetype )";
+    target_link_libraries(UntitledVulkanGameEngine glfw GLEW OpenGL OpenAL yaml-cpp vulkan sndfile util pthread assimp freetype UVKShaderCompilerLib UVKBuildToolLib )";
     for (const auto& a : data.unixLinkLibraries)
     {
         if (a.target & LIB_FLAGS_LINK_TO_ENGINE)

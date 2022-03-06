@@ -1,12 +1,13 @@
-#include "Utility.h"
-#include "ActorListGenerator.hpp"
-#include "CMakeGenerator.hpp"
-#include "FileGenerator.hpp"
-#include "SourceGenerator.hpp"
-#include "ReleaseBuild.hpp"
+#include "src/Utility.h"
+#include "src/ActorListGenerator.hpp"
+#include "src/CMakeGenerator.hpp"
+#include "src/FileGenerator.hpp"
+#include "src/SourceGenerator.hpp"
+#include "src/ReleaseBuild.hpp"
 
 int main(int argc, char** argv)
 {
+    UBT::setPath("../../");
     if (argc < 2)
     {
         std::cout << "Not enough arguments passed into the generator!" << std::endl;
@@ -35,7 +36,7 @@ int main(int argc, char** argv)
 
     try
     {
-        config = YAML::LoadFile("../../uvproj.yaml");
+        config = YAML::LoadFile(UBT::getPath() + "uvproj.yaml");
     }
     catch (YAML::BadFile&)
     {
@@ -54,7 +55,7 @@ int main(int argc, char** argv)
 
         std::string startupLevelName;
 
-        std::ifstream i(path + "Generated/ActorList.hpp");
+        std::ifstream i(UBT::getPath() + "Generated/ActorList.hpp");
         bSetReadable = i.is_open();
 
         if (config["startup-level"])
@@ -83,7 +84,7 @@ int main(int argc, char** argv)
         bool bSetReadable;
         std::string startupLevelName;
 
-        std::ifstream i(path + "Generated/ActorList.hpp");
+        std::ifstream i(UBT::getPath() + "Generated/ActorList.hpp");
         bSetReadable = i.is_open();
 
         if (config["startup-level"])
