@@ -19,25 +19,9 @@ namespace UBT
 {
     inline std::string path = "../../";
 
-    UBT_PUBLIC_API static const std::string& getPath()
-    {
-        return path;
-    }
+    UBT_PUBLIC_API const std::string& getPath();
+    UBT_PUBLIC_API void setPath(const char* pt);
 
-    UBT_PUBLIC_API static void setPath(const char* pt)
-    {
-        path = pt;
-    }
-
-    UBT_PUBLIC_API static std::string toLower(std::string str)
-    {
-        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-        return str;
-    }
-
-    UBT_PUBLIC_API static std::string toUpper(std::string str)
-    {
-        std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-        return str;
-    }
+    UBT_PUBLIC_API std::string toLower(std::string str);
+    UBT_PUBLIC_API std::string toUpper(std::string str);
 }
