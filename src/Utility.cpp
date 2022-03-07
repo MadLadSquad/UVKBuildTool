@@ -5,7 +5,7 @@ const std::string& UBT::getPath()
     return path;
 }
 
-void UBT::setPath(const char *pt)
+void UBT::setPath(std::string pt)
 {
     path = pt;
 }
