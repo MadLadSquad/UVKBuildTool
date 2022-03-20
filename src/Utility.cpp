@@ -7,6 +7,12 @@ const std::string& UBT::getPath()
 
 void UBT::setPath(std::string pt)
 {
+    if (pt.back() != '/')
+        pt += "/";
+    // Cleanup if some stupid Windows user decides to use this
+    for (auto& a : pt)
+        if (a == '\\')
+            a = '/';
     path = pt;
 }
 
