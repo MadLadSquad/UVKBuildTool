@@ -5,6 +5,23 @@
 #include "src/SourceGenerator.hpp"
 #include "src/ReleaseBuild.hpp"
 
+void getConfig(YAML::Node& config, std::string& name)
+{
+    try
+    {
+        config = YAML::LoadFile(UBT::getPath() + "uvproj.yaml");
+    }
+    catch (YAML::BadFile&)
+    {
+        std::cout << "Could not locate file" << std::endl;
+    }
+
+    if (config["name"])
+    {
+        name = config["name"].as<std::string>();
+    }
+}
+
 int main(int argc, char** argv)
 {
     UBT::setPath("../../");
@@ -33,25 +50,11 @@ int main(int argc, char** argv)
     }
 
     YAML::Node config;
-
-    try
-    {
-        config = YAML::LoadFile(UBT::getPath() + "uvproj.yaml");
-    }
-    catch (YAML::BadFile&)
-    {
-        std::cout << "Could not locate file" << std::endl;
-    }
-
     std::string name;
-    if (config["name"])
-    {
-        name = config["name"].as<std::string>();
-    }
-
     if (argv[1] == UBT::toLower("--generate") && argc < 4)
     {
         UBT::setPath(argv[2]);
+        getConfig(config, name);
         bool bSetReadable;
 
         std::string startupLevelName;
@@ -83,6 +86,7 @@ int main(int argc, char** argv)
     else if (argv[1] == UBT::toLower("--install") && argc < 4)
     {
         UBT::setPath(argv[2]);
+        getConfig(config, name);
         bool bSetReadable;
         std::string startupLevelName;
 
@@ -121,6 +125,7 @@ int main(int argc, char** argv)
     else if (argv[1] == UBT::toLower("--build"))
     {
         UBT::setPath(argv[2]);
+        getConfig(config, name);
         UBT::relBuild(config["name"].as<std::string>());
         return 0;
     }
@@ -133,6 +138,7 @@ int main(int argc, char** argv)
     else
     {
         UBT::setPath(argv[3]);
+        getConfig(config, name);
         if (argv[1] == UBT::toLower("--pawn"))
         {
             UBT::makeTemplate(std::string(argv[2]), "UVK::Pawn", name.c_str());
@@ -173,6 +179,7 @@ int main(int argc, char** argv)
     else
     {
         UBT::setPath(argv[4]);
+        getConfig(config, name);
         if (argv[1] == UBT::toLower("--scriptable-object") && argv[3] == UBT::toLower("--add"))
         {
             UBT::makeTemplate(std::string(argv[2]), "UVK::ScriptableObject", name.c_str());
