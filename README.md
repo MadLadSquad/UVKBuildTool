@@ -1,4 +1,6 @@
 # UVKBuildTool
+[![CI](https://github.com/MadLadSquad/UVKBuildTool/actions/workflows/ci.yaml/badge.svg)](https://github.com/MadLadSquad/UVKBuildTool/actions/workflows/ci.yaml)
+
 > Version: 0.8.0.0
 
 The universal file generator, build and release tool for the UntitledVulkanGameEngine, the build tool does the following things:
