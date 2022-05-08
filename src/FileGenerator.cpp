@@ -42,7 +42,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
         stream << R"({
 
 })";
-        stream << "void UVK::" << name << R"()::destroy()
+        stream << "void UVK::" << name << R"(::destroy()
 {
 
 }
