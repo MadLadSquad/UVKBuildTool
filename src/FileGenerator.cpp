@@ -38,9 +38,19 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
     }
     else
     {
-    	    stream << "void UVK::" << name << "::onEventInitEditorModules()" << std::endl;
+        stream << "void UVK::" << name << "::init()" << std::endl;
+        stream << R"({
+
+})";
+        stream << "void UVK::" << name << R"()::destroy()
+{
+
+}
+)";
+
+    	stream << "void UVK::" << name << "::onEventInitEditorModules()" << std::endl;
 	    stream << "{" << std::endl;
-    	    stream << std::endl;
+    	stream << std::endl;
 	    stream << "}" << std::endl;
 	    stream << std::endl;
     }
@@ -94,7 +104,10 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
     }
     else
     {
-        stream2 << "        virtual void onEventInitEditorModules() override;" << std::endl;
+        stream2 << R"(        virtual void onEventInitEditorModules() override;
+        virtual void init() override;
+        virtual void destroy() override;
+)" << std::endl;
     }
 
     if (bScriptableObject)
