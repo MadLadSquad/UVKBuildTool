@@ -1,0 +1,21 @@
+#pragma once
+#include "Game.hpp"
+
+namespace UVK
+{
+    class ${{ uppercase_name }}_PUBLIC_API ${{ name }} : public ${{ type }}
+    {
+    public:
+        ${{ name }}()
+        {
+
+        }
+
+        virtual void beginPlay() override;
+        virtual void endPlay() override;
+
+        ${{ add_tick_or_game_instance_functions_tick }}
+        ${{ add_scriptable_object_functions_head }}
+        virtual ~${{ name }}() override {};
+    };
+}
