@@ -7,12 +7,15 @@ set(CMAKE_CXX_STANDARD 20)
 set(BUILD_SHARED_LIBS ON)
 add_subdirectory(yaml-cpp)
 set(BUILD_SHARED_LIBS OFF)
+add_subdirectory(utg/ThirdParty/utfcpp)
 
 include_directories(yaml-cpp/include)
 include_directories(yaml-cpp/include/yaml-cpp)
+include_directories(utg/src/)
+include_directories(utg/ThirdParty/utfcpp/source/)
 
-file(GLOB_RECURSE SRC "src/*.cpp")
-file(GLOB_RECURSE HEAD "src/*.hpp")
+file(GLOB_RECURSE SRC "src/*.cpp" "utg/src/*.cpp")
+file(GLOB_RECURSE HEAD "src/*.hpp" "utg/src/*.hpp")
 
 add_library(UVKBuildToolLib SHARED ${SRC} ${HEAD})
 add_executable(UVKBuildTool ${HEAD} main.cpp)

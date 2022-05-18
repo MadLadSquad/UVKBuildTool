@@ -43,7 +43,6 @@ namespace UBT
         std::vector<LibSource> unixLinkLibraries;
     };
 
-    UBT_PUBLIC_API void addFilesToStream(std::ofstream& stream, const std::vector<TargetSource>& src, LibraryProjectType type);
     UBT_PUBLIC_API void addIncludeDirectories(YAML::Node& config, CMakeInfoData& data);
     UBT_PUBLIC_API void addLinkLibraries(YAML::Node& config, CMakeInfoData& data);
     UBT_PUBLIC_API void addHeaderLibraries(YAML::Node& config, CMakeInfoData& data);
@@ -54,4 +53,18 @@ namespace UBT
 
     UBT_PUBLIC_API void accumulateHeaderLibraries(YAML::Node& engine, std::vector<TargetSource>& headers);
 
+    template<typename T>
+    UBT_PUBLIC_API void addFilesToStream(T& stream, const std::vector<TargetSource>& src, LibraryProjectType type)
+    {
+        for (const auto& a : src)
+        {
+            if (a.prjtype & type)
+            {
+                for (const auto& f : a.glob)
+                    stream << "\"" << f << "\" ";
+                for (const auto& f : a.individual)
+                    stream << "\"" << f << "\" ";
+            }
+        }
+    }
 }

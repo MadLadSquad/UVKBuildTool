@@ -1,4 +1,5 @@
 #include "FileGenerator.hpp"
+#include <GeneratorCore.hpp>
 
 void UBT::makeTemplate(const std::string& name, const std::string& type, const char* prjname)
 {
@@ -6,121 +7,96 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
 	bool bGameInstance = false;
     bool bScriptableObject = false;
 
-	if (type == "UVK::Level" || type == "UVK::GameMode") bAddAutohandles = true;
+	if (type == "UVK::Level" || type == "UVK::GameMode" || type == "UVK::PlayerController") bAddAutohandles = true;
 	if (type == "UVK::GameInstance") bGameInstance = true;
     if (type == "UVK::ScriptableObject") bScriptableObject = true;
 
-	auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
-    
-    stream << "#include " << "\"" << name << ".hpp\"" << std::endl;
-    stream << std::endl;
-    stream << "void UVK::" << name << "::beginPlay()" << std::endl;
-    stream << "{" << std::endl;
-    if (bAddAutohandles)
     {
-        stream << "    beginAutohandle();" << std::endl;
-    }
-    stream << std::endl;
-    stream << "}" << std::endl;
-    stream << std::endl;
-	if (!bGameInstance)
-	{
-		stream << "void UVK::" << name << "::tick(float deltaTime)" << std::endl;
-		stream << "{" << std::endl;
-		if (bAddAutohandles)
-		{
-			stream << "    tickAutohandle(deltaTime);" << std::endl;
-		}
-    	stream << std::endl;
-
-	    stream << "}" << std::endl;
-	    stream << std::endl;
-    }
-    else
-    {
-        stream << "void UVK::" << name << "::init()" << std::endl;
-        stream << R"({
-
-})";
-        stream << "void UVK::" << name << R"(::destroy()
-{
-
-}
-)";
-
-    	stream << "void UVK::" << name << "::onEventInitEditorModules()" << std::endl;
-	    stream << "{" << std::endl;
-    	stream << std::endl;
-	    stream << "}" << std::endl;
-	    stream << std::endl;
-    }
-    stream << "void UVK::" << name << "::endPlay()" << std::endl;
-    stream << "{" << std::endl;
-    if (bAddAutohandles)
-    {
-        stream << "    endAutohandle();" << std::endl;
-    }
-    stream << std::endl;
-    stream << "}" << std::endl;
-
-    if (bScriptableObject)
-    {
-        stream << "void UVK::" << name << "::inactiveBegin()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-
-        stream << "void UVK::" << name << "::inactiveTick(float deltaTime)" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-
-        stream << "void UVK::" << name << "::inactiveEnd()" << std::endl;
-        stream << "{" << std::endl;
-        stream << std::endl;
-        stream << "}" << std::endl;
-    }
-    stream.close();
-
-    auto stream2 = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".hpp");
-    stream2 << "#pragma once" << std::endl;
-    stream2 << "#include \"Game.hpp\"" << std::endl;
-    stream2 << std::endl;
-    stream2 << "namespace UVK" << std::endl;
-    stream2 << "{" << std::endl;
-    stream2 << "    class " << UBT::toUpper(prjname) << "_PUBLIC_API " << name << " : public " << type << std::endl;
-    stream2 << "    {" << std::endl;
-    stream2 << "    public:" << std::endl;
-    stream2 << "        " << name << R"(() 
+        UTG::Input in;
+        std::string tickOrGameInstanceString = ("void UVK::" + name + "::tick(float deltaTime)\n{\n");
+        if (bAddAutohandles)
         {
-    
+            tickOrGameInstanceString += "    beginAutohandle();";
         }
+        tickOrGameInstanceString += "\n\n}";
 
-        virtual void endPlay() override;
-        virtual void beginPlay() override;)" << std::endl;
-    if (!bGameInstance)
-    {
-        stream2 << "        virtual void tick(float deltaTime) override;" << std::endl;
+        if (bGameInstance)
+        {
+            UTG::Input inst;
+            auto result = inst.init("../Templates/GameplayClasses/GameInstanceFunctionDefinitions.tmpl", UTG::Input::INPUT_TYPE_FILE);
+            if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
+            {
+                std::cout << "\x1b[31mThere was an error when generating the game instance file, specifically when opening the GameInstanceFunctionDefinitions.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
+                std::terminate();
+            }
+            inst["name"] = name;
+            tickOrGameInstanceString = inst.process();
+        }
+        else if (bScriptableObject)
+        {
+            UTG::Input inst;
+            auto result = inst.init("../Templates/GameplayClasses/ScriptableObjectFunctionDefinitions.tmpl", UTG::Input::INPUT_TYPE_FILE);
+            if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
+            {
+                std::cout << "\x1b[31mThere was an error when generating the game instance file, specifically when opening the ScriptableObjectFunctionDefinitions.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
+                std::terminate();
+            }
+            inst["name"] = name;
+            tickOrGameInstanceString = inst.process();
+        }
+        auto result = in.init("../Templates/GameplayClasses/GeneratedSource.cpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
+        if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
+        {
+            std::cout << "\x1b[31mThere was an error when generating the game instance file, specifically when opening the GeneratedSource.cpp.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
+            std::terminate();
+        }
+        in["name"] = name;
+        if (bAddAutohandles)
+        {
+            in["add_begin_auto_handle"] = "beginAutohandle();";
+            in["add_end_auto_handle"] = "endAutohandle();";
+        }
+        else
+        {
+            in["add_begin_auto_handle"] = " ";
+            in["add_end_auto_handle"] = " ";
+        }
+        in["add_tick_or_game_instance_functions"] = tickOrGameInstanceString;
+
+        auto stream = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".cpp");
+        stream << in.process() << std::endl;
+        stream.close();
     }
-    else
+    UTG::Input in;
+    std::string tickOrGameInstanceString = "virtual void tick(float deltaTime) override;";
+    if (bGameInstance)
     {
-        stream2 << R"(        virtual void onEventInitEditorModules() override;
+        tickOrGameInstanceString = R"(
+virtual void onEventInitEditorModules() override;
         virtual void init() override;
         virtual void destroy() override;
-)" << std::endl;
+)";
     }
-
-    if (bScriptableObject)
+    else if (bScriptableObject)
     {
-        stream2 << R"(
+        tickOrGameInstanceString += R"(
         virtual void inactiveBegin() override;
         virtual void inactiveTick(float deltaTime) override;
         virtual void inactiveEnd() override;
-)" << std::endl;
+)";
     }
+    auto result = in.init("../Templates/GameplayClasses/GeneratedSource.hpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
+    if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
+    {
+        std::cout << "\x1b[31mThere was an error when generating the game instance file, specifically when opening the GeneratedSource.hpp.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
+        std::terminate();
+    }
+    in["uppercase_name"] = toUpper(prjname);
+    in["name"] = name;
+    in["type"] = type;
+    in["add_tick_or_game_instance_functions_tick"] = tickOrGameInstanceString;
 
-    stream2 << "        virtual ~" << name << "() override {}" << R"(
-    };
-})";
+    auto stream2 = std::ofstream(path + "Source/" + static_cast<std::string>(name) + ".hpp");
+    stream2 << in.process() << std::endl;
     stream2.close();
 }
