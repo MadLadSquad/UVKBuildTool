@@ -1,6 +1,21 @@
 #include "CMakeGenerator.hpp"
 #include <GeneratorCore.hpp>
 
+template<typename T>
+void addFilesToStream(T& stream, const std::vector<UBT::TargetSource>& src, UBT::LibraryProjectType type)
+{
+    for (const auto& a : src)
+    {
+        if (a.prjtype & type)
+        {
+            for (const auto& f : a.glob)
+                stream << "\"" << f << "\" ";
+            for (const auto& f : a.individual)
+                stream << "\"" << f << "\" ";
+        }
+    }
+}
+
 void UBT::generateCmake(const char* name, const CMakeInfoData& data)
 {
     UTG::Input in;

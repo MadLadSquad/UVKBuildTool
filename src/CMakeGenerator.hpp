@@ -53,18 +53,5 @@ namespace UBT
 
     UBT_PUBLIC_API void accumulateHeaderLibraries(YAML::Node& engine, std::vector<TargetSource>& headers);
 
-    template<typename T>
-    UBT_PUBLIC_API void addFilesToStream(T& stream, const std::vector<TargetSource>& src, LibraryProjectType type)
-    {
-        for (const auto& a : src)
-        {
-            if (a.prjtype & type)
-            {
-                for (const auto& f : a.glob)
-                    stream << "\"" << f << "\" ";
-                for (const auto& f : a.individual)
-                    stream << "\"" << f << "\" ";
-            }
-        }
-    }
+
 }
