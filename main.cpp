@@ -9,11 +9,13 @@ void getConfig(YAML::Node& config, std::string& name)
 {
     try
     {
-        config = YAML::LoadFile(UBT::getPath() + "uvproj.yaml");
+        std::string tmp = UBT::getPath() + "uvproj.yaml";
+        config = YAML::LoadFile(tmp);
     }
     catch (YAML::BadFile&)
     {
         std::cout << "Could not locate file" << std::endl;
+        std::terminate();
     }
 
     if (config["name"])
@@ -135,7 +137,7 @@ int main(int argc, char** argv)
         std::cout << "Not enough arguments passed into the generator!" << std::endl;
         return 0;
     }
-    else
+    else if (argc == 4)
     {
         UBT::setPath(argv[3]);
         getConfig(config, name);
@@ -176,7 +178,7 @@ int main(int argc, char** argv)
         std::cout << "Not enough arguments passed into the generator!" << std::endl;
         return 0;
     }
-    else
+    else if (argc == 5)
     {
         UBT::setPath(argv[4]);
         getConfig(config, name);
