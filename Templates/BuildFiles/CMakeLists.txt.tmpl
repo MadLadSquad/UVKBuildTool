@@ -105,7 +105,7 @@ file(GLOB_RECURSE PrecompileEngineHeaders "Engine/Core/Core/STL.hpp" "Engine/Thi
 "Engine/ThirdParty/vulkan/headers/include/vulkan/vulkan.h")
 
 if(WIN32)
-    file(GLOB_RECURSE ProjectSrc "Source/*.hpp" "Source/*hpp")
+    file(GLOB_RECURSE ProjectSrc "Source/*.hpp" "Source/*.hpp")
     add_library(UntitledVulkanGameEngine SHARED Engine/ThirdParty/stb/stb_image.h Engine/ThirdParty/stb/sndfile.h ${EngineSrc} ${ProjectSrc})
 else()
     file(GLOB_RECURSE ProjectSrc "Source/*.hpp" "Source/*.cpp" )
