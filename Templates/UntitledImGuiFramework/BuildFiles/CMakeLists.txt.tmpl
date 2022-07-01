@@ -11,8 +11,8 @@ project(${{name}})
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_subdirectory(ThirdParty/glfw)
-add_subdirectory(ThirdParty/glew)
+add_subdirectory(Framework/ThirdParty/glfw)
+add_subdirectory(Framework/ThirdParty/glew)
 
 option(USE_AUDIO_MODULE "Use the audio module" OFF)
 option(USE_LOCALE_MODULE "Use the locale module" OFF)
@@ -21,18 +21,24 @@ option(USE_PLOTTING_MODULE "Use the plotting module" OFF)
 option(USE_UNDO_MODULE "Use the Undo/Redo module" OFF)
 option(USE_VIDEO_MODULE "Use the video module" OFF)
 
-include_directories(ThirdParty/glfw/include)
-include_directories(ThirdParty/glew/include)
-include_directories(ThirdParty/imgui/backends/everything)
-include_directories(ThirdParty/imgui/)
-include_directories(Core/)
-include_directories(Renderer/)
+
+include_directories(Source/)
+include_directories(Framework/)
+include_directories(Framework/ThirdParty/imgui/backends/everything/)
+include_directories(Framework/ThirdParty/imgui/backends/Vulkan/)
+include_directories(Framework/ThirdParty/imgui/misc/)
+include_directories(Framework/ThirdParty/glfw/include)
+include_directories(Framework/ThirdParty/glew/include)
+include_directories(Framework/ThirdParty/imgui/backends/everything)
+include_directories(Framework/ThirdParty/imgui/)
+include_directories(Framework/Core/)
+include_directories(Framework/Renderer/)
 
 link_directories(ThirdParty/glew/lib)
 link_directories(UVKBuildTool/build)
 
-file(GLOB_RECURSE UGUI_SRC "Core/*.cpp" "Renderer/*.cpp" "ThirdParty/imgui/backends/everything/*.cpp" "ThirdParty/imgui/misc/cpp/*.cpp")
-file(GLOB_RECURSE UGUI_HEAD "Core/*.hpp" "Renderer/*.hpp" "ThirdParty/imgui/backends/everything/*.h" "ThirdParty/imgui/misc/cpp/*.h" )
+file(GLOB_RECURSE UGUI_SRC "Framework/Core/*.cpp" "Framework/Renderer/*.cpp" "Framework/ThirdParty/imgui/backends/everything/*.cpp" "Framework/ThirdParty/imgui/misc/cpp/*.cpp")
+file(GLOB_RECURSE UGUI_HEAD "Framework/Core/*.hpp" "Framework/Renderer/*.hpp" "Framework/ThirdParty/imgui/backends/everything/*.h" "Framework/ThirdParty/imgui/misc/cpp/*.h" )
 
 add_library(UntitledImGuiFramework SHARED ${UGUI_SRC} ${UGUI_HEAD})
 set_target_properties(UntitledImGuiFramework PROPERTIES LINKER_LANGUAGE CXX)
