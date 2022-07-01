@@ -19,18 +19,8 @@ jobs:
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
     - name: Checkout LFS objects
       run: git lfs checkout
-    - name: Build for engine
-      run: |
-        mkdir build && cd build
-        cmake .. || exit
-        make -j "$(grep -c processor /proc/cpuinfo)" || exit
-        cd ..
-        rm -rf build && mkdir build
-    - name: Build for framework
-      run: |
-        cd build
-        cmake .. -DUBT_COMPILING_FOR_ENGINE=OFF
-        make -j "$(grep -c processor /proc/cpuinfo)" || exit
+    - name: Build
+      run: "./ci.sh"
   Windows:
     runs-on: windows-latest
     steps:
@@ -46,13 +36,4 @@ jobs:
     - name: Set MSBuild env
       uses: microsoft/setup-msbuild@v1.1
     - name: Build for engine
-      run: |
-        mkdir build && cd build
-        cmake .. || exit
-        MSBuild.exe UVKBuildTool.sln -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="$(grep -c processor /proc/cpuinfo)" || exit
-        cd .. && rmdir /s build && mkdir build
-    - name: Build for framework
-      run: |
-        cd build
-        cmake .. -DUBT_COMPILING_FOR_ENGINE=OFF
-        MSBuild.exe UVKBuildTool.sln -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="$(grep -c processor /proc/cpuinfo)" || exit
+      run: "bash ci.sh"
