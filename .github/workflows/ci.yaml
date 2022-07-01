@@ -25,7 +25,7 @@ jobs:
         cmake .. || exit
         make -j "$(grep -c processor /proc/cpuinfo)" || exit
         cd ..
-        rmdir build && mkdir build
+        rm -rf build && mkdir build
     - name: Build for framework
       run: |
         cd build
