@@ -1,7 +1,8 @@
 #!/bin/bash
 cpus=$(grep -c processor /proc/cpuinfo)
 
-mkdir build && (cd build || exit)
+mkdir build
+cd build || exit
 cmake .. || exit
 MSBuild.exe UVKBuildTool.sln -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="${cpus}" || make -j "${cpus}" || exit
 
