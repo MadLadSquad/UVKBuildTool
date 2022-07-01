@@ -30,7 +30,7 @@ file(GLOB_RECURSE UNI_HEAD "src/Uniform/*.h" "utg/src/*.hpp")
 file(GLOB_RECURSE UNI_SRC "src/Uniform/*.cpp" "utg/src/*.cpp")
 
 add_library(UVKBuildToolLib SHARED ${SRC} ${HEAD} ${UNI_SRC} ${UNI_HEAD})
-add_executable(UVKBuildTool ${HEAD} main.cpp ${UNI_HEAD})
+add_executable(UVKBuildTool ${HEAD} main.cpp ${UNI_HEAD} ${UNI_SRC})
 
 set_target_properties(UVKBuildTool PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(UVKBuildToolLib PROPERTIES LINKER_LANGUAGE CXX)
