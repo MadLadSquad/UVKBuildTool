@@ -50,7 +50,7 @@ jobs:
         mkdir build && cd build
         cmake .. || exit
         MSBuild.exe UVKBuildTool.sln -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="$(grep -c processor /proc/cpuinfo)" || exit
-        cd .. && rmdir build && mkdir build
+        cd .. && rmdir /s build && mkdir build
     - name: Build for framework
       run: |
         cd build
