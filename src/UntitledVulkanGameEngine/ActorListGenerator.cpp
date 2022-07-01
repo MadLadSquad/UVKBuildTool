@@ -1,3 +1,4 @@
+#ifdef UBT_TARGET_ENGINE
 #include "ActorListGenerator.hpp"
 #include <GeneratorCore.hpp>
 #include <filesystem>
@@ -5,7 +6,7 @@
 void UBT::generateSet()
 {
     UTG::Input in;
-    auto result = in.init("../Templates/BuildFiles/ActorList.hpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
+    auto result = in.init("../Templates/UntitledVulkanGameEngine/BuildFiles/ActorList.hpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
     if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
     {
         std::cout << "\x1b[31mError when generating the ActorList file from template! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
@@ -66,7 +67,7 @@ void UBT::addClass(const std::string& str)
 a.emplace_back()" + loc.stem().string() + R"(auto);)";
 
     UTG::Input in;
-    auto result = in.init("../Templates/BuildFiles/ActorList.hpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
+    auto result = in.init("../Templates/UntitledVulkanGameEngine/BuildFiles/ActorList.hpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
     if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
     {
         std::cout << "\x1b[31mError when opening the ActorList.hpp.tmpl! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
@@ -120,3 +121,4 @@ void UBT::removeClass(const std::string& str)
     out << buffer << std::endl;
     out.close();
 }
+#endif

@@ -1,5 +1,6 @@
 #pragma once
-#include "Utility.h"
+#ifdef UBT_TARGET_ENGINE
+#include <Uniform/UniformUtility.h>
 
 namespace UBT
 {
@@ -52,6 +53,5 @@ namespace UBT
     UBT_PUBLIC_API void generateCmake(const char* name, const CMakeInfoData& data);
 
     UBT_PUBLIC_API void accumulateHeaderLibraries(YAML::Node& engine, std::vector<TargetSource>& headers);
-
-
 }
+#endif

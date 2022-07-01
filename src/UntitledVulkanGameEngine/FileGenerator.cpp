@@ -1,3 +1,4 @@
+#ifdef UBT_TARGET_ENGINE
 #include "FileGenerator.hpp"
 #include <GeneratorCore.hpp>
 
@@ -23,7 +24,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
         if (bGameInstance)
         {
             UTG::Input inst;
-            auto result = inst.init("../Templates/GameplayClasses/GameInstanceFunctionDefinitions.tmpl", UTG::Input::INPUT_TYPE_FILE);
+            auto result = inst.init("../Templates/UntitledVulkanGameEngine/GameplayClasses/GameInstanceFunctionDefinitions.tmpl", UTG::Input::INPUT_TYPE_FILE);
             if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
             {
                 std::cout << "\x1b[31mThere was an error when generating the game instance file, specifically when opening the GameInstanceFunctionDefinitions.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
@@ -35,7 +36,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
         else if (bScriptableObject)
         {
             UTG::Input inst;
-            auto result = inst.init("../Templates/GameplayClasses/ScriptableObjectFunctionDefinitions.tmpl", UTG::Input::INPUT_TYPE_FILE);
+            auto result = inst.init("../Templates/UntitledVulkanGameEngine/GameplayClasses/ScriptableObjectFunctionDefinitions.tmpl", UTG::Input::INPUT_TYPE_FILE);
             if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
             {
                 std::cout << "\x1b[31mThere was an error when generating the game instance file, specifically when opening the ScriptableObjectFunctionDefinitions.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
@@ -44,7 +45,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
             inst["name"] = name;
             tickOrGameInstanceString = inst.process();
         }
-        auto result = in.init("../Templates/GameplayClasses/GeneratedSource.cpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
+        auto result = in.init("../Templates/UntitledVulkanGameEngine/GameplayClasses/GeneratedSource.cpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
         if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
         {
             std::cout << "\x1b[31mThere was an error when generating the game instance file, specifically when opening the GeneratedSource.cpp.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
@@ -85,7 +86,7 @@ virtual void onEventInitEditorModules() override;
         virtual void inactiveEnd() override;
 )";
     }
-    auto result = in.init("../Templates/GameplayClasses/GeneratedSource.hpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
+    auto result = in.init("../Templates/UntitledVulkanGameEngine/GameplayClasses/GeneratedSource.hpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
     if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
     {
         std::cout << "\x1b[31mThere was an error when generating the game instance file, specifically when opening the GeneratedSource.hpp.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
@@ -100,3 +101,4 @@ virtual void onEventInitEditorModules() override;
     stream2 << in.process() << std::endl;
     stream2.close();
 }
+#endif

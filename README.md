@@ -3,7 +3,7 @@
 
 > Version: 0.8.0.0
 
-The universal file generator, build and release tool for the UntitledVulkanGameEngine, the build tool does the following things:
+The universal file generator, build and release tool for the UntitledVulkanGameEngine and UntitledImGuiFramework, the build tool does the following things:
 - Autogenerates build and source files
 - Packages the project for production or testing
 - Installs some core engine components

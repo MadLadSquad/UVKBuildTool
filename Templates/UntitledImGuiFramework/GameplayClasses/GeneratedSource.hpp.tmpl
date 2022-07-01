@@ -1,0 +1,17 @@
+#pragma once
+#include <UntitledImGuiFramework/Framework.hpp>
+
+namespace ${{name}}
+{
+    class ${{classname}} : public UImGui::${{type}}
+    {
+    public:
+        ${{classname}}();
+        virtual void begin() override;
+        virtual void tick(float deltaTime) override;
+        virtual void end() override;
+        virtual ~${{classname}}() override;
+    private:
+
+    }
+}

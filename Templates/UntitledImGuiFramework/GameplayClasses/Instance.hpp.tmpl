@@ -1,0 +1,19 @@
+#pragma once
+#include <UntitledImGuiFramework/Framework.hpp>
+
+namespace ${{name}}
+{
+    class Instance : public UImGui::Instance
+    {
+    public:
+        Instance();
+        virtual void begin() override;
+        virtual void tick(float deltaTime) override;
+        virtual void end() override;
+        virtual ~Instance() override;
+
+        virtual void onEventConfigureStyle() override;
+    private:
+
+    }
+}
