@@ -6,7 +6,7 @@
     #include <UntitledVulkanGameEngine/SourceGenerator.hpp>
     #include <UntitledVulkanGameEngine/ReleaseBuild.hpp>
 #else
-    #include <UntitledImGuiFramework/Utility.h>
+    #include <UntitledImGuiFramework/Utility.hpp>
     #include <UntitledImGuiFramework/CMakeGenerator.hpp>
     #include <UntitledImGuiFramework/FileGenerator.hpp>
     #include <UntitledImGuiFramework/SourceGenerator.hpp>
