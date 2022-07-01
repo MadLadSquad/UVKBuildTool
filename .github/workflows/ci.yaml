@@ -25,7 +25,7 @@ jobs:
         cmake .. || exit
         make -j "$(grep -c processor /proc/cpuinfo)" || exit
         cd ..
-        rm -rf build && mkdir build
+        rmdir build && mkdir build
     - name: Build for framework
       run: |
         cd build
@@ -50,7 +50,7 @@ jobs:
         mkdir build && cd build
         cmake .. || exit
         MSBuild.exe UVKBuildTool.sln -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="$(grep -c processor /proc/cpuinfo)" || exit
-        cd .. && rm -rf build && mkdir build
+        cd .. && rmdir build && mkdir build
     - name: Build for framework
       run: |
         cd build
