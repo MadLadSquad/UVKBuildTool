@@ -54,7 +54,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
     in["name"] = prjname;
     in["classname"] = name;
 
-    stream = std::ofstream(path + "Source/" + name + ".hpp");
+    stream = std::ofstream(path + "Source/" + name + ".cpp");
     stream << in.process() << std::endl;
     stream.close();
 }
