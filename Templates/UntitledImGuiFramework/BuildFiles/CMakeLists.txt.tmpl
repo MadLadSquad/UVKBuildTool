@@ -13,7 +13,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(Framework/ThirdParty/glfw)
 add_subdirectory(Framework/ThirdParty/glew)
+set(BUILD_SHARED_LIBS ON)
 add_subdirectory(Framework/ThirdParty/yaml-cpp)
+set(BUILD_SHARED_LIBS OFF)
 
 option(USE_AUDIO_MODULE "Use the audio module" OFF)
 option(USE_LOCALE_MODULE "Use the locale module" OFF)
@@ -50,7 +52,7 @@ file(GLOB_RECURSE UGUI_HEAD "Framework/Core/*.hpp" "Framework/Renderer/*.hpp"
         "Framework/ThirdParty/logger/*.h" "Framework/ThirdParty/source-libraries/*.h"
         "Framework/ThirdParty/source-libraries/*.hpp" "Framework/Modules/Audio/src/*.hpp"
         "Framework/Modules/Locale/src/*.hpp" )
-file(GLOB_RECURSE EXEC_SRC "Source/*.hpp" "Source/*.cpp")
+file(GLOB_RECURSE EXEC_SRC "Source/*.hpp" "Source/*.cpp" "Framework/ThirdParty/logger/*.cpp")
 
 if (USE_PLOTTING_MODULE)
     file(GLOB_RECURSE UGUI_IMPLOT_SRC "Framework/Modules/Plotting/*.cpp")
@@ -62,6 +64,10 @@ endif()
 
 add_library(UntitledImGuiFramework SHARED ${UGUI_SRC} ${UGUI_HEAD} Generated/BuildDef.hpp ${UGUI_IMPLOT_SRC} ${UGUI_IMPLOT_HEAD})
 add_executable(${{name}} Generated/main.cpp ${UGUI_HEAD} ${EXEC_SRC} Generated/BuildDef.hpp ${UGUI_IMPLOT_HEAD})
+
+set_target_properties(UntitledImGuiFramework PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(${{name}} PROPERTIES LINKER_LANGUAGE CXX)
+
 if (USE_AUDIO_MODULE)
     target_compile_definitions(UntitledImGuiFramework PRIVATE "UIMGUI_AUDIO_MODULE_ENABLED")
     target_compile_definitions(${{name}} PRIVATE "UIMGUI_AUDIO_MODULE_ENABLED")
@@ -76,14 +82,12 @@ if (USE_PLOTTING_MODULE)
     target_compile_definitions(UntitledImGuiFramework PRIVATE "UIMGUI_PLOTTING_MODULE_ENABLED")
     target_compile_definitions(${{name}} PRIVATE "UIMGUI_PLOTTING_MODULE_ENABLED")
 endif()
-target_compile_definitions(UntitledImGuiFramework PRIVATE "UIMGUI_COMPILE_LIB")
+target_compile_definitions(UntitledImGuiFramework PRIVATE "UIMGUI_COMPILE_LIB" "YAML_CPP_DLL")
 
-set_target_properties(UntitledImGuiFramework PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(${{name}} PROPERTIES LINKER_LANGUAGE CXX)
 if (WIN32)
     target_link_libraries(UntitledImGuiFramework glfw opengl32 libglew_static yaml-cpp)
-    target_link_libraries(${{name}} UntitledImGuiFramework)
+    target_link_libraries(${{name}} UntitledImGuiFramework yaml-cpp)
 else()
     target_link_libraries(UntitledImGuiFramework glfw GLEW OpenGL util pthread yaml-cpp)
-    target_link_libraries(${{name}} UntitledImGuiFramework)
+    target_link_libraries(${{name}} UntitledImGuiFramework yaml-cpp )
 endif()
