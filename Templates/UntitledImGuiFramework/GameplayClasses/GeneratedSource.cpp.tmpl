@@ -5,19 +5,19 @@ ${{name}}::${{classname}}::${{classname}}()
 
 }
 
-${{name}}::${{classname}}::begin()
+void ${{name}}::${{classname}}::begin()
 {
     beginAutohandle();
 
 }
 
-${{name}}::${{classname}}::tick(float deltaTime)
+void ${{name}}::${{classname}}::tick(float deltaTime)
 {
     tickAutohandle(deltaTime);
 
 }
 
-${{name}}::${{classname}}::end()
+void ${{name}}::${{classname}}::end()
 {
     endAutohandle();
 

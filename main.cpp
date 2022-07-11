@@ -283,11 +283,11 @@ int main(int argc, char** argv)
         UBT::setPath(argv[3]);
         getConfig(config, name);
         if (argv[1] == UBT::toLower("--inline"))
-            UBT::makeTemplate(std::string(argv[2]), "Inline", name.c_str());
+            UBT::makeTemplate(std::string(argv[2]), "InlineComponent", name.c_str());
         else if (argv[1] == UBT::toLower("--window"))
-            UBT::makeTemplate(std::string(argv[2]), "Window", name.c_str());
+            UBT::makeTemplate(std::string(argv[2]), "WindowComponent", name.c_str());
         else if (argv[1] == UBT::toLower("--title-bar"))
-            UBT::makeTemplate(std::string(argv[2]), "TitleBar", name.c_str());
+            UBT::makeTemplate(std::string(argv[2]), "TitlebarComponent", name.c_str());
         return 0;
     }
 }

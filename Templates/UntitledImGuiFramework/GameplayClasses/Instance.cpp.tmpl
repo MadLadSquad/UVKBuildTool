@@ -5,19 +5,19 @@ ${{name}}::Instance::Instance()
 
 }
 
-${{name}}::Instance::begin()
+void ${{name}}::Instance::begin()
 {
     beginAutohandle();
 
 }
 
-${{name}}::Instance::tick(float deltaTime)
+void ${{name}}::Instance::tick(float deltaTime)
 {
     tickAutohandle(deltaTime);
 
 }
 
-${{name}}::Instance::end()
+void ${{name}}::Instance::end()
 {
     endAutohandle();
 
@@ -28,7 +28,7 @@ ${{name}}::Instance::~Instance()
 
 }
 
-${{name}}::Instance::onEventConfigureStyle()
+void ${{name}}::Instance::onEventConfigureStyle()
 {
 
 }
