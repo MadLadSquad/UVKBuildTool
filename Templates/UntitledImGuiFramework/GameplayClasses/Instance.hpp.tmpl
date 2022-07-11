@@ -12,7 +12,7 @@ namespace ${{name}}
         virtual void end() override;
         virtual ~Instance() override;
 
-        virtual void onEventConfigureStyle() override;
+        virtual void onEventConfigureStyle(ImGuiStyle& style, ImGuiIO& io) override;
     private:
 
     }
