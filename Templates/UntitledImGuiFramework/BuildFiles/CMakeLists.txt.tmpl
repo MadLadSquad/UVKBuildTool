@@ -46,13 +46,13 @@ link_directories(UVKBuildTool/build)
 file(GLOB_RECURSE UGUI_SRC "Framework/Core/*.cpp" "Framework/Renderer/*.cpp"
         "Framework/ThirdParty/imgui/backends/everything/*.cpp" "Framework/ThirdParty/imgui/misc/cpp/*.cpp"
         "Framework/ThirdParty/logger/*.cpp" "Framework/ThirdParty/source-libraries/*.cpp"
-        "Framework/Modules/Audio/src/*.cpp" "Framework/Modules/Locale/src/*.cpp")
+        "Framework/Modules/Audio/src/*.cpp" "Framework/Modules/Locale/src/*.cpp" "Source/*.cpp")
 file(GLOB_RECURSE UGUI_HEAD "Framework/Core/*.hpp" "Framework/Renderer/*.hpp"
         "Framework/ThirdParty/imgui/backends/everything/*.h" "Framework/ThirdParty/imgui/misc/cpp/*.h"
         "Framework/ThirdParty/logger/*.h" "Framework/ThirdParty/source-libraries/*.h"
         "Framework/ThirdParty/source-libraries/*.hpp" "Framework/Modules/Audio/src/*.hpp"
-        "Framework/Modules/Locale/src/*.hpp" )
-file(GLOB_RECURSE EXEC_SRC "Source/*.hpp" "Source/*.cpp" "Framework/ThirdParty/logger/*.cpp")
+        "Framework/Modules/Locale/src/*.hpp" "Source/*.hpp")
+file(GLOB_RECURSE EXEC_SRC "Framework/ThirdParty/logger/*.cpp")
 
 if (USE_PLOTTING_MODULE)
     file(GLOB_RECURSE UGUI_IMPLOT_SRC "Framework/Modules/Plotting/*.cpp")
