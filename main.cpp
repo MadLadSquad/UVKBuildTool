@@ -244,6 +244,8 @@ int main(int argc, char** argv)
 
         std::string startupLevelName;
         std::ifstream i(UBT::getPath() + "Generated/ActorList.hpp");
+        if (config["name"])
+            name = config["name"].as<std::string>();
 
         UBT::generateMain(name.c_str());
         UBT::generateDef();
