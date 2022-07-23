@@ -37,7 +37,7 @@ jobs:
           git config --global user.name "Madman10K"
           git config --global user.email "contact@madladsquad.com"
           git fetch --all
-          git checkout auto || git checkout -b auto main
+          git checkout auto || git checkout -b auto master
           echo "::set-output name=out::$(git submodule update --remote --merge)?"
       - name: Commit
         if: "steps.mod.outputs.out != '?'"
