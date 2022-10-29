@@ -47,7 +47,7 @@ include_directories(Engine/ThirdParty/imguiex/imguizmo)
 include_directories(Engine/ThirdParty/glew/include)
 include_directories(Engine/ThirdParty/yaml/include)
 include_directories(Engine/ThirdParty/yaml/include/yaml-cpp)
-include_directories(Engine/ThirdParty/logger/)
+include_directories(Engine/ThirdParty/uvklog/)
 include_directories(Engine/ThirdParty/urll/)
 include_directories(Source/)
 include_directories(Engine/ThirdParty/imgui/backends/everything/)
@@ -74,33 +74,33 @@ if(WIN32)
         "Engine/Renderer/*.hpp" "Engine/Renderer/*.cpp" "Engine/GameFramework/*.cpp" "Engine/GameFramework/*.hpp"
         "Engine/ThirdParty/imgui/backends/everything/*.cpp" "Engine/ThirdParty/imgui/misc/*.cpp" "Engine/ThirdParty/imgui/misc/*.h"
         "Engine/ThirdParty/imgui/backends/everything/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.cpp"
-        "Engine/ThirdParty/imguiex/*.cpp" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp" "Engine/ThirdParty/logger/*.h"
-        "Engine/ThirdParty/logger/*.cpp" ${{win32_additional_sources}} )
+        "Engine/ThirdParty/imguiex/*.cpp" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp" "Engine/ThirdParty/uvklog/*.h"
+        "Engine/ThirdParty/uvklog/*.cpp" ${{win32_additional_sources}} )
     # The headers of the engine library
     file(GLOB_RECURSE EngineHeaders "Engine/Audio/*.hpp" "Engine/Core/*.hpp" "Engine/Renderer/*.hpp" "Engine/GameFramework/*.hpp"
         "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/misc/*.h" "Engine/ThirdParty/imgui/backends/everything/*.h"
         "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp"
-        "Engine/ThirdParty/logger/*.h" "UVKShaderCompiler/Src/*.hpp" "UVKBuildTool/src/*.hpp" ${{win32_additional_headers}} )
+        "Engine/ThirdParty/uvklog/*.h" "UVKShaderCompiler/Src/*.hpp" "UVKBuildTool/src/*.hpp" ${{win32_additional_headers}} )
     file(GLOB_RECURSE ExecutableSrc "WrapperSource/*.cpp" "WrapperSource/*.hpp" ${{win32_wrapper_sources}} ${{win32_wrapper_headers}} )
 else()
     file(GLOB_RECURSE EngineSrc "Engine/Audio/*.cpp" "Engine/Audio/*.hpp" "Engine/Core/*.cpp" "Engine/Core/*.hpp"
         "Engine/Renderer/*.hpp" "Engine/Renderer/*.cpp" "Engine/GameFramework/*.cpp" "Engine/GameFramework/*.hpp"
         "Engine/ThirdParty/imgui/backends/everything/*.cpp" "Engine/ThirdParty/imgui/misc/*.cpp" "Engine/ThirdParty/imgui/misc/*.h"
         "Engine/ThirdParty/imgui/backends/everything/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.cpp"
-        "Engine/ThirdParty/imguiex/*.cpp" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp" "Engine/ThirdParty/logger/*.h"
-        "Engine/ThirdParty/logger/*.cpp" ${{unix_additional_sources}} )
+        "Engine/ThirdParty/imguiex/*.cpp" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp" "Engine/ThirdParty/uvklog/*.h"
+        "Engine/ThirdParty/uvklog/*.cpp" ${{unix_additional_sources}} )
     # The headers of the engine library
     file(GLOB_RECURSE EngineHeaders "Engine/Audio/*.hpp" "Engine/Core/*.hpp" "Engine/Renderer/*.hpp" "Engine/GameFramework/*.hpp"
         "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/misc/*.h" "Engine/ThirdParty/imgui/backends/everything/*.h"
         "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp"
-        "Engine/ThirdParty/logger/*.h" "UVKShaderCompiler/Src/*.hpp" "UVKBuildTool/src/*.hpp" ${{unix_additional_headers}} )
+        "Engine/ThirdParty/uvklog/*.h" "UVKShaderCompiler/Src/*.hpp" "UVKBuildTool/src/*.hpp" ${{unix_additional_headers}} )
     file(GLOB_RECURSE ExecutableSrc "WrapperSource/*.cpp" "WrapperSource/*.hpp" ${{unix_wrapper_sources}} ${{unix_wrapper_headers}} )
 endif()
 
 # Headers to precompile
 file(GLOB_RECURSE PrecompileEngineHeaders "Engine/Core/Core/STL.hpp" "Engine/ThirdParty/glm/glm/glm.hpp"
 "Engine/ThirdParty/stb/*.h" "Engine/ThirdParty/yaml/include/yaml-cpp/*.h" "Engine/ThirdParty/glm/glm/*.h"
-"Engine/ThirdParty/logger/UVKLog.h" "Engine/ThirdParty/yaml/include/yaml-cpp/*.hpp"
+"Engine/ThirdParty/uvklog/UVKLog.h" "Engine/ThirdParty/yaml/include/yaml-cpp/*.hpp"
 "Engine/ThirdParty/entt/*.h" "Engine/ThirdParty/freetype/include/freetype/freetype.h"
 "Engine/ThirdParty/vulkan/headers/include/vulkan/vulkan.h")
 
