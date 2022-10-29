@@ -21,12 +21,12 @@ int main(int argc, char** argv)
     {
         bCanClose = true;
         if (URLL::dlsym(handle, "modlibbegin", UVK::Utility::getGlobal().modbegin) == handle && URLL::dlsym(handle, "modlibend", UVK::Utility::getGlobal().modend) == handle && URLL::dlsym(handle, "modlibtick", UVK::Utility::getGlobal().modtick) == handle)
-            logger.consoleLog("Loaded all mods!", UVK_LOG_TYPE_SUCCESS);
+            Logger::log("Loaded all mods!", UVK_LOG_TYPE_SUCCESS);
         else
-            logger.consoleLog("Failed to load some or all of the initial mod library functions, mod events will not be loaded! Error: ", UVK_LOG_TYPE_WARNING, URLL::dlerror());
+            Logger::log("Failed to load some or all of the initial mod library functions, mod events will not be loaded! Error: ", UVK_LOG_TYPE_WARNING, URLL::dlerror());
     }
     else
-        logger.consoleLog("Failed to load the mod library!", UVK_LOG_TYPE_WARNING);
+        Logger::log("Failed to load the mod library!", UVK_LOG_TYPE_WARNING);
     Wrapper::wbegin();
     UVK::AudioManager manager;
 
@@ -49,5 +49,5 @@ int main(int argc, char** argv)
     UVK::Renderer(UVK::Utility::getGlobal().currentLevel, bUsesEditor);
     Wrapper::wend();
     if (bCanClose && URLL::dlclose(handle) != 0)
-        logger.consoleLog("Error when closing the mod handle, message:", UVK_LOG_TYPE_ERROR, URLL::dlerror());
+        Logger::log("Error when closing the mod handle, message:", UVK_LOG_TYPE_ERROR, URLL::dlerror());
 }
