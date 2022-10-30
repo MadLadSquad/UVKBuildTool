@@ -55,7 +55,7 @@ file(GLOB_RECURSE UGUI_HEAD "Framework/Core/*.hpp" "Framework/Renderer/*.hpp"
         "Framework/ThirdParty/source-libraries/*.hpp" "Framework/Modules/Audio/src/*.hpp"
         "Framework/Modules/Locale/src/*.hpp" "Source/*.hpp" "Framework/Modules/Undo/src/*.hpp"
         "Framework/Modules/Manager/*.hpp")
-file(GLOB_RECURSE EXEC_SRC "Framework/ThirdParty/logger/*.cpp")
+file(GLOB_RECURSE EXEC_SRC "")
 
 if (USE_PLOTTING_MODULE)
     file(GLOB_RECURSE UGUI_IMPLOT_SRC "Framework/Modules/Plotting/*.cpp")
@@ -91,7 +91,7 @@ if (USE_UNDO_MODULE)
     target_compile_definitions(${{name}} PRIVATE "UIMGUI_UNDO_MODULE_ENABLED")
 endif()
 
-target_compile_definitions(UntitledImGuiFramework PRIVATE "UIMGUI_COMPILE_LIB" "YAML_CPP_DLL" "UVK_LOG_EXPORT_FROM_LIBRARY" "UVK_LOG_IMGUI" "UVK_LIB_COMPILE")
+target_compile_definitions(UntitledImGuiFramework PRIVATE "UIMGUI_COMPILE_LIB" "YAML_CPP_DLL" "UVK_LOG_EXPORT_FROM_LIBRARY" "UVK_LIB_COMPILE")
 target_compile_definitions(${{name}} PRIVATE "UVK_LOG_EXPORT_FROM_LIBRARY")
 
 if (WIN32)
