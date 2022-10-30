@@ -92,7 +92,7 @@ if (USE_UNDO_MODULE)
 endif()
 
 target_compile_definitions(UntitledImGuiFramework PRIVATE "UIMGUI_COMPILE_LIB" "YAML_CPP_DLL" "UVK_LOG_EXPORT_FROM_LIBRARY" "UVK_LOG_IMGUI" "UVK_LIB_COMPILE")
-target_compile_definitions(${{name}} PRIVATE "UVK_LOG_EXPORT_FROM_LIBRARY" "UVK_LOG_IMGUI")
+target_compile_definitions(${{name}} PRIVATE "UVK_LOG_EXPORT_FROM_LIBRARY")
 
 if (WIN32)
     target_link_libraries(UntitledImGuiFramework glfw opengl32 libglew_static yaml-cpp)
