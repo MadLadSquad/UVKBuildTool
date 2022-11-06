@@ -10,7 +10,12 @@ void UBT::generateMain(const char* gameName)
         std::cout << "\x1b[31mThere was an error with the generator when generating main.cpp! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
         std::terminate();
     }
-    in["name"] = gameName;
+    std::string prjnm = gameName;
+    for (auto& a : prjnm)
+        if (a == '-')
+            a = '_';
+
+    in["name"] = prjnm;
 
     auto main = std::ofstream(path + static_cast<std::string>("Generated/main.cpp"));
     main << in.process() << std::endl;
