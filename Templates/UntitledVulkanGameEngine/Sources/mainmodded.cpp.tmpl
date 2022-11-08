@@ -46,7 +46,7 @@ int main(int argc, char** argv)
     auto* mode = new UVK::${{name}}GameInstance();
     UVK::Utility::getGlobal().instance = mode;
     UVK::UVKGlobal::openLevelInternal("${{startup_level_name}}", true);
-    UVK::Renderer(UVK::Utility::getGlobal().currentLevel, bUsesEditor);
+    UVK::RendererInternal(UVK::Utility::getGlobal().currentLevel, bUsesEditor);
     Wrapper::wend();
     if (bCanClose && URLL::dlclose(handle) != 0)
         Logger::log("Error when closing the mod handle, message:", UVK_LOG_TYPE_ERROR, URLL::dlerror());

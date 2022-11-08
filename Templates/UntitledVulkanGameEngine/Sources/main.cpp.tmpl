@@ -29,6 +29,6 @@ int main(int argc, char** argv)
     auto* mode = new UVK::${{name}}GameInstance();
     UVK::Utility::getGlobal().instance = mode;
     UVK::UVKGlobal::openLevelInternal("${{startup_level_name}}", true);
-    UVK::Renderer(UVK::Utility::getGlobal().currentLevel, bUsesEditor);
+    UVK::RendererInternal(UVK::Utility::getGlobal().currentLevel, bUsesEditor);
     Wrapper::wend();
 }
