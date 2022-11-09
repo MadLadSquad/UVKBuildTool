@@ -25,21 +25,12 @@ option(USE_PLOTTING_MODULE "Use the plotting module" OFF)
 option(USE_UNDO_MODULE "Use the Undo/Redo module" OFF)          # Not functional right now
 option(USE_VIDEO_MODULE "Use the video module" OFF)             # Not functional right now
 
-include_directories(Source/)
-include_directories(Framework/)
-include_directories(Framework/ThirdParty/imgui/backends/everything/)
-include_directories(Framework/ThirdParty/imgui/backends/Vulkan/)
-include_directories(Framework/ThirdParty/imgui/misc/)
-include_directories(Framework/ThirdParty/glfw/include)
-include_directories(Framework/ThirdParty/glew/include)
-include_directories(Framework/ThirdParty/imgui/backends/everything)
-include_directories(Framework/ThirdParty/imgui/)
-include_directories(Framework/Core/)
-include_directories(Framework/Renderer/)
-include_directories(Framework/ThirdParty/logger/src/)
-include_directories(Framework/ThirdParty/source-libraries/)
-include_directories(Framework/ThirdParty/yaml-cpp/include)
-include_directories(Framework/ThirdParty/yaml-cpp/include/yaml-cpp)
+include_directories("Source/" "Framework/ThirdParty/yaml-cpp/include/yaml-cpp" "Framework/"
+        "Framework/ThirdParty/imgui/backends/everything/" "Framework/ThirdParty/imgui/backends/Vulkan/" "Framework/ThirdParty/imgui/misc/"
+        "Framework/ThirdParty/glfw/include" "Framework/ThirdParty/glew/include" "Framework/ThirdParty/imgui/backends/everything"
+        "Framework/ThirdParty/imgui/" "Framework/Core/" "Framework/Renderer/" "Framework/ThirdParty/logger/src/"
+        "Framework/ThirdParty/source-libraries/" "Framework/ThirdParty/yaml-cpp/include")
+
 
 link_directories(ThirdParty/glew/lib)
 link_directories(UVKBuildTool/build)
@@ -91,8 +82,8 @@ if (USE_UNDO_MODULE)
     target_compile_definitions(${{name}} PRIVATE "UIMGUI_UNDO_MODULE_ENABLED")
 endif()
 
-target_compile_definitions(UntitledImGuiFramework PRIVATE "UIMGUI_COMPILE_LIB" "YAML_CPP_DLL" "UVK_LOG_EXPORT_FROM_LIBRARY" "UVK_LIB_COMPILE")
-target_compile_definitions(${{name}} PRIVATE "UVK_LOG_EXPORT_FROM_LIBRARY")
+target_compile_definitions(UntitledImGuiFramework PRIVATE "UIMGUI_COMPILE_LIB" "YAML_CPP_DLL" "UVK_LOG_EXPORT_FROM_LIBRARY" "UVK_LIB_COMPILE" "URLL_USE_FUNCTIONAL")
+target_compile_definitions(${{name}} PRIVATE "UVK_LOG_EXPORT_FROM_LIBRARY" "URLL_USE_FUNCTIONAL")
 
 if (WIN32)
     target_link_libraries(UntitledImGuiFramework glfw opengl32 libglew_static yaml-cpp)
