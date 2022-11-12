@@ -29,33 +29,17 @@ else()
 endif()
 
 # Added linking directories because we're using out custom ones and we don't want to pollute path
-link_directories(Engine/ThirdParty/vulkan/)
-link_directories(Engine/ThirdParty/vulkan/lib)
-link_directories(Engine/ThirdParty/glew/lib)
-link_directories(UVKShaderCompiler/build/)
-link_directories(UVKBuildTool/build/)
+link_directories("Engine/ThirdParty/vulkan/" "Engine/ThirdParty/vulkan/lib" "Engine/ThirdParty/glew/lib" "UVKBuildTool/build/"
+"UVKShaderCompiler/build/")
 
 # Include directories for everything really
-include_directories(Engine/ThirdParty/assimp/include)
-include_directories(.)
-include_directories(Engine/)
-include_directories(Engine/ThirdParty/entt/src/entt)
-include_directories(Engine/Core/)
-include_directories(Engine/ThirdParty/glm)
-include_directories(Engine/ThirdParty/)
-include_directories(Engine/ThirdParty/imguiex/imguizmo)
-include_directories(Engine/ThirdParty/glew/include)
-include_directories(Engine/ThirdParty/yaml/include)
-include_directories(Engine/ThirdParty/yaml/include/yaml-cpp)
-include_directories(Engine/ThirdParty/uvklog/src/)
-include_directories(Engine/ThirdParty/urll/)
-include_directories(Source/)
-include_directories(Engine/ThirdParty/imgui/backends/everything/)
-include_directories(Engine/ThirdParty/imgui/backends/Vulkan/)
-include_directories(Engine/ThirdParty/imgui/misc/)
-include_directories(Engine/ThirdParty/glfw/include/GLFW/)
-include_directories(Engine/ThirdParty/vulkan/headers/include)
-include_directories(Engine/ThirdParty/freetype/include)
+include_directories("Engine/ThirdParty/assimp/include" "." "Engine/" "Engine/ThirdParty/entt/src/entt" "Engine/Core/"
+"Engine/ThirdParty/glm" "Engine/ThirdParty/" "Engine/ThirdParty/imguiex/imguizmo" "Engine/ThirdParty/glew/include"
+"Engine/ThirdParty/yaml/include" "Engine/ThirdParty/yaml/include/yaml-cpp" "Engine/ThirdParty/uvklog/src/"
+"Engine/ThirdParty/urll/" "Source/" "Engine/ThirdParty/imgui/backends/everything/" "Engine/ThirdParty/imgui/backends/Vulkan/"
+"Engine/ThirdParty/glfw/include/GLFW/" "Engine/ThirdParty/imgui/misc/" "Engine/ThirdParty/vulkan/headers/include"
+"Engine/ThirdParty/freetype/include")
+
 if(WIN32)
     include_directories(Engine/ThirdParty/stb)
     ${{extra_include_directories_win32}}
