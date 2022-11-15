@@ -7,8 +7,11 @@
 int main(int argc, char** argv)
 {
     UIMGUI_START(true);
-    auto* instance = new ${{name}}::Instance();
-    UImGui::Utility::getGlobal().instance = instance;
+    ${{name}}::Instance instance{};
+    instance.arguments.resize(argc);
+    for (int i = 0; i < argc; i++)
+        instance.arguments[i] = argv[i];
+    UImGui::Utility::getGlobal().instance = &instance;
 
     UImGui::RendererInternal renderer;
     renderer.start();
