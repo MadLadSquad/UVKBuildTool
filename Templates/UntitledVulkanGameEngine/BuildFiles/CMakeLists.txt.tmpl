@@ -58,12 +58,12 @@ if(WIN32)
         "Engine/Renderer/*.hpp" "Engine/Renderer/*.cpp" "Engine/GameFramework/*.cpp" "Engine/GameFramework/*.hpp"
         "Engine/ThirdParty/imgui/backends/everything/*.cpp" "Engine/ThirdParty/imgui/misc/*.cpp" "Engine/ThirdParty/imgui/misc/*.h"
         "Engine/ThirdParty/imgui/backends/everything/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.cpp"
-        "Engine/ThirdParty/imguiex/*.cpp" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp" "Engine/ThirdParty/uvklog/*.h"
+        "Engine/ThirdParty/imguiex/*.cpp" "Engine/ThirdParty/imguiex/*.h" "Engine/ThirdParty/imguiex/*.hpp" "Generated/*.hpp" "Engine/ThirdParty/uvklog/*.h"
         "Engine/ThirdParty/uvklog/*.cpp" ${{win32_additional_sources}} )
     # The headers of the engine library
     file(GLOB_RECURSE EngineHeaders "Engine/Audio/*.hpp" "Engine/Core/*.hpp" "Engine/Renderer/*.hpp" "Engine/GameFramework/*.hpp"
         "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/misc/*.h" "Engine/ThirdParty/imgui/backends/everything/*.h"
-        "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp"
+        "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imguiex/*.h" "Engine/ThirdParty/imguiex/*.hpp" "Generated/*.hpp"
         "Engine/ThirdParty/uvklog/*.h" "UVKShaderCompiler/Src/*.hpp" "UVKBuildTool/src/*.hpp" ${{win32_additional_headers}} )
     file(GLOB_RECURSE ExecutableSrc "WrapperSource/*.cpp" "WrapperSource/*.hpp" ${{win32_wrapper_sources}} ${{win32_wrapper_headers}} )
 else()
@@ -71,12 +71,12 @@ else()
         "Engine/Renderer/*.hpp" "Engine/Renderer/*.cpp" "Engine/GameFramework/*.cpp" "Engine/GameFramework/*.hpp"
         "Engine/ThirdParty/imgui/backends/everything/*.cpp" "Engine/ThirdParty/imgui/misc/*.cpp" "Engine/ThirdParty/imgui/misc/*.h"
         "Engine/ThirdParty/imgui/backends/everything/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imgui/backends/Vulkan/*.cpp"
-        "Engine/ThirdParty/imguiex/*.cpp" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp" "Engine/ThirdParty/uvklog/*.h"
+        "Engine/ThirdParty/imguiex/*.cpp" "Engine/ThirdParty/imguiex/*.h" "Engine/ThirdParty/imguiex/*.hpp" "Generated/*.hpp" "Engine/ThirdParty/uvklog/*.h"
         "Engine/ThirdParty/uvklog/*.cpp" ${{unix_additional_sources}} )
     # The headers of the engine library
     file(GLOB_RECURSE EngineHeaders "Engine/Audio/*.hpp" "Engine/Core/*.hpp" "Engine/Renderer/*.hpp" "Engine/GameFramework/*.hpp"
         "Engine/GameFramework/*.hpp" "Engine/ThirdParty/imgui/misc/*.h" "Engine/ThirdParty/imgui/backends/everything/*.h"
-        "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imguiex/*.h" "Generated/*.hpp"
+        "Engine/ThirdParty/imgui/backends/Vulkan/*.h" "Engine/ThirdParty/imguiex/*.h" "Engine/ThirdParty/imguiex/*.hpp" "Generated/*.hpp"
         "Engine/ThirdParty/uvklog/*.h" "UVKShaderCompiler/Src/*.hpp" "UVKBuildTool/src/*.hpp" ${{unix_additional_headers}} )
     file(GLOB_RECURSE ExecutableSrc "WrapperSource/*.cpp" "WrapperSource/*.hpp" ${{unix_wrapper_sources}} ${{unix_wrapper_headers}} )
 endif()
