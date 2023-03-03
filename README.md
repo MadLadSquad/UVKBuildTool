@@ -4,23 +4,46 @@
 [![trello](https://img.shields.io/badge/Trello-UVK-blue])](https://trello.com/b/0upjsxT0/untitledvukangameengine)
 [![Discord](https://img.shields.io/discord/717037253292982315.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/4wgH8ZE)
 
-> Version: 0.8.0.0
+> Version: 0.8.0.1
 
-The universal file generator, build and release tool for the UntitledVulkanGameEngine and UntitledImGuiFramework, the build tool does the following things:
+The universal file generator, build and release tool for the 
+[UntitledVulkanGameEngine](https://github.com/MadLadSquad/UntitledVulkanGameEngine),
+[UntitledImGuiFramework](https://github.com/MadLadSquad/UntitledImGuiFramework) and for web applications like
+[Youyin](https://youyin.madladsquad.com/)
+
+For the UntitledVulkanGameEngine and UntitledImGuiFramework, the application does the following:
 - Autogenerates build and source files
 - Packages the project for production or testing
-- Installs some core engine components
+- Installs some core framework components
 - Creates an asset archive for production
 - Manages your project files
-## It can generate
-- CMakeLists.txt files
-- Additions to the CMakeLists.txt file such as additional libraries to link with
-- UntitledVulkanEngine native scripting header and source files
-- A main.cpp file for a UVK project
-- Release builds with `GNU make` and `MSVC`
-- A content archive for production games - soon
-- Encrypted content archive - soon 
+
+For web applications like Youyin, it does the following:
+- Allows for a components based architecture by utilising static templates
+- Generates HTML, CSS and JS files and deploys them using your preferred web server
+- Allows for translating a static webpage into multiple languages
+- Minifies HTML, CSS and JS files for production deployment
+
+## Features
+### UntitledVulkanGameEngine
+- [X] Generate project files such as `CMakeLists.txt` and `main.cpp`
+- [X] Generate native scripting header and source files
+- [X] Create release builds
+- [ ] Create a content archive for production deployment
+
+### UntitledImGuiFramework
+- [X] Generate project files such as `CMakeLists.txt` and `main.cpp`
+- [X] Generate UI components header and source files
+- [X] Create release builds
+
+### Web
+- [X] Generate pages from templated html files(for creating a component type system)
+- [X] Host pages locally for development using your preferred web server
+- [X] Minifies HTML, CSS and JS files for production deployment
+
+## Documentation
+Documentation can be found on the [wiki](https://github.com/MadLadSquad/UVKBuildTool/wiki)
+
 ## Dependencies
 - CMake
-- yaml-cpp
- 
+- [yaml-cpp](https://github.com/jbeder/yaml-cpp)
