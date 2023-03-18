@@ -17,7 +17,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
         std::string tickOrGameInstanceString = ("void UVK::" + name + "::tick(float deltaTime)\n{\n");
         if (bAddAutohandles)
         {
-            tickOrGameInstanceString += "    beginAutohandle();";
+            tickOrGameInstanceString += "    tickAutohandle(deltaTime);";
         }
         tickOrGameInstanceString += "\n\n}";
 
