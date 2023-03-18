@@ -17,8 +17,10 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(Framework/ThirdParty/glfw)
 add_subdirectory(Framework/ThirdParty/glew)
+
 set(BUILD_SHARED_LIBS ON)
 add_subdirectory(Framework/ThirdParty/yaml-cpp)
+add_subdirectory(Framework/ThirdParty/freetype)
 set(BUILD_SHARED_LIBS OFF)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -88,12 +90,14 @@ link_directories("ThirdParty/glew/lib" UVKBuildTool/build)
 
 file(GLOB_RECURSE UGUI_SRC "Framework/Core/*.cpp" "Framework/Renderer/*.cpp"
         "Framework/ThirdParty/imgui/backends/everything/*.cpp" "Framework/ThirdParty/imgui/misc/cpp/*.cpp"
+        "Framework/ThirdParty/imgui/misc/freetype/*.cpp"
         "Framework/ThirdParty/logger/*.cpp" "Framework/ThirdParty/source-libraries/*.cpp"
         "Framework/Modules/Audio/src/*.cpp" "Framework/Modules/Locale/src/*.cpp" "Source/*.cpp"
         "Framework/Modules/Undo/src/*.cpp" "Framework/Modules/Manager/*.cpp" "Framework/Modules/OS/*.cpp"
         "Framework/Modules/Modules.hpp")
 file(GLOB_RECURSE UGUI_HEAD "Framework/Core/*.hpp" "Framework/Renderer/*.hpp"
         "Framework/ThirdParty/imgui/backends/everything/*.h" "Framework/ThirdParty/imgui/misc/cpp/*.h"
+        "Framework/ThirdParty/imgui/misc/freetype/*.h"
         "Framework/ThirdParty/logger/*.h" "Framework/ThirdParty/source-libraries/*.h"
         "Framework/ThirdParty/source-libraries/*.hpp" "Framework/Modules/Audio/src/*.hpp"
         "Framework/Modules/Locale/src/*.hpp" "Source/*.hpp" "Framework/Modules/Undo/src/*.hpp"
@@ -250,10 +254,10 @@ target_compile_definitions(${{name}} PRIVATE "UVK_LOG_EXPORT_FROM_LIBRARY" "URLL
 # ----------------------------------------------------------------------------------------------------------------------
 
 if (WIN32)
-    target_link_libraries(UntitledImGuiFramework glfw opengl32 libglew_static yaml-cpp)
+    target_link_libraries(UntitledImGuiFramework glfw opengl32 libglew_static yaml-cpp freetype)
     target_link_libraries(${{name}} UntitledImGuiFramework yaml-cpp)
 else()
-    target_link_libraries(UntitledImGuiFramework glfw GLEW OpenGL util pthread yaml-cpp dl)
+    target_link_libraries(UntitledImGuiFramework glfw GLEW OpenGL util pthread yaml-cpp dl freetype)
     target_link_libraries(${{name}} UntitledImGuiFramework yaml-cpp dl util)
 
     if (USE_OS_MODULE)
