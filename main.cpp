@@ -267,13 +267,6 @@ int main(int argc, char** argv)
         UBT::makeTemplate(static_cast<std::string>(name + std::string("UIInstance")), "Instance", name.c_str());
         return 0;
     }
-    else if (argv[1] == UBT::toLower("--build"))
-    {
-        UBT::setPath(argv[2]);
-        getConfig(config, name);
-        UBT::relBuild(config["name"].as<std::string>());
-        return 0;
-    }
 
     if (argc < 4)
     {
@@ -290,6 +283,12 @@ int main(int argc, char** argv)
             UBT::makeTemplate(std::string(argv[2]), "WindowComponent", name.c_str());
         else if (argv[1] == UBT::toLower("--title-bar"))
             UBT::makeTemplate(std::string(argv[2]), "TitlebarComponent", name.c_str());
+        else if (argv[1] == UBT::toLower("--build"))
+        {
+            getConfig(config, name);
+            UBT::relBuild(config["name"].as<std::string>(), config, argv[2]);
+            return 0;
+        }
         return 0;
     }
 }
