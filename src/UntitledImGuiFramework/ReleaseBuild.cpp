@@ -130,11 +130,9 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
             findInstallDirs(unixDirs, unixInstallDirectories);
         if (windowsDirs)
             findInstallDirs(windowsDirs, windowsInstallDirectories);
-
-
-        gatherCustomInstalls(config, windowsInstallDirectories);
-        gatherCustomInstalls(config, unixInstallDirectories);
     }
+    gatherCustomInstalls(config, windowsInstallDirectories);
+    gatherCustomInstalls(config, unixInstallDirectories);
 
     installs += "if (WIN32)\n";
         generateInstallStatements(config, windowsInstallDirectories, installs);
