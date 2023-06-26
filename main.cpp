@@ -13,6 +13,7 @@
     #include <UntitledImGuiFramework/ReleaseBuild.hpp>
 #endif
 #include <GeneratorCore.hpp>
+#include <filesystem>
 
 void getConfig(YAML::Node& config, std::string& name)
 {
@@ -265,6 +266,10 @@ int main(int argc, char** argv)
         UBT::generateMain(name.c_str());
         UBT::generateDef();
         UBT::makeTemplate(static_cast<std::string>(name + std::string("UIInstance")), "Instance", name.c_str());
+
+        std::filesystem::copy_file(std::filesystem::path("../Templates/UntitledImGuiFramework/Sources/Config.hpp.tmpl"),
+                                   std::filesystem::path(UBT::getPath())/"Generated/Config.hpp");
+
         return 0;
     }
 

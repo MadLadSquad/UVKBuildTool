@@ -202,7 +202,7 @@ file(GLOB_RECURSE UGUI_HEAD "Framework/Core/*.hpp" "Framework/Renderer/*.hpp" ${
         "Framework/Modules/OS/*.h" "Framework/Modules/OS/*.hpp")
 
 file(GLOB_RECURSE UGUI_APP_SRC "Source/*.cpp")
-file(GLOB_RECURSE UGUI_APP_HEAD "Source/*.hpp")
+file(GLOB_RECURSE UGUI_APP_HEAD "Source/*.hpp" "Generated/Config.hpp")
 
 file(GLOB_RECURSE EXEC_SRC "")
 
@@ -463,8 +463,8 @@ else()
     target_link_libraries(UntitledImGuiFramework ${GLFW_LIBRARIES_T} ${GLEW_LIBRARIES_T} ${OPENGL_LIBRARIES_T}
             ${YAML_CPP_LIBRARIES_T} ${FREETYPE_LIBRARIES} ${VULKAN_LIBRARIES_T} ${X11_LIBRARIES} util pthread dl)
     target_link_libraries(${{name}}Lib UntitledImGuiFramework util pthread dl ${YAML_CPP_LIBRARIES_T})
-        target_link_libraries(${{name}} UntitledImGuiFramework ${{name}}Lib ${YAML_CPP_LIBRARIES_T} dl
-                util)
+    target_link_libraries(${{name}} UntitledImGuiFramework ${{name}}Lib ${YAML_CPP_LIBRARIES_T} dl
+            util)
 
     if (USE_OS_MODULE)
         if (ENABLE_DBUS_UTILS)

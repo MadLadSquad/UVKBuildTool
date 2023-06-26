@@ -1,0 +1,41 @@
+#pragma once
+
+// Default defines for these directories. They will only be defined while compiling for production
+#ifndef UIMGUI_FRAMEWORK_LIBRARY_DIR
+#define UIMGUI_FRAMEWORK_LIBRARY_DIR "."
+#endif
+
+#ifndef UIMGUI_APPLICATION_DIR
+#define UIMGUI_APPLICATION_DIR "."
+#endif
+
+#ifndef UIMGUI_APPLICATION_LIBRARY_DIR
+#define UIMGUI_APPLICATION_LIBRARY_DIR "."
+#endif
+
+#ifndef UIMGUI_CONFIG_DIR
+#define UIMGUI_CONFIG_DIR "../Config/"
+#define UIMGUI_PROJECT_DIR "../"
+#endif
+
+#ifndef UIMGUI_CONTENT_DIR
+#define UIMGUI_CONTENT_DIR "../Content/"
+#endif
+
+#ifndef UIMGUI_FRAMEWORK_INCLUDE_DIR
+#define UIMGUI_FRAMEWORK_INCLUDE_DIR "../Framework/"
+#endif
+
+#ifndef UIMGUI_APPLICATION_INCLUDE_DIR
+#define UIMGUI_APPLICATION_INCLUDE_DIR "../Source/"
+#endif
+
+#define UIMGUI_INIT_INFO_DEFAULT_DIRS                           \
+    .frameworkLibraryDir = UIMGUI_FRAMEWORK_LIBRARY_DIR,        \
+    .applicationDir = UIMGUI_APPLICATION_DIR,                   \
+    .applicationLibraryDir = UIMGUI_APPLICATION_LIBRARY_DIR,    \
+    .configDir = UIMGUI_CONFIG_DIR,                             \
+    .projectDir = UIMGUI_PROJECT_DIR,                           \
+    .contentDir = UIMGUI_CONTENT_DIR,                           \
+    .frameworkIncludeDir = UIMGUI_FRAMEWORK_INCLUDE_DIR,        \
+    .applicationIncludeDir = UIMGUI_APPLICATION_INCLUDE_DIR
