@@ -36,10 +36,16 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
         file << std::endl << installs;
     }
 
+
+    std::string systemWide = "--local";
+    if (config["system-wide"] && config["system-wide"].as<bool>())
+        systemWide = "--system-wide";
 #ifdef _WIN32
-    auto a = system(("cd " + UBT::getPath() + " && bash export.sh " + name + " " + prefix + " " + cmakeArgs).c_str());
+    auto a = system(("cd " + UBT::getPath() + " && bash export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs).c_str());
 #else
-    auto a = system(("cd " + UBT::getPath() + " && ./export.sh " + name + " " + prefix + " " + cmakeArgs).c_str());
+    std::string str = "cd " + UBT::getPath() + " && ./export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs;
+    std::cout << str << std::endl;
+    auto a = system(str.c_str());
 #endif
     if (a != 0)
         std::cout << "\x1b[33mThere was an error with running the 'export.sh' script!\x1b[0m";
@@ -141,10 +147,14 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
     installs += "\nendif()\n";
 
     std::string returns;
-    if (config["build-mode-static"] && config["build-mode-static"].as<bool>())
-        returns = "-DBUILD_VARIANT_STATIC=ON ";
-    if (config["build-mode-vendor"] && !config["build-mode-vendor"].as<bool>())
-        returns += "-DBUILD_VARIANT_VENDOR=OFF";
+    if (config["build-mode-static"])
+        returns = "-DBUILD_VARIANT_STATIC=" + (config["build-mode-static"].as<bool>() ? std::string("ON") : std::string("OFF"));
+    else
+        returns = "-DBUILD_VARIANT_STATIC=OFF";
+    if (config["build-mode-vendor"])
+        returns += " -DBUILD_VARIANT_VENDOR=" + (config["build-mode-vendor"].as<bool>() ? std::string("ON") : std::string("OFF"));
+    else
+        returns += " -DBUILD_VARIANT_VENDOR=ON";
     return returns;
 }
 
