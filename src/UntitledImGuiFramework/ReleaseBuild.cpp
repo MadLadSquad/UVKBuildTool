@@ -123,7 +123,7 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
         .applicationLibraryDir = "lib/",
         .applicationDir = "bin/",
         .configDir = "etc/" + name + "/",
-        .contentDir = "share/" + name + "/",
+        .contentDir = "share/config/" + name + "/",
         .frameworkIncludeDir = "include/" + name + "/",
         .applicationIncludeDir = "include/" + name + "/"
     };
