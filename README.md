@@ -4,12 +4,10 @@
 [![trello](https://img.shields.io/badge/Trello-UVK-blue])](https://trello.com/b/0upjsxT0/untitledvukangameengine)
 [![Discord](https://img.shields.io/discord/717037253292982315.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/4wgH8ZE)
 
-> Version: 0.8.0.2
-
 The universal file generator, build and release tool for the 
 [UntitledVulkanGameEngine](https://github.com/MadLadSquad/UntitledVulkanGameEngine),
 [UntitledImGuiFramework](https://github.com/MadLadSquad/UntitledImGuiFramework) and for web applications like
-[Youyin](https://youyin.madladsquad.com/)
+[Youyin](https://youyin.madladsquad.com/).
 
 For the UntitledVulkanGameEngine and UntitledImGuiFramework, the application does the following:
 - Autogenerates build and source files
@@ -41,9 +39,9 @@ For web applications like Youyin, it does the following:
 - [X] Minifies HTML, CSS and JS files for production deployment
 
 ## Documentation
-Documentation can be found on the [wiki](https://github.com/MadLadSquad/UVKBuildTool/wiki)
+Documentation can be found on the [wiki](https://github.com/MadLadSquad/UVKBuildTool/wiki).
 
 ## Dependencies
 - CMake
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp)
-
+- [UntitledTemplatingEngine](https://github.com/MadLadSquad/UntitledTemplatingEngine)
