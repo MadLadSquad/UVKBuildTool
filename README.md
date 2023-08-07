@@ -29,7 +29,6 @@ For web applications like Youyin, it does the following:
 - [X] Generate project files such as `CMakeLists.txt` and `main.cpp`
 - [X] Generate native scripting header and source files
 - [X] Create release builds
-- [ ] Create a content archive for production deployment
 
 ### UntitledImGuiFramework
 - [X] Generate project files such as `CMakeLists.txt` and `main.cpp`
