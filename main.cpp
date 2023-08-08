@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     if (argv[1] == UBT::toLower("--help"))
     {
         UTTE::Generator generator;
-        auto result = generator.loadFromFile("../Templates/HelpMessage.tmpl", false);
+        auto result = generator.loadFromFile("../Templates/HelpMessage.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
             std::cout << "\x1b[31mError when opening the HelpMessage.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
