@@ -1,5 +1,5 @@
 #include "ReleaseBuild.hpp"
-#include <GeneratorCore.hpp>
+#include <Generator.hpp>
 #include <filesystem>
 
 // Returns the CMake arguments and adds install statements to the "install" std::string&
@@ -7,21 +7,21 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs);
 
 void UBT::relBuild(const std::string& name, YAML::Node& config, const std::string& prefix)
 {
-    {
-        UTG::Input in;
-        auto result = in.init("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
-        if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
-        {
-            std::cout << "\x1b[31mThere was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
-            std::terminate();
-        }
-        in["define_or_undefine"] = "#define";
-        in["define_or_undefine_dev"] = "#undef";
+    UTTE::Generator generator{};
+    UTTE::InitialisationResult result;
 
-        std::ofstream out2(path + "Generated/BuildDef.hpp");
-        out2 << in.process() << std::endl;
-        out2.close();
+    result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl", true);
+    if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
+    {
+        std::cout << "\x1b[31mThere was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
+        std::terminate();
     }
+    auto& define_or_undefine = generator.pushVariable({ .value = "#define" }, "define_or_undefine");
+    auto& define_or_undefine_dev = generator.pushVariable({ .value = "#undef" }, "define_or_undefine_dev");
+
+    std::ofstream out(path + "Generated/BuildDef.hpp");
+    out << *generator.parse().result << std::endl;
+    out.close();
 
     auto currentPath = std::filesystem::path(UBT::getPath().c_str());
     std::filesystem::copy((currentPath/"CMakeLists.txt"), currentPath/"CMakeLists.txt.old");
@@ -36,7 +36,6 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
         file << std::endl << installs;
     }
 
-
     std::string systemWide = "--local";
     if (config["system-wide"] && config["system-wide"].as<bool>())
         systemWide = "--system-wide";
@@ -50,19 +49,17 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     if (a != 0)
         std::cout << "\x1b[33mThere was an error with running the 'export.sh' script!\x1b[0m";
 
-    UTG::Input in;
-    auto result = in.init("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl", UTG::Input::INPUT_TYPE_FILE);
-    if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
+    result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl", true);
+    if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << "\x1b[31mThere was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
         std::terminate();
     }
-    in["define_or_undefine"] = "#undef";
-    in["define_or_undefine_dev"] = "#undef";
+    UTTE_VARIABLE_SET_NEW_VAL(define_or_undefine, result, "#undef", UTTE_VARIABLE_TYPE_HINT_NORMAL);
+    UTTE_VARIABLE_SET_NEW_VAL(define_or_undefine_dev, result, "#undef", UTTE_VARIABLE_TYPE_HINT_NORMAL);
 
-    std::ofstream out2(path + "Generated/BuildDef.hpp");
-    out2 << in.process() << std::endl;
-    out2.close();
+    out = std::ofstream(path + "Generated/BuildDef.hpp");
+    out << *generator.parse().result << std::endl;
 }
 
 enum class InstallPlatform
@@ -93,7 +90,6 @@ struct InstallDirectories
 
     std::vector<CustomInstall> customInstalls;
 };
-
 
 void findInstallDirs(YAML::Node& config, InstallDirectories& dirs);
 void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, std::string& installs);

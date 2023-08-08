@@ -1,6 +1,6 @@
 #include "Instance.hpp"
 
-${{name}}::Instance::Instance()
+{{ name }} ::Instance::Instance()
 {
     initInfo =
     {
@@ -8,30 +8,30 @@ ${{name}}::Instance::Instance()
     };
 }
 
-void ${{name}}::Instance::begin()
+void {{ name }} ::Instance::begin()
 {
     beginAutohandle();
 
 }
 
-void ${{name}}::Instance::tick(float deltaTime)
+void {{ name }} ::Instance::tick(float deltaTime)
 {
     tickAutohandle(deltaTime);
 
 }
 
-void ${{name}}::Instance::end()
+void {{ name }} ::Instance::end()
 {
     endAutohandle();
 
 }
 
-${{name}}::Instance::~Instance()
+{{ name }} ::Instance::~Instance()
 {
 
 }
 
-void ${{name}}::Instance::onEventConfigureStyle(ImGuiStyle& style, ImGuiIO& io)
+void {{ name }} ::Instance::onEventConfigureStyle(ImGuiStyle& style, ImGuiIO& io)
 {
 
 }

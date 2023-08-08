@@ -1,17 +1,16 @@
 #include "CMakeGenerator.hpp"
-#include <GeneratorCore.hpp>
+#include <Generator.hpp>
 
 void UBT::generateCmake(const char* name)
 {
-    UTG::Input in;
-    auto result = in.init("../Templates/UntitledImGuiFramework/BuildFiles/CMakeLists.txt.tmpl", UTG::Input::INPUT_TYPE_FILE);
-    if (result != UTG::Input::ERROR_TYPE_NO_ERROR)
+    UTTE::Generator generator{};
+    auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeLists.txt.tmpl", true);
+    if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << "\x1b[31mError when opening the CMakeLists.txt.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
         std::terminate();
     }
-    in["name"] = name;
+    generator.pushVariable({ .value = name }, "name");
     auto stream = std::ofstream(path + static_cast<std::string>("CMakeLists.txt"));
-    stream << in.process() << std::endl;
-    stream.close();
+    stream << *generator.parse().result << std::endl;
 }
