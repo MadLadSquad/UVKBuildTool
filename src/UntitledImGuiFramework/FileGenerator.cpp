@@ -37,6 +37,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
 
         stream = std::ofstream(path + "Source/Instance.cpp");
         stream << *generator.parse().result << std::endl;
+        stream.close();
         return;
     }
 
@@ -63,4 +64,5 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
 
     stream = std::ofstream(path + "Source/" + name + ".cpp");
     stream << *generator.parse().result << std::endl;
+    stream.close();
 }

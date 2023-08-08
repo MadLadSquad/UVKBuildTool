@@ -60,6 +60,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
 
     out = std::ofstream(path + "Generated/BuildDef.hpp");
     out << *generator.parse().result << std::endl;
+    out.close();
 }
 
 enum class InstallPlatform

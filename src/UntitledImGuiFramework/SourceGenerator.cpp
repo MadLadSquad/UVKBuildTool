@@ -19,6 +19,7 @@ void UBT::generateMain(const char* gameName)
 
     auto main = std::ofstream(path + static_cast<std::string>("Generated/main.cpp"));
     main << *generator.parse().result << std::endl;
+    main.close();
 }
 
 void UBT::generateDef()
@@ -35,4 +36,5 @@ void UBT::generateDef()
 
     std::ofstream out(path + "Generated/BuildDef.hpp");
     out << *generator.parse().result << std::endl;
+    out.close();
 }
