@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.21)
 
 project(UVKBuildToolLib)
 project(UVKBuildTool)
@@ -11,9 +11,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(BUILD_SHARED_LIBS ON)
 add_subdirectory(yaml-cpp)
 set(BUILD_SHARED_LIBS OFF)
-add_subdirectory(utg/ThirdParty/utfcpp)
 
-include_directories(yaml-cpp/include yaml-cpp/include/yaml-cpp utg/src/ src/ utg/ThirdParty/)
+include_directories(yaml-cpp/include yaml-cpp/include/yaml-cpp utg/src/ src/)
 
 if (UBT_COMPILING_FOR_WEB)
     file(GLOB_RECURSE SRC "src/Web/*.cpp" )
