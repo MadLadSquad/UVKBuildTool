@@ -92,7 +92,7 @@ struct InstallDirectories
 };
 
 void findInstallDirs(YAML::Node& config, InstallDirectories& dirs);
-void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, std::string& installs);
+void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, UTTE::Generator& generator);
 void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs);
 void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir);
 
@@ -137,9 +137,30 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
     gatherCustomInstalls(config, unixInstallDirectories);
 
     installs += "if (WIN32)\n";
-        generateInstallStatements(config, windowsInstallDirectories, installs);
+    {
+        UTTE::Generator generator{};
+        auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl", true);
+        if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
+        {
+            std::cout << "\x1b[33mInvalid location for the CMakeInstall template!\x1b[0m" << std::endl;
+            std::terminate();
+        }
+        generateInstallStatements(config, windowsInstallDirectories, generator);
+        installs += *generator.parse().result;
+    }
     installs += "\nelse()\n";
-        generateInstallStatements(config, unixInstallDirectories, installs);
+    {
+        UTTE::Generator generator{};
+        auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl", true);
+        if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
+        {
+            std::cout << "\x1b[33mInvalid location for the CMakeInstall template!\x1b[0m" << std::endl;
+            std::terminate();
+        }
+        generateInstallStatements(config, unixInstallDirectories, generator);
+        installs += *generator.parse().result;
+    }
+
     installs += "\nendif()\n";
 
     std::string returns;
@@ -158,51 +179,70 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
 
 void findInstallDirs(YAML::Node& config, InstallDirectories& dirs)
 {
-    addToDir(frameworkDir, "framework-library-dir");
-    addToDir(applicationLibraryDir, "framework-application-library-dir");
-    addToDir(applicationDir, "application-binary-dir");
-    addToDir(configDir, "config-dir");
-    addToDir(contentDir, "content-dir");
-    addToDir(frameworkIncludeDir, "framework-include-dir");
-    addToDir(applicationIncludeDir, "application-include-dir");
+    addToDir(frameworkDir,              "framework-library-dir");
+    addToDir(applicationLibraryDir,     "framework-application-library-dir");
+    addToDir(applicationDir,            "application-binary-dir");
+    addToDir(configDir,                 "config-dir");
+    addToDir(contentDir,                "content-dir");
+    addToDir(frameworkIncludeDir,       "framework-include-dir");
+    addToDir(applicationIncludeDir,     "application-include-dir");
 }
 
-void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, std::string& installs)
+void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, UTTE::Generator& generator)
 {
     auto name = config["name"].as<std::string>();
 
-    installs += "    install(TARGETS UntitledImGuiFramework DESTINATION " + dirs.frameworkDir + ")\n";
-    generateMacroDefinitions(name, "UIMGUI_FRAMEWORK_LIBRARY_DIR", installs, dirs.frameworkDir);
-
+    std::string applicationDir;
     if (dirs.platform != InstallPlatform::WINDOWS)
     {
-        installs += "\n    install(TARGETS " + name + "Lib DESTINATION " + dirs.applicationLibraryDir + ")\n";
-        generateMacroDefinitions(name, "UIMGUI_APPLICATION_LIBRARY_DIR", installs, dirs.applicationLibraryDir);
+        applicationDir += "\n    install(TARGETS " + name + "Lib DESTINATION " + dirs.applicationLibraryDir + ")\n";
+        generateMacroDefinitions(name, "UIMGUI_APPLICATION_LIBRARY_DIR", applicationDir, dirs.applicationLibraryDir);
     }
 
-    installs += "\n    install(TARGETS " + name + " DESTINATION " + dirs.applicationDir + ")\n";
-    generateMacroDefinitions(name, "UIMGUI_APPLICATION_DIR", installs, dirs.applicationDir);
-
-    installs += "\n    install(FILES uvproj.yaml DESTINATION " + dirs.configDir + ")\n";
-    generateMacroDefinitions(name, "UIMGUI_PROJECT_DIR", installs, dirs.configDir);
-
-    installs += "\n    install(DIRECTORY \"Config/\" DESTINATION " + dirs.configDir + ")\n";
-    generateMacroDefinitions(name, "UIMGUI_CONFIG_DIR", installs, dirs.configDir);
-
-    installs += "\n    install(DIRECTORY \"Content/\" DESTINATION " + dirs.contentDir + ")\n";
-    generateMacroDefinitions(name, "UIMGUI_CONTENT_DIR", installs, dirs.contentDir);
-
-    installs += "\n    install(DIRECTORY \"Source/\" DESTINATION " + dirs.applicationIncludeDir + ")\n";
-    generateMacroDefinitions(name, "UIMGUI_FRAMEWORK_INCLUDE_DIR", installs, dirs.applicationIncludeDir);
-
-    //installs += "\n    install(DIRECTORY \"Framework/\" DESTINATION " + dirs.frameworkIncludeDir + ")\n";
-    generateMacroDefinitions(name, "UIMGUI_APPLICATION_INCLUDE_DIR", installs, dirs.frameworkIncludeDir);
-
+    std::string customDirs;
     for (auto& a : dirs.customInstalls)
     {
-        installs += "\n    install(" + a.type + " " + a.fileDir + " DESTINATION " + a.installDir + ")\n";
-        generateMacroDefinitions(name, a.macroName, installs, a.installDir);
+        customDirs += "\n    install(" + a.type + " " + a.fileDir + " DESTINATION " + a.installDir + ")\n";
+        generateMacroDefinitions(name, a.macroName, customDirs, a.installDir);
     }
+
+    generator.pushVariable({ .value = dirs.frameworkDir             }, "framework_dir"              );
+    generator.pushVariable({ .value = applicationDir                }, "application_library_dir"    );
+    generator.pushVariable({ .value = dirs.applicationDir           }, "application_dir"            );
+    generator.pushVariable({ .value = dirs.configDir                }, "config_dir"                 );
+    generator.pushVariable({ .value = dirs.contentDir               }, "content_dir"                );
+    generator.pushVariable({ .value = dirs.applicationIncludeDir    }, "application_include_dir"    );
+    generator.pushVariable({ .value = dirs.frameworkIncludeDir      }, "framework_include_dir"      );
+    generator.pushVariable({ .value = customDirs                    }, "custom_installs"            );
+
+    //installs += "    install(TARGETS UntitledImGuiFramework DESTINATION " + dirs.frameworkDir + ")\n";
+    //generateMacroDefinitions(name, "UIMGUI_FRAMEWORK_LIBRARY_DIR", installs, dirs.frameworkDir);
+//
+    //if (dirs.platform != InstallPlatform::WINDOWS)
+    //{
+    //    installs += "\n    install(TARGETS " + name + "Lib DESTINATION " + dirs.applicationLibraryDir + ")\n";
+    //    generateMacroDefinitions(name, "UIMGUI_APPLICATION_LIBRARY_DIR", installs, dirs.applicationLibraryDir);
+    //}
+//
+    //installs += "\n    install(TARGETS " + name + " DESTINATION " + dirs.applicationDir + ")\n";
+    //generateMacroDefinitions(name, "UIMGUI_APPLICATION_DIR", installs, dirs.applicationDir);
+//
+    //installs += "\n    install(FILES uvproj.yaml DESTINATION " + dirs.configDir + ")\n";
+    //generateMacroDefinitions(name, "UIMGUI_PROJECT_DIR", installs, dirs.configDir);
+//
+    //installs += "\n    install(DIRECTORY \"Config/\" DESTINATION " + dirs.configDir + ")\n";
+    //generateMacroDefinitions(name, "UIMGUI_CONFIG_DIR", installs, dirs.configDir);
+//
+    //installs += "\n    install(DIRECTORY \"Content/\" DESTINATION " + dirs.contentDir + ")\n";
+    //generateMacroDefinitions(name, "UIMGUI_CONTENT_DIR", installs, dirs.contentDir);
+//
+    //installs += "\n    install(DIRECTORY \"Source/\" DESTINATION " + dirs.applicationIncludeDir + ")\n";
+    //generateMacroDefinitions(name, "UIMGUI_FRAMEWORK_INCLUDE_DIR", installs, dirs.applicationIncludeDir);
+//
+    ////installs += "\n    install(DIRECTORY \"Framework/\" DESTINATION " + dirs.frameworkIncludeDir + ")\n";
+    //generateMacroDefinitions(name, "UIMGUI_APPLICATION_INCLUDE_DIR", installs, dirs.frameworkIncludeDir);
+
+
 }
 
 void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs)

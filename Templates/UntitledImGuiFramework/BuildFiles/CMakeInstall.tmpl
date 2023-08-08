@@ -1,0 +1,37 @@
+    install(TARGETS UntitledImGuiFramework DESTINATION {{ framework_dir }})
+    target_compile_definitions(UntitledImGuiFramework PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ framework_dir  }}")
+    target_compile_definitions({{ name }}Lib PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ framework_dir  }}")
+    target_compile_definitions({{ name }} PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ framework_dir  }}")
+
+    {{ application_library_dir }}
+
+    install(TARGETS {{ name }} DESTINATION {{ application_dir }})
+    target_compile_definitions(UntitledImGuiFramework PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ application_dir  }}")
+    target_compile_definitions({{ name }}Lib PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ application_dir  }}")
+    target_compile_definitions({{ name }} PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ application_dir  }}")
+
+    install(FILES uvproj.yaml DESTINATION {{ config_dir }})
+    target_compile_definitions(UntitledImGuiFramework PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ config_dir  }}")
+    target_compile_definitions({{ name }}Lib PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ config_dir  }}")
+    target_compile_definitions({{ name }} PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ config_dir  }}")
+
+    install(DIRECTORY "Config/" DESTINATION {{ config_dir }})
+    target_compile_definitions(UntitledImGuiFramework PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ config_dir  }}")
+    target_compile_definitions({{ name }}Lib PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ config_dir  }}")
+    target_compile_definitions({{ name }} PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ config_dir  }}")
+
+    install(DIRECTORY "Content/" DESTINATION {{ content_dir }})
+    target_compile_definitions(UntitledImGuiFramework PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ content_dir  }}")
+    target_compile_definitions({{ name }}Lib PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ content_dir  }}")
+    target_compile_definitions({{ name }} PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ content_dir  }}")
+
+    install(DIRECTORY "Source/" DESTINATION {{ application_include_dir }})
+    target_compile_definitions(UntitledImGuiFramework PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ application_include_dir  }}")
+    target_compile_definitions({{ name }}Lib PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ application_include_dir  }}")
+    target_compile_definitions({{ name }} PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ application_include_dir  }}")
+
+    target_compile_definitions(UntitledImGuiFramework PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ framework_include_dir  }}")
+    target_compile_definitions({{ name }}Lib PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ framework_include_dir  }}")
+    target_compile_definitions({{ name }} PRIVATE {{ definition }}="${CMAKE_INSTALL_PREFIX}/{{ framework_include_dir  }}")
+
+    {{ custom_installs }}
