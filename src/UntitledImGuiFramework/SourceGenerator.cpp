@@ -4,7 +4,7 @@
 void UBT::generateMain(const char* gameName)
 {
     UTTE::Generator generator{};
-    auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/Sources/main.cpp.tmpl", true);
+    auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/Sources/main.cpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << "\x1b[31mThere was an error with the generator when generating main.cpp! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
@@ -24,7 +24,7 @@ void UBT::generateMain(const char* gameName)
 void UBT::generateDef()
 {
     UTTE::Generator generator{};
-    auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl", true);
+    auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << "\x1b[31mThere was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;

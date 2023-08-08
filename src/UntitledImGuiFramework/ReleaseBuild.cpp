@@ -10,7 +10,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     UTTE::Generator generator{};
     UTTE::InitialisationResult result;
 
-    result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl", true);
+    result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << "\x1b[31mThere was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
@@ -49,7 +49,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     if (a != 0)
         std::cout << "\x1b[33mThere was an error with running the 'export.sh' script!\x1b[0m";
 
-    result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl", true);
+    result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << "\x1b[31mThere was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
@@ -139,7 +139,7 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
     installs += "if (WIN32)\n";
     {
         UTTE::Generator generator{};
-        auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl", true);
+        auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
             std::cout << "\x1b[33mInvalid location for the CMakeInstall template!\x1b[0m" << std::endl;
@@ -151,7 +151,7 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
     installs += "\nelse()\n";
     {
         UTTE::Generator generator{};
-        auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl", true);
+        auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
             std::cout << "\x1b[33mInvalid location for the CMakeInstall template!\x1b[0m" << std::endl;
