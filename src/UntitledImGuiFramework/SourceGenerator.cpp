@@ -1,3 +1,4 @@
+#ifdef UBT_TARGET_FRAMEWORK
 #include "SourceGenerator.hpp"
 #include <Generator.hpp>
 
@@ -36,3 +37,4 @@ void UBT::generateDef()
     std::ofstream out(path + "Generated/BuildDef.hpp");
     out << generator.parse().result->c_str();
 }
+#endif

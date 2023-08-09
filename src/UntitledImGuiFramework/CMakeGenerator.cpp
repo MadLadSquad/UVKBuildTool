@@ -1,3 +1,4 @@
+#ifdef UBT_TARGET_FRAMEWORK
 #include "CMakeGenerator.hpp"
 #include <Generator.hpp>
 
@@ -14,3 +15,4 @@ void UBT::generateCmake(const char* name)
     auto stream = std::ofstream(path + std::string("CMakeLists.txt"));
     stream << generator.parse().result->c_str();
 }
+#endif

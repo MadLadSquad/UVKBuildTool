@@ -1,3 +1,4 @@
+#ifdef UBT_TARGET_FRAMEWORK
 #include "ReleaseBuild.hpp"
 #include <Generator.hpp>
 #include <filesystem>
@@ -267,3 +268,4 @@ void generateMacroDefinitions(const std::string& name, const std::string& defini
     installs += "    target_compile_definitions(" + name + "Lib PRIVATE " + definition +"=\"${CMAKE_INSTALL_PREFIX}/" + dir + "\")\n";
     installs += "    target_compile_definitions(" + name + " PRIVATE " + definition +"=\"${CMAKE_INSTALL_PREFIX}/" + dir + "\")\n";
 }
+#endif
