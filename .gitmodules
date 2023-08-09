@@ -3,4 +3,4 @@
 	url = https://github.com/MadLadSquad/yaml-cpp.git
 [submodule "utg"]
 	path = utg
-	url = https://github.com/MadLadSquad/UntitledTextGenerator.git
+	url = https://github.com/MadLadSquad/UntitledTemplatingEngine.git
