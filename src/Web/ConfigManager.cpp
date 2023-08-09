@@ -8,7 +8,7 @@
 void getConfig(const char* path, UTTE::Generator& generator, std::vector<std::string>& allowedExt,
                                                              std::vector<std::string>& ignoredFiles,
                                                              std::vector<std::string>& intermediateFiles,
-                                                             std::vector<std::string>& localhostCommands) noexcept
+                                                             std::vector<std::string>& localhostCommands, bool& bRunAutomatically) noexcept
 {
     YAML::Node node;
     try
@@ -51,6 +51,9 @@ void getConfig(const char* path, UTTE::Generator& generator, std::vector<std::st
     SET_ARRAY(ignoredFiles,         "filename-blacklist"        );
     SET_ARRAY(intermediateFiles,    "intermediate-extensions"   );
     SET_ARRAY(localhostCommands,    "localhost-commands"        );
+
+    if (node["run-localhost-automatically"])
+        bRunAutomatically = node["run-localhost-automatically"].as<bool>();
 
     generator.pushFunction({ .name = "include", .function = UBT::funcInclude });
 }
@@ -130,9 +133,10 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
     std::vector<std::string> ignoredFiles;
     std::vector<std::string> intermediateFiles;
     std::vector<std::string> localhostCommands;
+    bool bRunLocalhost = true;
 
     UTTE::Generator generator{};
-    getConfig(projectPath, generator, allowedExtensions, ignoredFiles, intermediateFiles, localhostCommands);
+    getConfig(projectPath, generator, allowedExtensions, ignoredFiles, intermediateFiles, localhostCommands, bRunLocalhost);
 
     // Add custom variables from the user
     UBT::funcExportMain(generator);
@@ -149,7 +153,8 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
     // Remove any intermediate files
     deleteIntermediateRecursive(ep, intermediateFiles);
 
-    for (auto& a : localhostCommands)
-        system(("cd " + rootDir.string() + " && " + a).c_str());
+    if (bRunLocalhost)
+        for (auto& a : localhostCommands)
+            system(("cd " + rootDir.string() + " && " + a).c_str());
 }
 #endif
