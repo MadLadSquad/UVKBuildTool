@@ -83,7 +83,8 @@ skip_this_file_3:;
 // btw :D
 void copyRecursive(const std::filesystem::path& dest, const std::filesystem::path& path, const std::vector<std::string>& ignoredFiles)
 {
-    std::filesystem::create_directory(dest);
+    if (!exists(dest))
+        std::filesystem::create_directory(dest);
     for (auto& a : std::filesystem::directory_iterator(path))
     {
         for (auto& f : ignoredFiles)
