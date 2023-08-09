@@ -29,13 +29,18 @@ cpus=$(grep -c processor /proc/cpuinfo)
 
 find_visual_studio_directory
 
-cp Templates/Web/UBTCustomFunctions "$1/" || exit
-ln -rs "$1/UBTCustomFunctions" src/Web/UBTCustomFunctions/ || exit
+cp Templates/Web/UBTCustomFunctions "$1/" -r || exit
+cp "$1/UBTCustomFunctions" src/Web/ -r || exit
 
 mkdir build
 cd build || exit
-cmake .. -G "Visual Studio ${VSShortVer} ${VSVer}" -DCOMPILING_FOR_WEB=ON -DCMAKE_BUILD_TYPE=RELEASE || cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE || exit
-MSBuild.exe UVKBuildTool.sln -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="${cpus}" || make -j "${cpus}" || exit
+if windows; then
+  cmake .. -G "Visual Studio ${VSShortVer} ${VSVer}" -DUBT_COMPILING_FOR_WEB=ON -DCMAKE_BUILD_TYPE=RELEASE
+  MSBuild.exe UVKBuildTool.sln -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="${cpus}" || exit
+else
+  cmake .. -G "Unix Makefiles" -DUBT_COMPILING_FOR_WEB=ON -DCMAKE_BUILD_TYPE=RELEASE || exit
+  make -j "${cpus}" || exit
+fi
 
 cp Release/UVKBuildTool.exe . 2> /dev/null || echo -n " " || exit
 cp Release/UVKBuildToolLib.dll . 2> /dev/null || cp Release/libUVKBuildToolLib.dll . 2> /dev/null || echo -n " "

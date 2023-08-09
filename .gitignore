@@ -18,3 +18,4 @@ _deps
 build/
 
 src/Web/UBTCustomFunctions/
+src/Web/UBTCustomFunctions
