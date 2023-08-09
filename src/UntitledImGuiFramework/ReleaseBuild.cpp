@@ -20,7 +20,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     auto& define_or_undefine_dev = generator.pushVariable({ .value = "#undef" }, "define_or_undefine_dev");
 
     std::ofstream out(path + "Generated/BuildDef.hpp");
-    out << *generator.parse().result << std::endl;
+    out << generator.parse().result->c_str();
     out.close();
 
     auto currentPath = std::filesystem::path(UBT::getPath().c_str());
@@ -59,8 +59,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     UTTE_VARIABLE_SET_NEW_VAL(define_or_undefine_dev, result, "#undef", UTTE_VARIABLE_TYPE_HINT_NORMAL);
 
     out = std::ofstream(path + "Generated/BuildDef.hpp");
-    out << *generator.parse().result << std::endl;
-    out.close();
+    out << generator.parse().result->c_str();
 }
 
 enum class InstallPlatform

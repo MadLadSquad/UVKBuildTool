@@ -18,8 +18,7 @@ void UBT::generateMain(const char* gameName)
     generator.pushVariable({ .value = prjnm }, "name");
 
     auto main = std::ofstream(path + static_cast<std::string>("Generated/main.cpp"));
-    main << *generator.parse().result << std::endl;
-    main.close();
+    main << generator.parse().result->c_str();
 }
 
 void UBT::generateDef()
@@ -35,6 +34,5 @@ void UBT::generateDef()
     generator.pushVariable({ .value = "#undef" }, "define_or_undefine_dev");
 
     std::ofstream out(path + "Generated/BuildDef.hpp");
-    out << *generator.parse().result << std::endl;
-    out.close();
+    out << generator.parse().result->c_str();
 }

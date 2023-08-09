@@ -13,5 +13,4 @@ void UBT::generateCmake(const char* name)
     generator.pushVariable({ .value = name }, "name");
     auto stream = std::ofstream(path + std::string("CMakeLists.txt"));
     stream << generator.parse().result->c_str();
-    stream.close();
 }

@@ -25,7 +25,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
         generator.pushVariable({ .value = prjnm }, "name");
 
         auto stream = std::ofstream(path + "Source/Instance.hpp");
-        stream << *generator.parse().result << std::endl;
+        stream << generator.parse().result->c_str();
         stream.close();
 
         result = generator.loadFromFile("../Templates/UntitledImGuiFramework/GameplayClasses/Instance.cpp.tmpl");
@@ -36,8 +36,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
         }
 
         stream = std::ofstream(path + "Source/Instance.cpp");
-        stream << *generator.parse().result << std::endl;
-        stream.close();
+        stream << generator.parse().result->c_str();
         return;
     }
 
@@ -52,7 +51,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
     generator.pushVariable({ .value = type }, "type");
 
     auto stream = std::ofstream(path + "Source/" + name + ".hpp");
-    stream << *generator.parse().result << std::endl;
+    stream << generator.parse().result->c_str();
     stream.close();
 
     result = generator.loadFromFile("../Templates/UntitledImGuiFramework/GameplayClasses/GeneratedSource.cpp.tmpl");
@@ -63,6 +62,5 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
     }
 
     stream = std::ofstream(path + "Source/" + name + ".cpp");
-    stream << *generator.parse().result << std::endl;
-    stream.close();
+    stream << generator.parse().result->c_str();
 }
