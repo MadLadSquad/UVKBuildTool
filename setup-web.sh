@@ -29,7 +29,7 @@ cpus=$(grep -c processor /proc/cpuinfo)
 
 find_visual_studio_directory
 
-cp Templates/Web/UBTCustomFunctions "$1/" -r || exit
+cp Templates/Web/UBTCustomFunctions "$1/" -r
 cp "$1/UBTCustomFunctions" src/Web/ -r || exit
 
 mkdir build
