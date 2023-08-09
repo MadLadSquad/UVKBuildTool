@@ -10,4 +10,4 @@ echo -e "\x1b[32mSuccessfully built the UVKBuildTool for the UntitledImGuiFramew
 
 cd .. || exit
 rm -rf build || exit
-./setup-web || exit
+./setup-web.sh || exit
