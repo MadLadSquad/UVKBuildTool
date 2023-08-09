@@ -1,8 +1,10 @@
-#include <UntitledImGuiFramework/Utility.hpp>
-#include <UntitledImGuiFramework/CMakeGenerator.hpp>
-#include <UntitledImGuiFramework/FileGenerator.hpp>
-#include <UntitledImGuiFramework/SourceGenerator.hpp>
-#include <UntitledImGuiFramework/ReleaseBuild.hpp>
+#ifdef UBT_TARGET_FRAMEWORK
+    #include <UntitledImGuiFramework/Utility.hpp>
+    #include <UntitledImGuiFramework/CMakeGenerator.hpp>
+    #include <UntitledImGuiFramework/FileGenerator.hpp>
+    #include <UntitledImGuiFramework/SourceGenerator.hpp>
+    #include <UntitledImGuiFramework/ReleaseBuild.hpp>
+#endif
 #include <Generator.hpp>
 #include <filesystem>
 
@@ -25,6 +27,7 @@ void getConfig(YAML::Node& config, std::string& name)
     }
 }
 
+#ifdef UBT_TARGET_FRAMEWORK
 int main(int argc, char** argv)
 {
     UBT::setPath("../../");
@@ -117,3 +120,9 @@ int main(int argc, char** argv)
         return 0;
     }
 }
+#else
+int main(int argc, char** argv)
+{
+    return 0;
+}
+#endif

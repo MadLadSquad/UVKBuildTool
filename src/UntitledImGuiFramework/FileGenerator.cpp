@@ -65,4 +65,4 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
     stream = std::ofstream(path + "Source/" + name + ".cpp");
     stream << generator.parse().result->c_str();
 }
-#ifdef UBT_TARGET_FRAMEWORK
+#endif
