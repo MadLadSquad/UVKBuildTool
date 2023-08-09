@@ -92,7 +92,11 @@ void copyRecursive(const std::filesystem::path& dest, const std::filesystem::pat
                 goto skip_this_file;
 
         if (a.is_directory())
+        {
+            if (a.path() == dest)
+                continue;
             copyRecursive(dest/a.path().filename(), a.path(), ignoredFiles);
+        }
         else
         {
             std::error_code code;
