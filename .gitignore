@@ -16,3 +16,5 @@ _deps
 .idea/
 .vs/
 build/
+
+src/Web/UBTCustomFunctions/

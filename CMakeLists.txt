@@ -4,7 +4,7 @@ project(UVKBuildToolLib)
 project(UVKBuildTool)
 
 # This option is needed to define a compiler macro and the given source files to be used by the compilation target
-option(UBT_COMPILING_FOR_WEB "If set to ON it will compile with configuration for a web project, otherwise will compile for the UntitledImGuiFramework!" OFF)
+option(UBT_COMPILING_FOR_WEB "If set to ON it will compile with configuration for a web project, otherwise will compile for the UntitledImGuiFramework!" ON)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -21,15 +21,15 @@ else()
     file(GLOB_RECURSE SRC "src/UntitledImGuiFramework/*.cpp")
     file(GLOB_RECURSE HEAD "src/UntitledImGuiFramework/*.hpp")
 endif()
-file(GLOB_RECURSE UNI_HEAD "src/Uniform/*.h" "utg/src/*.hpp")
+file(GLOB_RECURSE UNI_HEAD "src/Uniform/*.h" "utg/src/*.hpp" "utg/src/*.h")
 file(GLOB_RECURSE UNI_SRC "src/Uniform/*.cpp")
 file(GLOB_RECURSE UTG_SRC "utg/src/*.cpp")
 
 add_library(UVKBuildToolLib SHARED ${SRC} ${HEAD} ${UNI_SRC} ${UNI_HEAD} ${UTG_SRC})
-add_executable(UVKBuildTool ${HEAD} ${UNI_HEAD} main.cpp ${UTG_SRC})
+add_executable(UVKBuildTool ${HEAD} ${UNI_HEAD} main.cpp)
 
-set_target_properties(UVKBuildTool PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(UVKBuildToolLib PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(UVKBuildTool PROPERTIES LINKER_LANGUAGE CXX)
 if (UBT_COMPILING_FOR_WEB)
     target_compile_definitions(UVKBuildToolLib PRIVATE "UBT_LIB_COMPILE" "YAML_CPP_DLL" "UBT_TARGET_WEB")
     target_compile_definitions(UVKBuildTool PRIVATE "UBT_TARGET_WEB")
@@ -39,4 +39,4 @@ else()
 endif()
 
 target_link_libraries(UVKBuildToolLib yaml-cpp)
-target_link_libraries(UVKBuildTool UVKBuildToolLib yaml-cpp)
+target_link_libraries(UVKBuildTool UVKBuildToolLib)

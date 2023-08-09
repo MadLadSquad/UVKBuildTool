@@ -4,9 +4,13 @@
     #include <UntitledImGuiFramework/FileGenerator.hpp>
     #include <UntitledImGuiFramework/SourceGenerator.hpp>
     #include <UntitledImGuiFramework/ReleaseBuild.hpp>
+#elif UBT_TARGET_WEB
+    #include <Web/ConfigManager.hpp>
+    #include <Web/Functions.hpp>
 #endif
 #include <Generator.hpp>
 #include <filesystem>
+#include <yaml-cpp/yaml.h>
 
 void getConfig(YAML::Node& config, std::string& name)
 {
@@ -22,9 +26,7 @@ void getConfig(YAML::Node& config, std::string& name)
     }
 
     if (config["name"])
-    {
         name = config["name"].as<std::string>();
-    }
 }
 
 #ifdef UBT_TARGET_FRAMEWORK
@@ -120,9 +122,22 @@ int main(int argc, char** argv)
         return 0;
     }
 }
-#else
+#elif UBT_TARGET_WEB
 int main(int argc, char** argv)
 {
+    UBT::setPath("../../");
+    if (argc < 2)
+        return UBT::showHelp(false);
+    if (argv[1] == UBT::toLower("--help"))
+        return UBT::showHelp(false);
+
+    if (argc < 4)
+    {
+        std::cout << "Not enough arguments passed into the generator!" << std::endl;
+        return UBT::showHelp(true);
+    }
+    else if (argv[1] == UBT::toLower("--build"))
+        UBT::buildMain(argv[2], argv[3]);
     return 0;
 }
 #endif
