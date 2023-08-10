@@ -1,7 +1,13 @@
 #!/bin/bash
+if [[ $1 == "" ]]; then
+  echo "ERROR: The script should be called with a CLI argument that specifies the project path!"
+  exit
+fi
 cpus=$(grep -c processor /proc/cpuinfo)
 
-mkdir build
+cp "$1/UBTCustomFunctions" src/Web/ -r || exit
+
+mkdir build &> /dev/null
 cd build || exit
 cmake .. -DCMAKE_BUILD_TYPE=RELEASE || exit
 MSBuild.exe UVKBuildTool.sln -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="${cpus}" || make -j "${cpus}" || exit

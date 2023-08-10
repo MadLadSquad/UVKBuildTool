@@ -9,7 +9,7 @@ void getConfig(const char* path, UTTE::Generator& generator, std::vector<std::st
                                                              std::vector<std::string>& ignoredFiles,
                                                              std::vector<std::string>& intermediateFiles,
                                                              std::vector<std::string>& localhostCommands,
-                                                             std::vector<std::string>& customPreGenerationCommands) noexcept
+                                                             std::vector<std::string>& customPreGenerationCommands, bool& bRunAutomatically) noexcept
 {
     YAML::Node node;
     try
@@ -53,6 +53,9 @@ void getConfig(const char* path, UTTE::Generator& generator, std::vector<std::st
     SET_ARRAY(intermediateFiles,            "intermediate-extensions"       );
     SET_ARRAY(localhostCommands,            "localhost-commands"            );
     SET_ARRAY(customPreGenerationCommands,  "custom-pre-generation-commands");
+
+    if (node["run-localhost-automatically"])
+        bRunAutomatically = node["run-localhost-automatically"].as<bool>();
 
     generator.pushFunction({ .name = "include", .function = UBT::funcInclude });
 }
@@ -128,6 +131,7 @@ skip_this_file_2:;
 
 void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
 {
+    bool bRunLocalhost = true;
     std::vector<std::string> allowedExtensions;
     std::vector<std::string> ignoredFiles;
     std::vector<std::string> intermediateFiles;
@@ -135,7 +139,7 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
     std::vector<std::string> customPreGenerationCommands;
 
     UTTE::Generator generator{};
-    getConfig(projectPath, generator, allowedExtensions, ignoredFiles, intermediateFiles, localhostCommands, customPreGenerationCommands);
+    getConfig(projectPath, generator, allowedExtensions, ignoredFiles, intermediateFiles, localhostCommands, customPreGenerationCommands, bRunLocalhost);
 
     // Add custom variables from the user
     UBT::funcExportMain(generator);
@@ -155,7 +159,8 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
     // Remove any intermediate files
     deleteIntermediateRecursive(ep, intermediateFiles);
 
-    for (auto& a : localhostCommands)
-        system(("cd " + rootDir.string() + " && " + a).c_str());
+    if (bRunLocalhost)
+        for (auto& a : localhostCommands)
+            system(("cd " + rootDir.string() + " && " + a).c_str());
 }
 #endif
