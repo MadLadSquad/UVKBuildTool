@@ -8,7 +8,8 @@
 void getConfig(const char* path, UTTE::Generator& generator, std::vector<std::string>& allowedExt,
                                                              std::vector<std::string>& ignoredFiles,
                                                              std::vector<std::string>& intermediateFiles,
-                                                             std::vector<std::string>& localhostCommands, bool& bRunAutomatically) noexcept
+                                                             std::vector<std::string>& localhostCommands,
+                                                             std::vector<std::string>& customPreGenerationCommands, bool& bRunAutomatically) noexcept
 {
     YAML::Node node;
     try
@@ -47,10 +48,11 @@ void getConfig(const char* path, UTTE::Generator& generator, std::vector<std::st
             }
         }
     }
-    SET_ARRAY(allowedExt,           "allowed-extensions"        );
-    SET_ARRAY(ignoredFiles,         "filename-blacklist"        );
-    SET_ARRAY(intermediateFiles,    "intermediate-extensions"   );
-    SET_ARRAY(localhostCommands,    "localhost-commands"        );
+    SET_ARRAY(allowedExt,                   "allowed-extensions"            );
+    SET_ARRAY(ignoredFiles,                 "filename-blacklist"            );
+    SET_ARRAY(intermediateFiles,            "intermediate-extensions"       );
+    SET_ARRAY(localhostCommands,            "localhost-commands"            );
+    SET_ARRAY(customPreGenerationCommands,  "custom-pre-generation-commands");
 
     if (node["run-localhost-automatically"])
         bRunAutomatically = node["run-localhost-automatically"].as<bool>();
@@ -129,14 +131,15 @@ skip_this_file_2:;
 
 void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
 {
+    bool bRunLocalhost = true;
     std::vector<std::string> allowedExtensions;
     std::vector<std::string> ignoredFiles;
     std::vector<std::string> intermediateFiles;
     std::vector<std::string> localhostCommands;
-    bool bRunLocalhost = true;
+    std::vector<std::string> customPreGenerationCommands;
 
     UTTE::Generator generator{};
-    getConfig(projectPath, generator, allowedExtensions, ignoredFiles, intermediateFiles, localhostCommands, bRunLocalhost);
+    getConfig(projectPath, generator, allowedExtensions, ignoredFiles, intermediateFiles, localhostCommands, customPreGenerationCommands, bRunLocalhost);
 
     // Add custom variables from the user
     UBT::funcExportMain(generator);
@@ -146,6 +149,9 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
 
     // Copy the files to the new directory
     copyRecursive(ep, std::filesystem::path(projectPath), ignoredFiles);
+
+    for (auto& a : customPreGenerationCommands)
+        system(("cd " + rootDir.string() + " && " + a).c_str());
 
     // Generate the templates recursively
     generateRecursive(ep, allowedExtensions, generator);
