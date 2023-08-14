@@ -3,7 +3,7 @@ if [[ $1 == "" ]]; then
   echo "ERROR: The script should be called with a CLI argument that specifies the project path!"
   exit
 fi
-cpus=$(grep -c processor /proc/cpuinfo)
+cpus=$(grep -c processor /proc/cpuinfo) || cpus=$(sysctl -n hw.ncpu)
 
 cp "$1/UBTCustomFunctions" src/Web/ -r || exit
 

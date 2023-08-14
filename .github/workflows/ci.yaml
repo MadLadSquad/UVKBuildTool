@@ -8,7 +8,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        lfs: true
+        submodules: true
     - name: Get dependencies
       shell: bash
       run: sudo apt-get update && sudo apt-get install gcc make g++ libtool cmake
@@ -17,22 +17,32 @@ jobs:
       run: |
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-    - name: Checkout LFS objects
-      run: git lfs checkout
     - name: Build
       run: "./ci.sh"
   Windows:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Checkout submodules
+      run: |
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+    - name: Set MSBuild env
+      uses: microsoft/setup-msbuild@v1.1
+    - name: Build for engine
+      run: "bash ci.sh"
+  MacOS:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
       with:
         lfs: true
     - name: Checkout submodules
       run: |
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-    - name: Checkout LFS objects
-      run: git lfs checkout
     - name: Set MSBuild env
       uses: microsoft/setup-msbuild@v1.1
     - name: Build for engine
