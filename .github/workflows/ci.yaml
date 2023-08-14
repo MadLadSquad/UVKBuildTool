@@ -38,12 +38,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        lfs: true
+        submodules: true
     - name: Checkout submodules
       run: |
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-    - name: Set MSBuild env
-      uses: microsoft/setup-msbuild@v1.1
     - name: Build for engine
       run: "bash ci.sh"
