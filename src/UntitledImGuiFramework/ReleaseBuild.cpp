@@ -207,6 +207,7 @@ void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, UTT
         generateMacroDefinitions(name, a.macroName, customDirs, a.installDir);
     }
 
+    generator.pushVariable({ .value = name                          }, "name"                       );
     generator.pushVariable({ .value = dirs.frameworkDir             }, "framework_dir"              );
     generator.pushVariable({ .value = applicationDir                }, "application_library_dir"    );
     generator.pushVariable({ .value = dirs.applicationDir           }, "application_dir"            );
