@@ -121,7 +121,7 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
         .applicationDir = "bin/",
         .configDir = "etc/" + name + "/",
         .contentDir = "share/config/" + name + "/",
-        .frameworkIncludeDir = "include/" + name + "/",
+        .frameworkIncludeDir = "include/UntitledImGuiFramework/",
         .applicationIncludeDir = "include/" + name + "/"
     };
 
@@ -173,6 +173,10 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
         returns += " -DBUILD_VARIANT_VENDOR=" + (config["build-mode-vendor"].as<bool>() ? std::string("ON") : std::string("OFF"));
     else
         returns += " -DBUILD_VARIANT_VENDOR=ON";
+    if (config["install-framework"])
+        returns += " -DUIMGUI_INSTALL_FRAMEWORK=" + (config["install-framework"].as<bool>() ? std::string("ON") : std::string("OFF"));
+    else
+        returns += " -DUIMGUI_INSTALL_FRAMEWORK=OFF";
     return returns;
 }
 
