@@ -31,6 +31,8 @@ find_visual_studio_directory
 
 cp Templates/Web/UBTCustomFunctions "$1/" -r
 cp "$1/UBTCustomFunctions" src/Web/ -r || exit
+mkdir "$1/Translations"
+touch "$1/Translations/ui18n-config.yaml"
 
 mkdir build
 cd build || exit

@@ -4,3 +4,6 @@
 [submodule "utg"]
 	path = utg
 	url = https://github.com/MadLadSquad/UntitledTemplatingEngine.git
+[submodule "ui18n"]
+	path = ui18n
+	url = https://github.com/MadLadSquad/UntitledI18N.git

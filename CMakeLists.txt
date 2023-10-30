@@ -4,7 +4,7 @@ project(UVKBuildToolLib)
 project(UVKBuildTool)
 
 # This option is needed to define a compiler macro and the given source files to be used by the compilation target
-option(UBT_COMPILING_FOR_WEB "If set to ON it will compile with configuration for a web project, otherwise will compile for the UntitledImGuiFramework!" OFF)
+option(UBT_COMPILING_FOR_WEB "If set to ON it will compile with configuration for a web project, otherwise will compile for the UntitledImGuiFramework!" ON)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -12,7 +12,12 @@ set(BUILD_SHARED_LIBS ON)
 add_subdirectory(yaml-cpp)
 set(BUILD_SHARED_LIBS OFF)
 
-include_directories(yaml-cpp/include yaml-cpp/include/yaml-cpp utg/src/ src/)
+set(BUILD_VARIANT_VENDOR ON)
+set(USE_PRECONFIGURED_YAML ON)
+add_subdirectory(ui18n)
+
+set(YAML_CPP_INCLUDE_DIRS_T "yaml-cpp/include" "yaml-cpp/include/yaml-cpp")
+include_directories(${YAML_CPP_INCLUDE_DIRS_T} utg/src/ src/ ui18n/)
 
 if (UBT_COMPILING_FOR_WEB)
     file(GLOB_RECURSE SRC "src/Web/*.cpp" )
@@ -38,5 +43,5 @@ else()
     target_compile_definitions(UVKBuildTool PRIVATE "UBT_TARGET_FRAMEWORK" "UVK_LOG_EXPORT_FROM_LIBRARY")
 endif()
 
-target_link_libraries(UVKBuildToolLib yaml-cpp)
+target_link_libraries(UVKBuildToolLib yaml-cpp UntitledI18N)
 target_link_libraries(UVKBuildTool UVKBuildToolLib)
