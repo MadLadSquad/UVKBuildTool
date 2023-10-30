@@ -29,8 +29,8 @@ cpus=$(grep -c processor /proc/cpuinfo) || cpus=$(sysctl -n hw.ncpu)
 
 find_visual_studio_directory
 
-cp Templates/Web/UBTCustomFunctions "$1/" -r
-cp "$1/UBTCustomFunctions" src/Web/ -r || exit
+cp -r Templates/Web/UBTCustomFunctions "$1/"
+cp -r "$1/UBTCustomFunctions" src/Web/ || exit
 mkdir "$1/Translations"
 touch "$1/Translations/ui18n-config.yaml"
 

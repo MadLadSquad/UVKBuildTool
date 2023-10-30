@@ -151,7 +151,7 @@ void buildGeneric(GeneratorData& data,  const std::filesystem::path& ep,
                                         const std::filesystem::path& projectPath, bool bDeleteIntermediate = false) noexcept
 {
     // To prevent file copying with infinite recursion
-    data.ignoredFiles.push_back(ep.filename());
+    data.ignoredFiles.push_back(ep.filename().string());
 
     // Copy the files to the new directory
     copyRecursive(ep, projectPath, data.ignoredFiles);
