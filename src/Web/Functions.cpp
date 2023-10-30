@@ -16,7 +16,7 @@ UTTE::Variable UBT::funcInclude(std::vector<UTTE::Variable>& args, UTTE::Generat
     for (size_t i = 1; i < args.size(); i++)
     {
         std::string dt;
-        if (gen.loadFromFile(rootDir/args[i].value) == UTTE_INITIALISATION_RESULT_SUCCESS)
+        if (gen.loadFromFile((rootDir/args[i].value).string()) == UTTE_INITIALISATION_RESULT_SUCCESS)
             // Note: Your linter is lying to you, this is not redundant. Check out UntitledImGuiFramework/CMakeGenerator.cpp for more info
             result.value += std::string("\n") + gen.parse().result->c_str();
     }
