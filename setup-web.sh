@@ -36,7 +36,7 @@ touch "$1/Translations/ui18n-config.yaml"
 
 mkdir build
 cd build || exit
-if windows; then
+if [ "${windows}" = true ]; then
   cmake .. -G "Visual Studio ${VSShortVer} ${VSVer}" -DUBT_COMPILING_FOR_WEB=ON -DCMAKE_BUILD_TYPE=RELEASE
   MSBuild.exe UVKBuildTool.sln -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="${cpus}" || exit
 else
