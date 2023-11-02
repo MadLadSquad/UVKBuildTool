@@ -20,7 +20,7 @@ struct GeneratorData
     bool bRunLocalhost = true;
 };
 
-void getConfig(const char* path, GeneratorData& data) noexcept
+void getConfig(const char* path, GeneratorData& data)
 {
     YAML::Node node;
     try
