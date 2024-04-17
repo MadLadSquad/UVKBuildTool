@@ -32,23 +32,36 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     auto cmakeArgs = getInstallStatements(config, installs);
     // Output temporary CMakeLists.txt
     {
-        std::ofstream file;
-        file.open(UBT::getPath() + "CMakeLists.txt", std::ios_base::app);
-        file << std::endl << installs.c_str(); // Convert to C string because this fucks up on Windows and adds some random data
+        std::ifstream in(currentPath/"CMakeLists.txt");
+        in.seekg(0, std::ios::end);
+        size_t size = in.tellg();
+        std::string buffer(size, ' ');
+        in.seekg(0);
+        in.read(buffer.data(), size);
+        in.close();
+
+        buffer += "\n" + installs;
+        for (size_t i = 0; i < buffer.size(); i++)
+            if (buffer[i] == '\0' && i < (buffer.size() - 1))
+                buffer[i] = ' ';
+
+        std::ofstream file(currentPath/"CMakeLists.txt");
+        file << buffer.c_str() << std::endl; // Convert to C string because this fucks up on Windows and adds some random data
+        file.close();
     }
 
     std::string systemWide = "--local";
     if (config["system-wide"] && config["system-wide"].as<bool>())
         systemWide = "--system-wide";
 #ifdef _WIN32
-    auto a = system(("cd " + UBT::getPath() + " && bash export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs).c_str());
+    std::string str = "cd " + UBT::getPath() + " && bash export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs;
 #else
     std::string str = "cd " + UBT::getPath() + " && ./export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs;
+#endif
     std::cout << str << std::endl;
     auto a = system(str.c_str());
-#endif
     if (a != 0)
-        std::cout << "\x1b[33mThere was an error with running the 'export.sh' script!\x1b[0m";
+        std::cout << "\x1b[31mThere was an error with running the 'export.sh' script!\x1b[0m";
 
     result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
@@ -95,7 +108,7 @@ struct InstallDirectories
 void findInstallDirs(YAML::Node& config, InstallDirectories& dirs);
 void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, UTTE::Generator& generator);
 void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs);
-void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir);
+void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir, InstallPlatform platform);
 
 std::string getInstallStatements(YAML::Node& config, std::string& installs)
 {
@@ -104,25 +117,25 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
     InstallDirectories windowsInstallDirectories =
     {
         .platform = InstallPlatform::WINDOWS,
-        .frameworkDir = "Program Files/" + name + "/",
-        .applicationLibraryDir = "Program Files/" + name + "/",
-        .applicationDir = "Program Files/" + name + "/",
-        .configDir = "Program Files/" + name + "/",
-        .contentDir = "Program Files/" + name + "/",
-        .frameworkIncludeDir = "Program Files/" + name + "/",
-        .applicationIncludeDir = "Program Files/" + name + "/",
+        .frameworkDir =                 "Program Files/" + name + "/",
+        .applicationLibraryDir =        "Program Files/" + name + "/",
+        .applicationDir =               "Program Files/" + name + "/",
+        .configDir =                    "Program Files/" + name + "/",
+        .contentDir =                   "Program Files/" + name + "/",
+        .frameworkIncludeDir =          "Program Files/" + name + "/",
+        .applicationIncludeDir =        "Program Files/" + name + "/",
     };
 
     InstallDirectories unixInstallDirectories =
     {
         .platform = InstallPlatform::UNIX,
-        .frameworkDir = "lib/",
-        .applicationLibraryDir = "lib/",
-        .applicationDir = "bin/",
-        .configDir = "etc/" + name + "/",
-        .contentDir = "share/config/" + name + "/",
-        .frameworkIncludeDir = "include/UntitledImGuiFramework/",
-        .applicationIncludeDir = "include/" + name + "/"
+        .frameworkDir =                 "lib/",
+        .applicationLibraryDir =        "lib/",
+        .applicationDir =               "bin/",
+        .configDir =                    "etc/" + name + "/",
+        .contentDir =                   "share/config/" + name + "/",
+        .frameworkIncludeDir =          "include/UntitledImGuiFramework/",
+        .applicationIncludeDir =        "include/" + name + "/"
     };
 
     if (config["install-override"])
@@ -143,7 +156,7 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
         auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
-            std::cout << "\x1b[33mInvalid location for the CMakeInstall template!\x1b[0m" << std::endl;
+            std::cout << "\x1b[31mInvalid location for the CMakeInstall template!\x1b[0m" << std::endl;
             std::terminate();
         }
         generateInstallStatements(config, windowsInstallDirectories, generator);
@@ -155,7 +168,7 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
         auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
-            std::cout << "\x1b[33mInvalid location for the CMakeInstall template!\x1b[0m" << std::endl;
+            std::cout << "\x1b[31mInvalid location for the CMakeInstall template!\x1b[0m" << std::endl;
             std::terminate();
         }
         generateInstallStatements(config, unixInstallDirectories, generator);
@@ -200,15 +213,15 @@ void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, UTT
     std::string applicationDir;
     if (dirs.platform != InstallPlatform::WINDOWS)
     {
-        applicationDir += "\n    install(TARGETS " + name + "Lib DESTINATION " + dirs.applicationLibraryDir + ")\n";
-        generateMacroDefinitions(name, "UIMGUI_APPLICATION_LIBRARY_DIR", applicationDir, dirs.applicationLibraryDir);
+        applicationDir += "\n    install(TARGETS " + name + "Lib DESTINATION \"" + dirs.applicationLibraryDir + "\")\n";
+        generateMacroDefinitions(name, "UIMGUI_APPLICATION_LIBRARY_DIR", applicationDir, dirs.applicationLibraryDir, dirs.platform);
     }
 
     std::string customDirs;
     for (auto& a : dirs.customInstalls)
     {
-        customDirs += "\n    install(" + a.type + " " + a.fileDir + " DESTINATION " + a.installDir + ")\n";
-        generateMacroDefinitions(name, a.macroName, customDirs, a.installDir);
+        customDirs += "\n    install(" + a.type + " " + a.fileDir + " DESTINATION \"" + a.installDir + "\")\n";
+        generateMacroDefinitions(name, a.macroName, customDirs, a.installDir, dirs.platform);
     }
 
     generator.pushVariable({ .value = name                          }, "name"                       );
@@ -267,10 +280,11 @@ void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs)
     }
 }
 
-void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir)
+void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir, InstallPlatform platform)
 {
     installs += "    target_compile_definitions(UntitledImGuiFramework PRIVATE " + definition +"=\"${CMAKE_INSTALL_PREFIX}/" + dir + "\")\n";
-    installs += "    target_compile_definitions(" + name + "Lib PRIVATE " + definition +"=\"${CMAKE_INSTALL_PREFIX}/" + dir + "\")\n";
+    if (platform != InstallPlatform::WINDOWS)
+        installs += "    target_compile_definitions(" + name + "Lib PRIVATE " + definition +"=\"${CMAKE_INSTALL_PREFIX}/" + dir + "\")\n";
     installs += "    target_compile_definitions(" + name + " PRIVATE " + definition +"=\"${CMAKE_INSTALL_PREFIX}/" + dir + "\")\n";
 }
 #endif
