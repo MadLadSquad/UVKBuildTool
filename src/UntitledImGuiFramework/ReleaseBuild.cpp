@@ -34,7 +34,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     {
         std::ofstream file;
         file.open(UBT::getPath() + "CMakeLists.txt", std::ios_base::app);
-        file << std::endl << installs;
+        file << std::endl << installs.c_str(); // Convert to C string because this fucks up on Windows and adds some random data
     }
 
     std::string systemWide = "--local";
