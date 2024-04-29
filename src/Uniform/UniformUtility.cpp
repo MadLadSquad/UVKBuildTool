@@ -1,4 +1,5 @@
 #include "UniformUtility.h"
+#include <Generator.hpp>
 
 const std::string& UBT::getPath()
 {
