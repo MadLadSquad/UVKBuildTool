@@ -37,6 +37,7 @@ add_executable(UVKBuildTool ${HEAD} ${UNI_HEAD} main.cpp)
 
 set_target_properties(UVKBuildToolLib PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(UVKBuildTool PROPERTIES LINKER_LANGUAGE CXX)
+target_compile_definitions(UVKBuildTool PRIVATE UTTE_CUSTOM_MAP=phmap::flat_hash_map UTTE_CUSTOM_MAP_INCLUDE=<Uniform/parallel-hashmap/parallel_hashmap/phmap.h>)
 if (UBT_COMPILING_FOR_WEB)
     target_compile_definitions(UVKBuildToolLib PRIVATE "UBT_LIB_COMPILE" "UVK_LIB_COMPILE" "YAML_CPP_DLL" "UBT_TARGET_WEB" "UVK_LOG_EXPORT_FROM_LIBRARY")
     target_compile_definitions(UVKBuildTool PRIVATE "UBT_TARGET_WEB" "UVK_LOG_EXPORT_FROM_LIBRARY")

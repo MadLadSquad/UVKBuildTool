@@ -1,8 +1,7 @@
 #include "UniformUtility.h"
+//#define UTTE_CUSTOM_MAP phmap::flat_hash_map
+//#define UTTE_CUSTOM_MAP_INCLUDE <Uniform/parallel-hashmap/parallel_hashmap/phmap.h>
 #include <Generator.hpp>
-#include <yaml-cpp/yaml.h>
-
-#define HPMAP_REAL phmap::priv::hash_default_hash<K>, phmap::priv::hash_default_eq<K>, phmap::priv::Allocator<phmap::priv::Pair<const K, V>>
 
 const std::string& UBT::getPath()
 {
