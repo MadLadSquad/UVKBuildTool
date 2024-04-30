@@ -51,7 +51,7 @@ void getConfig(const char* path, GeneratorData& data)
                 else if (a["val"].IsMap())
                 {
                     auto& map = data.generator.requestMapWithGC();
-                    map = a["val"].as<std::map<std::string, std::string>>();
+                    map = a["val"].as<utte_map<std::string, std::string>>();
                     data.generator.pushVariable(UTTE::Generator::makeMap(map), name);
                 }
                 else
