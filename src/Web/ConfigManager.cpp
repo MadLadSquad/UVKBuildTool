@@ -40,22 +40,22 @@ void getConfig(const char* path, GeneratorData& data)
         {
             if (a["var"] && a["val"])
             {
-                auto name = a["var"].as<std::string>();
+                auto name = a["var"].as<utte_string>();
 
                 if (a["val"].IsSequence())
                 {
                     auto& string = data.generator.requestArrayWithGC();
-                    string = a["val"].as<std::vector<std::string>>();
+                    string = a["val"].as<std::vector<utte_string>>();
                     data.generator.pushVariable(UTTE::Generator::makeArray(string), name);
                 }
                 else if (a["val"].IsMap())
                 {
                     auto& map = data.generator.requestMapWithGC();
-                    map = a["val"].as<utte_map<std::string, std::string>>();
+                    map = a["val"].as<utte_map<utte_string, utte_string>>();
                     data.generator.pushVariable(UTTE::Generator::makeMap(map), name);
                 }
                 else
-                    data.generator.pushVariable({ .value = a["val"].as<std::string>(), .type = UTTE_VARIABLE_TYPE_HINT_NORMAL }, name);
+                    data.generator.pushVariable({ .value = a["val"].as<utte_string>(), .type = UTTE_VARIABLE_TYPE_HINT_NORMAL }, name);
             }
         }
     }
