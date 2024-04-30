@@ -7,6 +7,3 @@
 [submodule "ui18n"]
 	path = ui18n
 	url = https://github.com/MadLadSquad/UntitledI18N.git
-[submodule "src/Uniform/parallel-hashmap"]
-	path = src/Uniform/parallel-hashmap
-	url = https://github.com/MadLadSquad/parallel-hashmap.git
