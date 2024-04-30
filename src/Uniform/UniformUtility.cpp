@@ -1,6 +1,4 @@
 #include "UniformUtility.h"
-//#define UTTE_CUSTOM_MAP phmap::flat_hash_map
-//#define UTTE_CUSTOM_MAP_INCLUDE <Uniform/parallel-hashmap/parallel_hashmap/phmap.h>
 #include <Generator.hpp>
 
 const std::string& UBT::getPath()
