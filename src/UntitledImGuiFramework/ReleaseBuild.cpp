@@ -129,8 +129,8 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
     InstallDirectories unixInstallDirectories =
     {
         .platform = InstallPlatform::UNIX,
-        .frameworkDir =                 "lib/",
-        .applicationLibraryDir =        "lib/",
+        .frameworkDir =                 "lib64/",
+        .applicationLibraryDir =        "lib64/",
         .applicationDir =               "bin/",
         .configDir =                    "etc/" + name + "/",
         .contentDir =                   "share/config/" + name + "/",
