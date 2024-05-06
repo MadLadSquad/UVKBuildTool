@@ -141,6 +141,7 @@ if (USE_OS_MODULE)
 
             if (BUILD_VARIANT_VENDOR)
                 add_subdirectory(Framework/Modules/OS/ThirdParty/UntitledDBusUtils)
+                include_directories(${UntitledDBusUtils_INCLUDE_DIRS})
                 list(APPEND ENABLED_LIBRARIES UntitledDBusUtils)
             else()
                 pkg_check_modules(UntitledDBusUtils REQUIRED UntitledDBusUtils)
