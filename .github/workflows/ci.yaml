@@ -11,7 +11,7 @@ jobs:
         submodules: true
     - name: Get dependencies
       shell: bash
-      run: sudo apt-get update && sudo apt-get install gcc make g++ libtool cmake
+      run: sudo apt-get update && sudo apt-get install gcc make g++ libtool cmake libyaml-cpp-dev
     - name: Checkout submodules
       shell: bash
       run: |
@@ -43,5 +43,6 @@ jobs:
       run: |
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+    - run: brew install yaml-cpp
     - name: Build for engine
       run: "bash ci.sh"
