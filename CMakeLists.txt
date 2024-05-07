@@ -17,6 +17,7 @@ else()
     include(FindYamlCpp)
     find_package(YamlCpp REQUIRED)
     include_directories(${YamlCpp_INCLUDE_PATH})
+    link_directories(${YamlCpp_LIBRARY_DIRS})
 endif()
 
 if (UBT_COMPILING_FOR_WEB)
