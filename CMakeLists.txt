@@ -17,7 +17,7 @@ else()
     include(FindYamlCpp)
     find_package(YamlCpp REQUIRED)
     include_directories(${YamlCpp_INCLUDE_PATH})
-    cmake_path(GET "${YamlCpp_LIBRARY}" PARENT_PATH YAML_PARENT_DIR)
+    cmake_path(GET YamlCpp_LIBRARY PARENT_PATH YAML_PARENT_DIR)
     link_directories(${YAML_PARENT_DIR})
 endif()
 
