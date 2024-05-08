@@ -4,9 +4,9 @@
 #include <filesystem>
 
 // Returns the CMake arguments and adds install statements to the "install" std::string&
-std::string getInstallStatements(YAML::Node& config, std::string& installs);
+std::string getInstallStatements(YAML::Node& config, std::string& installs, const std::string& realInstallDir);
 
-void UBT::relBuild(const std::string& name, YAML::Node& config, const std::string& prefix)
+void UBT::relBuild(const std::string& name, YAML::Node& config, const std::string& prefix, const std::string& realInstallDir)
 {
     UTTE::Generator generator{};
     UTTE::InitialisationResult result;
@@ -29,7 +29,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
 
     std::string installs;
 
-    auto cmakeArgs = getInstallStatements(config, installs);
+    auto cmakeArgs = getInstallStatements(config, installs, realInstallDir);
     // Output temporary CMakeLists.txt
     {
         std::ifstream in(currentPath/"CMakeLists.txt");
@@ -110,7 +110,7 @@ void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, UTT
 void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs);
 void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir, InstallPlatform platform);
 
-std::string getInstallStatements(YAML::Node& config, std::string& installs)
+std::string getInstallStatements(YAML::Node& config, std::string& installs, const std::string& realInstallDir)
 {
     auto name = config["name"].as<std::string>();
 
@@ -177,11 +177,11 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs)
 
     installs += "\nendif()\n";
 
-    std::string returns;
+    std::string returns = "-DUIMGUI_INSTALL_PREFIX=" + realInstallDir;
     if (config["build-mode-static"])
-        returns = "-DBUILD_VARIANT_STATIC=" + (config["build-mode-static"].as<bool>() ? std::string("ON") : std::string("OFF"));
+        returns += " -DBUILD_VARIANT_STATIC=" + (config["build-mode-static"].as<bool>() ? std::string("ON") : std::string("OFF"));
     else
-        returns = "-DBUILD_VARIANT_STATIC=OFF";
+        returns += " -DBUILD_VARIANT_STATIC=OFF";
     if (config["build-mode-vendor"])
         returns += " -DBUILD_VARIANT_VENDOR=" + (config["build-mode-vendor"].as<bool>() ? std::string("ON") : std::string("OFF"));
     else
@@ -282,9 +282,9 @@ void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs)
 
 void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir, InstallPlatform platform)
 {
-    installs += "    target_compile_definitions(UntitledImGuiFramework PRIVATE " + definition +"=\"${CMAKE_INSTALL_PREFIX}/" + dir + "\")\n";
+    installs += "    target_compile_definitions(UntitledImGuiFramework PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
     if (platform != InstallPlatform::WINDOWS)
-        installs += "    target_compile_definitions(" + name + "Lib PRIVATE " + definition +"=\"${CMAKE_INSTALL_PREFIX}/" + dir + "\")\n";
-    installs += "    target_compile_definitions(" + name + " PRIVATE " + definition +"=\"${CMAKE_INSTALL_PREFIX}/" + dir + "\")\n";
+        installs += "    target_compile_definitions(" + name + "Lib PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
+    installs += "    target_compile_definitions(" + name + " PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
 }
 #endif

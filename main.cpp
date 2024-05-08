@@ -113,14 +113,22 @@ int main(int argc, char** argv)
             UBT::makeTemplate(std::string(argv[2]), "WindowComponent", name.c_str());
         else if (argv[1] == UBT::toLower("--title-bar"))
             UBT::makeTemplate(std::string(argv[2]), "TitlebarComponent", name.c_str());
-        else if (argv[1] == UBT::toLower("--build"))
-        {
-            getConfig(config, name);
-            UBT::relBuild(config["name"].as<std::string>(), config, argv[2]);
-            return 0;
-        }
         return 0;
     }
+
+    if (argc < 5)
+    {
+        std::cout << "\x1b[31mError: Not enough arguments passed into the generator!\x1b[0m" << std::endl;
+        return 0;
+    }
+    else if (argc == 5)
+    {
+        UBT::setPath(argv[4]);
+        getConfig(config, name);
+        if (argv[1] == UBT::toLower("--build"));
+            UBT::relBuild(config["name"].as<std::string>(), config, argv[2], argv[3])
+    }
+    return 0;
 }
 #elif UBT_TARGET_WEB
 int main(int argc, char** argv)
