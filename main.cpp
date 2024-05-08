@@ -126,7 +126,7 @@ int main(int argc, char** argv)
         UBT::setPath(argv[4]);
         getConfig(config, name);
         if (argv[1] == UBT::toLower("--build"));
-            UBT::relBuild(config["name"].as<std::string>(), config, argv[2], argv[3])
+            UBT::relBuild(config["name"].as<std::string>(), config, argv[2], argv[3]);
     }
     return 0;
 }
