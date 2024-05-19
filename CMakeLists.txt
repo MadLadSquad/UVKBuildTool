@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.21)
 
+if (WIN32)
+    set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+    set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+endif()
+
 project(UVKBuildToolLib)
 project(UVKBuildTool)
 
@@ -20,6 +25,20 @@ else()
     cmake_path(GET YamlCpp_LIBRARY PARENT_PATH YAML_PARENT_DIR)
     link_directories(${YAML_PARENT_DIR})
 endif()
+
+if (WIN32)
+    add_subdirectory(ucli/)
+else()
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(UntitledCLIParser UntitledCLIParser)
+    if (UntitledCLIParser_FOUND)
+        link_directories(${UntitledCLIParser_LIBRARY_DIRS})
+        include_directories(${UntitledCLIParser_INCLUDE_DIRS})
+    else()
+        add_subdirectory(ucli/)
+    endif()
+endif()
+
 
 if (UBT_COMPILING_FOR_WEB)
     set(BUILD_VARIANT_VENDOR ON)
@@ -62,4 +81,4 @@ if (UBT_COMPILING_FOR_WEB)
     target_link_libraries(UVKBuildToolLib UntitledI18N)
 endif()
 
-target_link_libraries(UVKBuildTool UVKBuildToolLib)
+target_link_libraries(UVKBuildTool UVKBuildToolLib UntitledCLIParser)

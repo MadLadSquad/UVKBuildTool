@@ -7,3 +7,6 @@
 [submodule "ui18n"]
 	path = ui18n
 	url = https://github.com/MadLadSquad/UntitledI18N.git
+[submodule "ucli"]
+	path = ucli
+	url = https://github.com/MadLadSquad/UntitledCLIParser.git

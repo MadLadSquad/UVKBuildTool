@@ -11,6 +11,12 @@
 #include <Generator.hpp>
 #include <filesystem>
 #include <yaml-cpp/yaml.h>
+#include "ucli/CLIParser.hpp"
+
+#define ERROR "\x1b[31m"
+#define WARNING "\x1b[33m"
+#define SUCCESS "\x1b[32m"
+#define END_COLOUR "\x1b[0m"
 
 void getConfig(YAML::Node& config, std::string& name)
 {
@@ -21,7 +27,7 @@ void getConfig(YAML::Node& config, std::string& name)
     }
     catch (YAML::BadFile&)
     {
-        std::cout << "Could not locate file" << std::endl;
+        std::cout << ERROR << "Could not locate file" << END_COLOUR << std::endl;
         std::terminate();
     }
 
@@ -33,9 +39,16 @@ void getConfig(YAML::Node& config, std::string& name)
 int main(int argc, char** argv)
 {
     UBT::setPath("../../");
+    //UCLI::Parser parser{};
+    //parser.setUnknownArgumentCallback([](const char* name, void* data) -> void {
+    //    std::cout << ERROR << "Unknown argument error: " << name << std::endl;
+    //    // TODO: Add help function here
+    //}, nullptr);
+    //parser.parse(argc, argv, )
+
     if (argc < 2)
     {
-        std::cout << "Not enough arguments passed into the generator!" << std::endl;
+        std::cout << ERROR << "Not enough arguments passed into the generator!" << END_COLOUR << std::endl;
         return 0;
     }
     if (argv[1] == UBT::toLower("--help"))
@@ -44,7 +57,7 @@ int main(int argc, char** argv)
         auto result = generator.loadFromFile("../Templates/HelpMessage.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
-            std::cout << "\x1b[31mError when opening the HelpMessage.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
+            std::cout << ERROR << "Error when opening the HelpMessage.tmpl file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
             std::terminate();
         }
         std::string buf;
@@ -100,7 +113,7 @@ int main(int argc, char** argv)
 
     if (argc < 4)
     {
-        std::cout << "\x1b[31mError: Not enough arguments passed into the generator!\x1b[0m" << std::endl;
+        std::cout << ERROR << "Error: Not enough arguments passed into the generator!" << END_COLOUR << std::endl;
         return 0;
     }
     else if (argc == 4)
@@ -118,7 +131,7 @@ int main(int argc, char** argv)
 
     if (argc < 5)
     {
-        std::cout << "\x1b[31mError: Not enough arguments passed into the generator!\x1b[0m" << std::endl;
+        std::cout << ERROR << "Error: Not enough arguments passed into the generator!" << END_COLOUR << std::endl;
         return 0;
     }
     else if (argc == 5)
@@ -141,7 +154,7 @@ int main(int argc, char** argv)
 
     if (argc < 4)
     {
-        std::cout << "Not enough arguments passed into the generator!" << std::endl;
+        std::cout << ERROR << "Not enough arguments passed into the generator!" << END_COLOUR << std::endl;
         return UBT::showHelp(true);
     }
     else if (argv[1] == UBT::toLower("--build"))
