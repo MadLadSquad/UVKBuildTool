@@ -15,6 +15,11 @@
     #define UBT_PUBLIC_API
 #endif
 
+#define ERROR "\x1b[31m"
+#define WARNING "\x1b[33m"
+#define SUCCESS "\x1b[32m"
+#define END_COLOUR "\x1b[0m"
+
 namespace YAML
 {
     // utte_map

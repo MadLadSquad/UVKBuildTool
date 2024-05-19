@@ -8,7 +8,7 @@ int UBT::showHelp(bool bError) noexcept
     auto result = generator.loadFromFile("../Templates/HelpMessage.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
-        std::cout << "\x1b[31mError when opening the HelpMessage.tmpl file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
+        std::cout << ERROR << "Error when opening the HelpMessage.tmpl file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
         std::terminate();
     }
     std::string buf;

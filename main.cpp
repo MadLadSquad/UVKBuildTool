@@ -13,11 +13,6 @@
 #include <yaml-cpp/yaml.h>
 #include "ucli/CLIParser.hpp"
 
-#define ERROR "\x1b[31m"
-#define WARNING "\x1b[33m"
-#define SUCCESS "\x1b[32m"
-#define END_COLOUR "\x1b[0m"
-
 void getConfig(YAML::Node& config, std::string& name)
 {
     try
@@ -49,28 +44,10 @@ int main(int argc, char** argv)
     if (argc < 2)
     {
         std::cout << ERROR << "Not enough arguments passed into the generator!" << END_COLOUR << std::endl;
-        return 0;
+        return UBT::showHelp(false);
     }
     if (argv[1] == UBT::toLower("--help"))
-    {
-        UTTE::Generator generator;
-        auto result = generator.loadFromFile("../Templates/HelpMessage.tmpl");
-        if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
-        {
-            std::cout << ERROR << "Error when opening the HelpMessage.tmpl file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
-            std::terminate();
-        }
-        std::string buf;
-        std::string tmp;
-
-        std::ifstream instr("../Templates/UntitledImGuiFramework/ArgumentsRegistry.tmpl");
-        while (std::getline(instr, tmp))
-            buf += tmp + "\n";
-
-        generator.pushVariable({ .value = buf }, "arguments");
-        std::cout << *generator.parse().result << std::endl;
-        return 0;
-    }
+        return UBT::showHelp(false);
 
     YAML::Node config;
     std::string name;
@@ -114,7 +91,7 @@ int main(int argc, char** argv)
     if (argc < 4)
     {
         std::cout << ERROR << "Error: Not enough arguments passed into the generator!" << END_COLOUR << std::endl;
-        return 0;
+        return UBT::showHelp(true);
     }
     else if (argc == 4)
     {
@@ -132,13 +109,13 @@ int main(int argc, char** argv)
     if (argc < 5)
     {
         std::cout << ERROR << "Error: Not enough arguments passed into the generator!" << END_COLOUR << std::endl;
-        return 0;
+        return UBT::showHelp(true);
     }
     else if (argc == 5)
     {
         UBT::setPath(argv[4]);
         getConfig(config, name);
-        if (argv[1] == UBT::toLower("--build"));
+        if (argv[1] == UBT::toLower("--build"))
             UBT::relBuild(config["name"].as<std::string>(), config, argv[2], argv[3]);
     }
     return 0;

@@ -14,7 +14,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
-        std::cout << "\x1b[31mThere was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
+        std::cout << ERROR << "There was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
         std::terminate();
     }
     auto& define_or_undefine = generator.pushVariable({ .value = "#define" }, "define_or_undefine");
@@ -61,12 +61,12 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     std::cout << str << std::endl;
     auto a = system(str.c_str());
     if (a != 0)
-        std::cout << "\x1b[31mThere was an error with running the 'export.sh' script!\x1b[0m";
+        std::cout << ERROR << "There was an error with running the 'export.sh' script!" << END_COLOUR;
 
     result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
-        std::cout << "\x1b[31mThere was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
+        std::cout << ERROR << "There was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
         std::terminate();
     }
     UTTE_VARIABLE_SET_NEW_VAL(define_or_undefine, result, "#undef", UTTE_VARIABLE_TYPE_HINT_NORMAL);
@@ -156,7 +156,7 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
         auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
-            std::cout << "\x1b[31mInvalid location for the CMakeInstall template!\x1b[0m" << std::endl;
+            std::cout << ERROR << "Invalid location for the CMakeInstall template!\x1b[0m" << std::endl;
             std::terminate();
         }
         generateInstallStatements(config, windowsInstallDirectories, generator);
@@ -168,7 +168,7 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
         auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
-            std::cout << "\x1b[31mInvalid location for the CMakeInstall template!\x1b[0m" << std::endl;
+            std::cout << ERROR << "Invalid location for the CMakeInstall template!\x1b[0m" << std::endl;
             std::terminate();
         }
         generateInstallStatements(config, unixInstallDirectories, generator);
@@ -273,7 +273,7 @@ void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs)
                     if (a["file"])
                         filename = " File in question: " + a["file"].as<std::string>();
 
-                    std::cout << "\x1b[33mWarning: There was a problem with generating a custom install." << filename << "\x1b[0m" << std::endl;
+                    std::cout << WARNING << "Warning: There was a problem with generating a custom install." << filename << END_COLOUR << std::endl;
                 }
             }
         }

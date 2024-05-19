@@ -8,7 +8,7 @@ void UBT::generateMain(const char* gameName)
     auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/Sources/main.cpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
-        std::cout << "\x1b[31mThere was an error with the generator when generating main.cpp! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
+        std::cout << ERROR << "There was an error with the generator when generating main.cpp! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
         std::terminate();
     }
     std::string prjnm = gameName;
@@ -28,7 +28,7 @@ void UBT::generateDef()
     auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
-        std::cout << "\x1b[31mThere was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << "\x1b[0m" << std::endl;
+        std::cout << ERROR << "There was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
         std::terminate();
     }
     generator.pushVariable({ .value = "#undef" }, "define_or_undefine");

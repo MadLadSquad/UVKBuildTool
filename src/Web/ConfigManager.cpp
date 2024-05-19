@@ -29,7 +29,7 @@ void getConfig(const char* path, GeneratorData& data)
     }
     catch (YAML::BadFile&)
     {
-        std::cout << "Error: Bad config file!" << std::endl;
+        std::cout << ERROR <<  "Error: Bad config file!" << END_COLOUR << std::endl;
         std::terminate();
     }
 
@@ -88,7 +88,7 @@ void generateRecursive(const std::filesystem::path& path, const std::vector<std:
                 auto result = generator.loadFromFile(a.path().string());
                 if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
                 {
-                    std::cout << "\x1b[33mWarning: Couldn't generate the following file due to it being invalid: " << a.path().string() << "\x1b[0m" << std::endl;
+                    std::cout << WARNING << "Warning: Couldn't generate the following file due to it being invalid: " << a.path().string() << END_COLOUR << std::endl;
                     goto skip_this_file_3;
                 }
                 std::ofstream out(a.path());
@@ -175,7 +175,7 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
     auto result = engine.init((std::string(projectPath) + "/Translations").c_str());
     if (result != UI18N_INIT_RESULT_SUCCESS)
     {
-        std::cout << "\x1b[33mUI18N Warning: Couldn't initialise the translation engine. Error code: " << result << "\x1b[0m" << std::endl;
+        std::cout << WARNING << "UI18N Warning: Couldn't initialise the translation engine. Error code: " << result << END_COLOUR << std::endl;
         data.bCanUseTranslations = false;
     }
     else
