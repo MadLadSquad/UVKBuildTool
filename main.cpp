@@ -8,7 +8,6 @@
     #include <Web/ConfigManager.hpp>
     #include <Web/Functions.hpp>
 #endif
-#include <Generator.hpp>
 #include <filesystem>
 #include <yaml-cpp/yaml.h>
 #include "ucli/CLIParser.hpp"
@@ -64,6 +63,7 @@ int main(int argc, char** argv)
                     UBT::generateDef();
                     std::filesystem::copy_file(std::filesystem::path("../Templates/UntitledImGuiFramework/Sources/Config.hpp.tmpl"),
                                                std::filesystem::path(UBT::getPath())/"Generated/Config.hpp");
+                    exit(0);
                 },
             },
             UCLI::Parser::ArrayFlag{
@@ -93,6 +93,7 @@ int main(int argc, char** argv)
 
                     std::filesystem::copy_file(std::filesystem::path("../Templates/UntitledImGuiFramework/Sources/Config.hpp.tmpl"),
                                                std::filesystem::path(UBT::getPath())/"Generated/Config.hpp");
+                    exit(0);
                 },
             },
             UCLI::Parser::ArrayFlag{
@@ -111,6 +112,7 @@ int main(int argc, char** argv)
                     getConfig(config, name);
 
                     UBT::makeTemplate(std::string(args[0]), "InlineComponent", name.c_str());
+                    exit(0);
                 },
             },
             UCLI::Parser::ArrayFlag{
@@ -129,6 +131,7 @@ int main(int argc, char** argv)
                     getConfig(config, name);
 
                     UBT::makeTemplate(std::string(args[0]), "WindowComponent", name.c_str());
+                    exit(0);
                 },
             },
             UCLI::Parser::ArrayFlag{
@@ -147,6 +150,7 @@ int main(int argc, char** argv)
                     getConfig(config, name);
 
                     UBT::makeTemplate(std::string(args[0]), "TitlebarComponent", name.c_str());
+                    exit(0);
                 },
             },
             UCLI::Parser::ArrayFlag{
@@ -156,7 +160,7 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size < 2 || args == nullptr || args[0] == nullptr || args[1] == nullptr || args[2] == nullptr)
+                    if (size < 3 || args == nullptr || args[0] == nullptr || args[1] == nullptr || args[2] == nullptr)
                     {
                         std::cout << ERROR << "Invalid argument, build requires a staging path, installation path and a path to a UVKBuildTool project!" << END_COLOUR << std::endl;
                         exit(UBT::showHelp(true));
@@ -165,6 +169,7 @@ int main(int argc, char** argv)
                     getConfig(config, name);
 
                     UBT::relBuild(config["name"].as<std::string>(), config, args[0], args[1]);
+                    exit(0);
                 },
             },
         }, {}, {
