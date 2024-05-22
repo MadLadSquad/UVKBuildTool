@@ -46,7 +46,7 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size == 0 || args == nullptr || args[0] == nullptr)
+                    if (size == 0 || args == nullptr)
                     {
                         std::cout << ERROR << "Invalid argument, generate requires a path to a UVKBuildTool project!" << END_COLOUR << std::endl;
                         exit(UBT::showHelp(true));
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size == 0 || args == nullptr || args[0] == nullptr)
+                    if (size == 0 || args == nullptr)
                     {
                         std::cout << ERROR << "Invalid argument, install requires a path to a UVKBuildTool project!" << END_COLOUR << std::endl;
                         exit(UBT::showHelp(true));
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size < 2 || args == nullptr || args[0] == nullptr || args[1] == nullptr)
+                    if (size < 2 || args == nullptr)
                     {
                         std::cout << ERROR << "Invalid argument, inline requires a class name path to a UVKBuildTool project!" << END_COLOUR << std::endl;
                         exit(UBT::showHelp(true));
@@ -122,7 +122,7 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size < 2 || args == nullptr || args[0] == nullptr || args[1] == nullptr)
+                    if (size < 2 || args == nullptr)
                     {
                         std::cout << ERROR << "Invalid argument, window requires a class name and path to a UVKBuildTool project!" << END_COLOUR << std::endl;
                         exit(UBT::showHelp(true));
@@ -141,7 +141,7 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size < 2 || args == nullptr || args[0] == nullptr || args[1] == nullptr)
+                    if (size < 2 || args == nullptr)
                     {
                         std::cout << ERROR << "Invalid argument, title-bar requires a class name and path to a UVKBuildTool project!" << END_COLOUR << std::endl;
                         exit(UBT::showHelp(true));
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size < 3 || args == nullptr || args[0] == nullptr || args[1] == nullptr || args[2] == nullptr)
+                    if (size < 3 || args == nullptr)
                     {
                         std::cout << ERROR << "Invalid argument, build requires a staging path, installation path and a path to a UVKBuildTool project!" << END_COLOUR << std::endl;
                         exit(UBT::showHelp(true));
@@ -188,18 +188,34 @@ int main(int argc, char** argv)
 int main(int argc, char** argv)
 {
     UBT::setPath("../../");
-    if (argc < 2)
-        return UBT::showHelp(false);
-    if (argv[1] == UBT::toLower("--help"))
-        return UBT::showHelp(false);
-
-    if (argc < 4)
-    {
-        std::cout << ERROR << "Not enough arguments passed into the generator!" << END_COLOUR << std::endl;
-        return UBT::showHelp(true);
-    }
-    else if (argv[1] == UBT::toLower("--build"))
-        UBT::buildMain(argv[2], argv[3]);
+    UCLI::Parser parser{};
+    parser.setUnknownArgumentCallback([](const char* name, void* data) -> void {
+        std::cout << ERROR << "Unknown argument error: " << name << END_COLOUR << std::endl;
+        exit(UBT::showHelp(false));
+    }, nullptr);
+    parser.parse(argc, argv, {
+        UCLI::Parser::ArrayFlag {
+            .longType = "build",
+            .shortType = "b",
+            .func = [](UCLI::Parser::ArrayFlag*, char** args, size_t size) -> void {
+                if (size < 2)
+                {
+                    std::cout << ERROR << "Invalid argument, build requires an export path and a UVKBuildTool project path!" << END_COLOUR << std::endl;
+                    exit(UBT::showHelp(true));
+                }
+                UBT::buildMain(args[0], args[1]);
+                exit(0);
+            }
+        },
+    }, {}, {
+        UCLI::Parser::BooleanFlagWithFunc {
+            .longType = "help",
+            .shortType = "h",
+            .func = [](UCLI::Parser::BooleanFlagWithFunc*) -> void {
+                exit(UBT::showHelp(false));
+            }
+        }
+    });
     return 0;
 }
 #endif
