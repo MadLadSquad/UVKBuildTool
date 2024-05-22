@@ -29,6 +29,22 @@ void getConfig(YAML::Node& config, std::string& name)
         name = config["name"].as<std::string>();
 }
 
+/**
+ * @brief Check if an arguments is withing bounds and that the args array is not null
+ * @arg x - boolean expression to use to check
+ * @arg y - Error message
+ */
+#define CHECK_BOUNDS(x, y) if ((x) || args == nullptr) {      \
+    std::cout << ERROR << (y) << END_COLOUR << std::endl;     \
+    exit(UBT::showHelp(true));                                \
+}
+
+/**
+ * @brief Sets the UVKBuildTool project path and gets config
+ * @arg x - Project path as string
+ */
+#define SETUP_WORKDIR(x) UBT::setPath(x); getConfig(config, name);
+
 #ifdef UBT_TARGET_FRAMEWORK
 int main(int argc, char** argv)
 {
@@ -46,13 +62,8 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size == 0 || args == nullptr)
-                    {
-                        std::cout << ERROR << "Invalid argument, generate requires a path to a UVKBuildTool project!" << END_COLOUR << std::endl;
-                        exit(UBT::showHelp(true));
-                    }
-                    UBT::setPath(args[0]);
-                    getConfig(config, name);
+                    CHECK_BOUNDS(size == 0, "Invalid argument, generate requires a path to a UVKBuildTool project!");
+                    SETUP_WORKDIR(args[0]);
 
                     std::string startupLevelName;
                     std::ifstream i(UBT::getPath() + "Generated/ActorList.hpp");
@@ -73,13 +84,8 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size == 0 || args == nullptr)
-                    {
-                        std::cout << ERROR << "Invalid argument, install requires a path to a UVKBuildTool project!" << END_COLOUR << std::endl;
-                        exit(UBT::showHelp(true));
-                    }
-                    UBT::setPath(args[0]);
-                    getConfig(config, name);
+                    CHECK_BOUNDS(size == 0, "Invalid argument, generate requires a path to a UVKBuildTool project!");
+                    SETUP_WORKDIR(args[0]);
 
                     std::string startupLevelName;
                     std::ifstream i(UBT::getPath() + "Generated/ActorList.hpp");
@@ -103,13 +109,8 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size < 2 || args == nullptr)
-                    {
-                        std::cout << ERROR << "Invalid argument, inline requires a class name path to a UVKBuildTool project!" << END_COLOUR << std::endl;
-                        exit(UBT::showHelp(true));
-                    }
-                    UBT::setPath(args[1]);
-                    getConfig(config, name);
+                    CHECK_BOUNDS(size < 2, "Invalid argument, inline requires a class name path to a UVKBuildTool project!");
+                    SETUP_WORKDIR(args[1]);
 
                     UBT::makeTemplate(std::string(args[0]), "InlineComponent", name.c_str());
                     exit(0);
@@ -122,13 +123,8 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size < 2 || args == nullptr)
-                    {
-                        std::cout << ERROR << "Invalid argument, window requires a class name and path to a UVKBuildTool project!" << END_COLOUR << std::endl;
-                        exit(UBT::showHelp(true));
-                    }
-                    UBT::setPath(args[1]);
-                    getConfig(config, name);
+                    CHECK_BOUNDS(size < 2, "Invalid argument, window requires a class name path to a UVKBuildTool project!");
+                    SETUP_WORKDIR(args[1]);
 
                     UBT::makeTemplate(std::string(args[0]), "WindowComponent", name.c_str());
                     exit(0);
@@ -141,13 +137,8 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size < 2 || args == nullptr)
-                    {
-                        std::cout << ERROR << "Invalid argument, title-bar requires a class name and path to a UVKBuildTool project!" << END_COLOUR << std::endl;
-                        exit(UBT::showHelp(true));
-                    }
-                    UBT::setPath(args[1]);
-                    getConfig(config, name);
+                    CHECK_BOUNDS(size < 2, "Invalid argument, title-bar requires a class name path to a UVKBuildTool project!");
+                    SETUP_WORKDIR(args[1]);
 
                     UBT::makeTemplate(std::string(args[0]), "TitlebarComponent", name.c_str());
                     exit(0);
@@ -160,13 +151,8 @@ int main(int argc, char** argv)
                     YAML::Node config;
                     std::string name;
 
-                    if (size < 3 || args == nullptr)
-                    {
-                        std::cout << ERROR << "Invalid argument, build requires a staging path, installation path and a path to a UVKBuildTool project!" << END_COLOUR << std::endl;
-                        exit(UBT::showHelp(true));
-                    }
-                    UBT::setPath(args[2]);
-                    getConfig(config, name);
+                    CHECK_BOUNDS(size < 3, "Invalid argument, build requires a staging path, installation path and a path to a UVKBuildTool project!");
+                    SETUP_WORKDIR(args[2]);
 
                     UBT::relBuild(config["name"].as<std::string>(), config, args[0], args[1]);
                     exit(0);
@@ -198,11 +184,7 @@ int main(int argc, char** argv)
             .longType = "build",
             .shortType = "b",
             .func = [](UCLI::Parser::ArrayFlag*, char** args, size_t size) -> void {
-                if (size < 2)
-                {
-                    std::cout << ERROR << "Invalid argument, build requires an export path and a UVKBuildTool project path!" << END_COLOUR << std::endl;
-                    exit(UBT::showHelp(true));
-                }
+                CHECK_BOUNDS(size < 2, "Invalid argument, build requires an export path and a UVKBuildTool project path!");
                 UBT::buildMain(args[0], args[1]);
                 exit(0);
             }
