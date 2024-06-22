@@ -121,7 +121,7 @@ if (USE_OS_MODULE)
     option(ENABLE_UFONT_UTILS "Compiles in cross-platform utilities for dealing with system fonts" OFF)
     option(ENABLE_UOPEN "Enables the UntitledOpen library, that opens URLs and files with a default application" OFF)
 
-    if (NOT WIN32)
+    if (NOT WIN32 AND NOT APPLE)
         option(ENABLE_XDG_BASEDIR "Compile in the UntitledXDGBasedir library for a XDG Basedir implementation" OFF)
         if (ENABLE_XDG_BASEDIR)
             if (BUILD_VARIANT_VENDOR)
