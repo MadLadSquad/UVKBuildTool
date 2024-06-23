@@ -4,6 +4,6 @@
 
 namespace UBT
 {
-    UBT_PUBLIC_API void generateCmake(const char* name);
+    UBT_PUBLIC_API void generateCmake(const char* name) noexcept;
 }
 #endif

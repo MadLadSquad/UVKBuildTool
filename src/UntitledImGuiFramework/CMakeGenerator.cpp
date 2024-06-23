@@ -2,13 +2,13 @@
 #include "CMakeGenerator.hpp"
 #include <Generator.hpp>
 
-void UBT::generateCmake(const char* name)
+void UBT::generateCmake(const char* name) noexcept
 {
     UTTE::Generator generator{};
-    auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeLists.txt.tmpl");
+    const auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeLists.txt.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
-        std::cout << ERROR << "Error when opening the CMakeLists.txt.tmpl file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
+        std::cout << ERROR << "Error when opening the CMakeLists.txt.tmpl file! Error code: " << result << END_COLOUR << std::endl;
         std::terminate();
     }
     generator.pushVariable({ .value = name }, "name");

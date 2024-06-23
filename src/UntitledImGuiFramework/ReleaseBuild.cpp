@@ -4,9 +4,9 @@
 #include <filesystem>
 
 // Returns the CMake arguments and adds install statements to the "install" std::string&
-std::string getInstallStatements(YAML::Node& config, std::string& installs, const std::string& realInstallDir);
+std::string getInstallStatements(YAML::Node& config, std::string& installs, const std::string& realInstallDir) noexcept;
 
-void UBT::relBuild(const std::string& name, YAML::Node& config, const std::string& prefix, const std::string& realInstallDir)
+void UBT::relBuild(const std::string& name, YAML::Node& config, const std::string& prefix, const std::string& realInstallDir) noexcept
 {
     UTTE::Generator generator{};
     UTTE::InitialisationResult result;
@@ -14,7 +14,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
-        std::cout << ERROR << "There was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
+        std::cout << ERROR << "There was an error with the generator when generating the BuildDef.hpp file! Error code: " << result << END_COLOUR << std::endl;
         std::terminate();
     }
     auto& define_or_undefine = generator.pushVariable({ .value = "#define" }, "define_or_undefine");
@@ -24,8 +24,8 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     out << generator.parse().result->c_str();
     out.close();
 
-    auto currentPath = std::filesystem::path(UBT::getPath().c_str());
-    std::filesystem::copy((currentPath/"CMakeLists.txt"), currentPath/"CMakeLists.txt.old");
+    auto currentPath = std::filesystem::path(getPath().c_str());
+    copy((currentPath/"CMakeLists.txt"), currentPath/"CMakeLists.txt.old");
 
     std::string installs;
 
@@ -37,7 +37,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
         size_t size = in.tellg();
         std::string buffer(size, ' ');
         in.seekg(0);
-        in.read(buffer.data(), size);
+        in.read(buffer.data(), static_cast<std::streamsize>(size));
         in.close();
 
         buffer += "\n" + installs;
@@ -54,19 +54,18 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     if (config["system-wide"] && config["system-wide"].as<bool>())
         systemWide = "--system-wide";
 #ifdef _WIN32
-    std::string str = "cd " + UBT::getPath() + " && bash export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs;
+    std::string str = "cd " + getPath() + " && bash export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs;
 #else
-    std::string str = "cd " + UBT::getPath() + " && ./export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs;
+    std::string str = "cd " + getPath() + " && ./export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs;
 #endif
     std::cout << str << std::endl;
-    auto a = system(str.c_str());
-    if (a != 0)
+    if (system(str.c_str()) != 0)
         std::cout << ERROR << "There was an error with running the 'export.sh' script!" << END_COLOUR;
 
     result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
-        std::cout << ERROR << "There was an error with the generator when generating the BuildDef.hpp file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
+        std::cout << ERROR << "There was an error with the generator when generating the BuildDef.hpp file! Error code: " << result << END_COLOUR << std::endl;
         std::terminate();
     }
     UTTE_VARIABLE_SET_NEW_VAL(define_or_undefine, result, "#undef", UTTE_VARIABLE_TYPE_HINT_NORMAL);
@@ -80,6 +79,8 @@ enum class InstallPlatform
 {
     UNIX,
     WINDOWS,
+    MACOS,
+    WASM
 };
 
 struct CustomInstall
@@ -105,12 +106,25 @@ struct InstallDirectories
     std::vector<CustomInstall> customInstalls;
 };
 
-void findInstallDirs(YAML::Node& config, InstallDirectories& dirs);
-void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, UTTE::Generator& generator);
-void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs);
-void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir, InstallPlatform platform);
+void findInstallDirs(YAML::Node& config, InstallDirectories& dirs) noexcept;
+void generateInstallStatements(YAML::Node& config, const InstallDirectories& dirs, UTTE::Generator& generator) noexcept;
+void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs) noexcept;
+void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir, InstallPlatform platform) noexcept;
 
-std::string getInstallStatements(YAML::Node& config, std::string& installs, const std::string& realInstallDir)
+void addParsedPlatformConfigToCMakeLists(YAML::Node& config, const InstallDirectories& installDirs, std::string& installs) noexcept
+{
+    UTTE::Generator generator{};
+    const auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl");
+    if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
+    {
+        std::cout << ERROR << "Invalid location for the CMakeInstall template!\x1b[0m" << std::endl;
+        std::terminate();
+    }
+    generateInstallStatements(config, installDirs, generator);
+    installs += *generator.parse().result;
+}
+
+std::string getInstallStatements(YAML::Node& config, std::string& installs, const std::string& realInstallDir) noexcept
 {
     auto name = config["name"].as<std::string>();
 
@@ -138,43 +152,59 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
         .applicationIncludeDir =        "include/" + name + "/"
     };
 
+    InstallDirectories macosInstallDirectories =
+    {
+        .platform = InstallPlatform::MACOS,
+        .frameworkDir =                 "lib64/",
+        .applicationLibraryDir =        "lib64/",
+        .applicationDir =               "bin/",
+        .configDir =                    "etc/" + name + "/",
+        .contentDir =                   "share/config/" + name + "/",
+        .frameworkIncludeDir =          "include/UntitledImGuiFramework/",
+        .applicationIncludeDir =        "include/" + name + "/"
+    };
+
+    // TODO: Configure WASM traget installs
+    InstallDirectories wasmInstallDirectories =
+    {
+        .platform = InstallPlatform::WASM,
+        .frameworkDir =                 "lib64/",
+        .applicationLibraryDir =        "lib64/",
+        .applicationDir =               "bin/",
+        .configDir =                    "etc/" + name + "/",
+        .contentDir =                   "share/config/" + name + "/",
+        .frameworkIncludeDir =          "include/UntitledImGuiFramework/",
+        .applicationIncludeDir =        "include/" + name + "/"
+    };
+
     if (config["install-override"])
     {
         auto unixDirs = config["install-override"]["unix"];
         auto windowsDirs = config["install-override"]["windows"];
+        auto macosDirs = config["install-override"]["macos"];
+        auto wasmDirs = config["install-override"]["wasm"];
         if (unixDirs)
             findInstallDirs(unixDirs, unixInstallDirectories);
         if (windowsDirs)
             findInstallDirs(windowsDirs, windowsInstallDirectories);
+        if (macosDirs)
+            findInstallDirs(macosDirs, macosInstallDirectories);
+        if (wasmDirs)
+            findInstallDirs(wasmDirs, wasmInstallDirectories);
     }
     gatherCustomInstalls(config, windowsInstallDirectories);
     gatherCustomInstalls(config, unixInstallDirectories);
+    gatherCustomInstalls(config, macosInstallDirectories);
+    gatherCustomInstalls(config, wasmInstallDirectories);
 
-    installs += "if (WIN32)\n";
-    {
-        UTTE::Generator generator{};
-        auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl");
-        if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
-        {
-            std::cout << ERROR << "Invalid location for the CMakeInstall template!\x1b[0m" << std::endl;
-            std::terminate();
-        }
-        generateInstallStatements(config, windowsInstallDirectories, generator);
-        installs += *generator.parse().result;
-    }
+    installs += "if (EMSCRIPTEN)\n";
+        addParsedPlatformConfigToCMakeLists(config, wasmInstallDirectories, installs);
+    installs += "\nelseif (APPLE)\n";
+        addParsedPlatformConfigToCMakeLists(config, macosInstallDirectories, installs);
+    installs += "\nelseif (WIN32)\n";
+        addParsedPlatformConfigToCMakeLists(config, windowsInstallDirectories, installs);
     installs += "\nelse()\n";
-    {
-        UTTE::Generator generator{};
-        auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl");
-        if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
-        {
-            std::cout << ERROR << "Invalid location for the CMakeInstall template!\x1b[0m" << std::endl;
-            std::terminate();
-        }
-        generateInstallStatements(config, unixInstallDirectories, generator);
-        installs += *generator.parse().result;
-    }
-
+       addParsedPlatformConfigToCMakeLists(config, unixInstallDirectories, installs);
     installs += "\nendif()\n";
 
     std::string returns = "-DUIMGUI_INSTALL_PREFIX=" + realInstallDir;
@@ -195,7 +225,7 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
 
 #define addToDir(x, y) if (config[y]) dirs.x = config[y].as<std::string>()
 
-void findInstallDirs(YAML::Node& config, InstallDirectories& dirs)
+void findInstallDirs(YAML::Node& config, InstallDirectories& dirs) noexcept
 {
     addToDir(frameworkDir,              "framework-library-dir");
     addToDir(applicationLibraryDir,     "framework-application-library-dir");
@@ -206,9 +236,9 @@ void findInstallDirs(YAML::Node& config, InstallDirectories& dirs)
     addToDir(applicationIncludeDir,     "application-include-dir");
 }
 
-void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, UTTE::Generator& generator)
+void generateInstallStatements(YAML::Node& config, const InstallDirectories& dirs, UTTE::Generator& generator) noexcept
 {
-    auto name = config["name"].as<std::string>();
+    const auto name = config["name"].as<std::string>();
 
     std::string applicationDir;
     if (dirs.platform != InstallPlatform::WINDOWS)
@@ -218,7 +248,7 @@ void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, UTT
     }
 
     std::string customDirs;
-    for (auto& a : dirs.customInstalls)
+    for (const auto& a : dirs.customInstalls)
     {
         customDirs += "\n    install(" + a.type + " " + a.fileDir + " DESTINATION \"" + a.installDir + "\")\n";
         generateMacroDefinitions(name, a.macroName, customDirs, a.installDir, dirs.platform);
@@ -235,7 +265,7 @@ void generateInstallStatements(YAML::Node& config, InstallDirectories& dirs, UTT
     generator.pushVariable({ .value = customDirs                    }, "custom_installs"            );
 }
 
-void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs)
+void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs) noexcept
 {
     if (config["additional-installs"])
     {
@@ -248,11 +278,17 @@ void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs)
             case InstallPlatform::UNIX:
                 platform = "unix";
                 break;
+            case InstallPlatform::MACOS:
+                platform = "macos";
+                break;
+            case InstallPlatform::WASM:
+                platform = "wasm";
+                break;
             default:
                 return;
         }
 
-        auto installs = config["additional-installs"][platform];
+        const auto installs = config["additional-installs"][platform];
         if (installs)
         {
             for (const YAML::Node& a : installs)
@@ -280,11 +316,14 @@ void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs)
     }
 }
 
-void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir, InstallPlatform platform)
+void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir, const InstallPlatform platform) noexcept
 {
-    installs += "    target_compile_definitions(UntitledImGuiFramework PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
-    if (platform != InstallPlatform::WINDOWS)
-        installs += "    target_compile_definitions(" + name + "Lib PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
+    if (platform != InstallPlatform::WASM)
+    {
+        installs += "    target_compile_definitions(UntitledImGuiFramework PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
+        if (platform != InstallPlatform::WINDOWS)
+            installs += "    target_compile_definitions(" + name + "Lib PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
+    }
     installs += "    target_compile_definitions(" + name + " PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
 }
 #endif

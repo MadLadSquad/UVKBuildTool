@@ -2,7 +2,7 @@
 #include "FileGenerator.hpp"
 #include <Generator.hpp>
 
-void UBT::makeTemplate(const std::string& name, const std::string& type, const char* prjname)
+void UBT::makeTemplate(const std::string& name, const std::string& type, const char* prjname) noexcept
 {
 	bool bInstance = false;
     UTTE::Generator generator{};
@@ -20,7 +20,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
         result = generator.loadFromFile("../Templates/UntitledImGuiFramework/GameplayClasses/Instance.hpp.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
-            std::cout << ERROR << "There was an error when generating the instance file, specifically when opening the Instance.hpp.tmpl file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
+            std::cout << ERROR << "There was an error when generating the instance file, specifically when opening the Instance.hpp.tmpl file! Error code: " << result << END_COLOUR << std::endl;
             std::terminate();
         }
         generator.pushVariable({ .value = prjnm }, "name");
@@ -32,7 +32,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
         result = generator.loadFromFile("../Templates/UntitledImGuiFramework/GameplayClasses/Instance.cpp.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
-            std::cout << ERROR << "There was an error when generating the instance file, specifically when opening the Instance.cpp.tmpl file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
+            std::cout << ERROR << "There was an error when generating the instance file, specifically when opening the Instance.cpp.tmpl file! Error code: " << result << END_COLOUR << std::endl;
             std::terminate();
         }
 

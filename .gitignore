@@ -8,9 +8,7 @@ cmake_install.cmake
 install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
-cmake-build-debug/
-cmake-build-release/
-cmake-build-relwithdebinfo/
+cmake-build-*/
 example.yaml
 _deps
 .idea/
