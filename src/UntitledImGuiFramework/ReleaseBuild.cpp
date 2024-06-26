@@ -318,12 +318,6 @@ void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs) noexcept
 
 void generateMacroDefinitions(const std::string& name, const std::string& definition, std::string& installs, const std::string& dir, const InstallPlatform platform) noexcept
 {
-    if (platform != InstallPlatform::WASM)
-    {
-        installs += "    target_compile_definitions(UntitledImGuiFramework PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
-        if (platform != InstallPlatform::WINDOWS)
-            installs += "    target_compile_definitions(" + name + "Lib PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
-    }
-    installs += "    target_compile_definitions(" + name + " PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
+    installs += "    multicast(target_compile_definitions PRIVATE " + definition +"=\"${UIMGUI_INSTALL_PREFIX}/" + dir + "\")\n";
 }
 #endif
