@@ -14,37 +14,20 @@
 #endif
 
 #ifndef UIMGUI_CONFIG_DIR
-    #ifdef __EMSCRIPTEN__
-        #define UIMGUI_CONFIG_DIR "./Config/"
-        #define UIMGUI_PROJECT_DIR "./"
-    #else
-        #define UIMGUI_CONFIG_DIR "../Config/"
-        #define UIMGUI_PROJECT_DIR "../"
-    #endif
+    #define UIMGUI_CONFIG_DIR "../Config/"
+    #define UIMGUI_PROJECT_DIR "../"
 #endif
 
 #ifndef UIMGUI_CONTENT_DIR
-    #ifdef __EMSCRIPTEN__
-        #define UIMGUI_CONTENT_DIR "./Content/"
-    #else
-        #define UIMGUI_CONTENT_DIR "../Content/"
-    #endif
+    #define UIMGUI_CONTENT_DIR "../Content/"
 #endif
 
 #ifndef UIMGUI_FRAMEWORK_INCLUDE_DIR
-    #ifdef __EMSCRIPTEN__
-        #define UIMGUI_FRAMEWORK_INCLUDE_DIR "./Framework/"
-    #else
-        #define UIMGUI_FRAMEWORK_INCLUDE_DIR "../Framework/"
-    #endif
+    #define UIMGUI_FRAMEWORK_INCLUDE_DIR "../Framework/"
 #endif
 
 #ifndef UIMGUI_APPLICATION_INCLUDE_DIR
-    #ifdef __EMSCRIPTEN__
-        #define UIMGUI_APPLICATION_INCLUDE_DIR "./Source/"
-    #else
-        #define UIMGUI_APPLICATION_INCLUDE_DIR "../Source/"
-    #endif
+    #define UIMGUI_APPLICATION_INCLUDE_DIR "../Source/"
 #endif
 
 #define UIMGUI_INIT_INFO_DEFAULT_DIRS                           \
