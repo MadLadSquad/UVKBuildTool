@@ -66,9 +66,18 @@ int main(int argc, char** argv)
                     SETUP_WORKDIR(args[0]);
 
                     std::string startupLevelName;
-                    std::ifstream i(UBT::getPath() + "Generated/ActorList.hpp");
                     if (config["name"])
                         name = config["name"].as<std::string>();
+
+                    auto path = std::filesystem::path(UBT::getPath());
+                    if (!std::filesystem::exists(path/"Generated"))
+                        std::filesystem::create_directory(path/"Generated");
+                    if (!std::filesystem::exists(path/"Framework"))
+                        std::filesystem::create_directory_symlink(std::filesystem::current_path().parent_path().parent_path()/"Framework", path/"Framework");
+                    if (!std::filesystem::exists(path/"UVKBuildTool"))
+                        std::filesystem::create_directory_symlink(std::filesystem::current_path().parent_path(), path/"UVKBuildTool");
+                    if (!std::filesystem::exists(path/"export.sh"))
+                        std::filesystem::copy_file(std::filesystem::current_path().parent_path().parent_path()/"export.sh", path/"export.sh");
 
                     UBT::generateMain(name.c_str());
                     UBT::generateDef();
@@ -88,7 +97,6 @@ int main(int argc, char** argv)
                     SETUP_WORKDIR(args[0]);
 
                     std::string startupLevelName;
-                    std::ifstream i(UBT::getPath() + "Generated/ActorList.hpp");
                     if (config["name"])
                         name = config["name"].as<std::string>();
 
