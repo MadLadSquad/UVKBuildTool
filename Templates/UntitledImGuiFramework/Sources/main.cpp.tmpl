@@ -7,16 +7,27 @@
 int main(int argc, char** argv)
 {
     UIMGUI_START(true);
+#ifdef __EMSCRIPTEN__
+    auto* inst = new {{ name }}::Instance{};
+#else
     {{ name }}::Instance instance{};
-    instance.argc = argc;
-    instance.argv = argv;
+    auto* inst = &instance;
+#endif
+    inst->argc = argc;
+    inst->argv = argv;
 
-    instance.arguments.resize(argc);
+    inst->arguments.resize(argc);
     for (int i = 0; i < argc; i++)
-        instance.arguments[i] = argv[i];
-    UImGui::Utility::getGlobal().instance = &instance;
+        inst->arguments[i] = argv[i];
+    UImGui::Utility::getGlobal().instance = inst;
 
+#ifdef __EMSCRIPTEN__
+    auto* renderer = new UImGui::RendererInternal{};
+    renderer->start();
+    renderer->stop();
+#else
     UImGui::RendererInternal renderer;
     renderer.start();
     renderer.stop();
+#endif
 }
