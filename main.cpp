@@ -81,8 +81,9 @@ int main(int argc, char** argv)
 
                     UBT::generateMain(name.c_str());
                     UBT::generateDef();
+
                     std::filesystem::copy_file(std::filesystem::path("../Templates/UntitledImGuiFramework/Sources/Config.hpp.tmpl"),
-                                               std::filesystem::path(UBT::getPath())/"Generated/Config.hpp");
+                                               std::filesystem::path(UBT::getPath())/"Generated/Config.hpp", std::filesystem::copy_options::overwrite_existing);
                     exit(0);
                 },
             },
