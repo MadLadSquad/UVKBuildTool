@@ -76,8 +76,8 @@ int main(int argc, char** argv)
                         std::filesystem::create_directory_symlink(std::filesystem::current_path().parent_path().parent_path()/"Framework", path/"Framework");
                     if (!std::filesystem::exists(path/"UVKBuildTool"))
                         std::filesystem::create_directory_symlink(std::filesystem::current_path().parent_path(), path/"UVKBuildTool");
-                    if (!std::filesystem::exists(path/"export.sh"))
-                        std::filesystem::copy_file(std::filesystem::current_path().parent_path().parent_path()/"export.sh", path/"export.sh");
+
+                    std::filesystem::copy_file(std::filesystem::current_path().parent_path().parent_path()/"export.sh", path/"export.sh", std::filesystem::copy_options::overwrite_existing);
 
                     UBT::generateMain(name.c_str());
                     UBT::generateDef();
