@@ -79,6 +79,7 @@ int main(int argc, char** argv)
 
                     std::filesystem::copy_file(std::filesystem::current_path().parent_path().parent_path()/"export.sh", path/"export.sh", std::filesystem::copy_options::overwrite_existing);
 
+                    UBT::generateCmake(config);
                     UBT::generateMain(name.c_str());
                     UBT::generateDef();
 
@@ -101,7 +102,7 @@ int main(int argc, char** argv)
                     if (config["name"])
                         name = config["name"].as<std::string>();
 
-                    UBT::generateCmake(name.c_str());
+                    UBT::generateCmake(config);
                     UBT::generateMain(name.c_str());
                     UBT::generateDef();
                     UBT::makeTemplate(static_cast<std::string>(name + std::string("UIInstance")), "Instance", name.c_str());

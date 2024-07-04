@@ -4,6 +4,6 @@
 
 namespace UBT
 {
-    UBT_PUBLIC_API void generateCmake(const char* name) noexcept;
+    UBT_PUBLIC_API void generateCmake(const YAML::Node& node) noexcept;
 }
 #endif
