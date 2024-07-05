@@ -43,14 +43,15 @@ void UBT::generateCmake(const YAML::Node& node) noexcept
 
         PUSH_VARIABLE(theming);
         PUSH_VARIABLE(i18n);
-        PUSH_VARIABLE(undo-redo);
-        PUSH_VARIABLE(cli-parser);
+	// Fix up double forms
+	generator.pushVariable({ .value = (modules["undo-redo"] && modules["undo-redo"].as<bool>()) || (modules["undo_redo"] && modules["undo_redo"].as<bool>()) ? "ON" : "OFF" }, "undo-redo");
+	generator.pushVariable({ .value = (modules["cli-parser"] && modules["cli-parser"].as<bool>()) || (modules["cli_parser"] && modules["cli_parser"].as<bool>()) ? "ON" : "OFF" }, "cli-parser");
 
         PUSH_VARIABLE(plotting);
         PUSH_VARIABLE(knobs);
         PUSH_VARIABLE(spinners);
         PUSH_VARIABLE(toggles);
-        PUSH_VARIABLE(text-utils);
+	generator.pushVariable({ .value = (modules["text-utils"] && modules["text-utils"].as<bool>()) || (modules["text_utils"] && modules["text_utils"].as<bool>()) ? "ON" : "OFF" }, "text-utils");
 
         auto stream = std::ofstream(getPath() + "Generated/" + node["name"].as<std::string>() + "Modules.cmake");
         stream << generator.parse().result->c_str();
