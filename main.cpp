@@ -65,17 +65,39 @@ int main(int argc, char** argv)
                     CHECK_BOUNDS(size == 0, "Invalid argument, generate requires a path to a UVKBuildTool project!");
                     SETUP_WORKDIR(args[0]);
 
-                    std::string startupLevelName;
                     if (config["name"])
                         name = config["name"].as<std::string>();
 
                     auto path = std::filesystem::path(UBT::getPath());
                     if (!std::filesystem::exists(path/"Generated"))
                         std::filesystem::create_directory(path/"Generated");
+
+                    // I fucking hate windows
+#ifdef _WIN32
+                    std::string tmp = path.string().c_str();
+                    std::string frameworkBase = (std::filesystem::current_path().parent_path().parent_path()/"Framework").string().c_str();
+                    std::string frameworkDest = (path/"Framework").string().c_str();
+
+                    std::string buildToolBase = (std::filesystem::current_path().parent_path().parent_path()/"UVKBuildTool").string().c_str();
+                    std::string buildToolDest = (path/"UVKBuildTool").string().c_str();
+                    
+                    UBT::sanitisePath(frameworkBase);
+                    UBT::sanitisePath(frameworkDest);
+                    UBT::sanitisePath(buildToolBase);
+                    UBT::sanitisePath(buildToolDest);
+
+                    std::filesystem::copy_file(std::filesystem::current_path().parent_path().parent_path()/"elevate.bat", std::filesystem::current_path()/"elevate.bat");
+                    if (!std::filesystem::exists(path / "Framework"))
+                        system(("elevate.bat mklink /d " + frameworkDest + " " + frameworkBase).c_str());
+                    if (!std::filesystem::exists(path / "UVKBuildTool"))
+                        system(("elevate.bat mklink /d " + buildToolDest + " " + buildToolBase).c_str());
+                    std::filesystem::remove(std::filesystem::current_path() / "elevate.bat");
+#else
                     if (!std::filesystem::exists(path/"Framework"))
                         std::filesystem::create_directory_symlink(std::filesystem::current_path().parent_path().parent_path()/"Framework", path/"Framework");
                     if (!std::filesystem::exists(path/"UVKBuildTool"))
                         std::filesystem::create_directory_symlink(std::filesystem::current_path().parent_path(), path/"UVKBuildTool");
+#endif
 
                     std::filesystem::copy_file(std::filesystem::current_path().parent_path().parent_path()/"export.sh", path/"export.sh", std::filesystem::copy_options::overwrite_existing);
 
@@ -98,7 +120,6 @@ int main(int argc, char** argv)
                     CHECK_BOUNDS(size == 0, "Invalid argument, generate requires a path to a UVKBuildTool project!");
                     SETUP_WORKDIR(args[0]);
 
-                    std::string startupLevelName;
                     if (config["name"])
                         name = config["name"].as<std::string>();
 

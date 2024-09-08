@@ -57,6 +57,8 @@ namespace UBT
     UBT_PUBLIC_API const std::string& getPath();
     UBT_PUBLIC_API void setPath(std::string pt);
 
+    UBT_PUBLIC_API void sanitisePath(std::string& s) noexcept;
+
     UBT_PUBLIC_API std::string toLower(std::string str);
     UBT_PUBLIC_API std::string toUpper(std::string str);
 }

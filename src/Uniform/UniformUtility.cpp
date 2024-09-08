@@ -17,6 +17,19 @@ void UBT::setPath(std::string pt)
     path = pt;
 }
 
+void UBT::sanitisePath(std::string& s) noexcept
+{
+#ifdef _WIN32
+    for (auto& a : s)
+        if (a == '/')
+            a = '\\';
+#else
+    for (auto& a : s)
+        if (a == '\\')
+            a = '/';
+#endif
+}
+
 std::string UBT::toUpper(std::string str)
 {
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
