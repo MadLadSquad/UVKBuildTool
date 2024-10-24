@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 if [[ $1 == "" ]]; then
   echo "ERROR: The script should be called with a CLI argument that specifies the project path!"
   exit
