@@ -11,7 +11,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     UTTE::Generator generator{};
     UTTE::InitialisationResult result;
 
-    result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
+    result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << ERROR << "There was an error with the generator when generating the BuildDef.hpp file! Error code: " << result << END_COLOUR << std::endl;
@@ -62,7 +62,7 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     if (system(str.c_str()) != 0)
         std::cout << ERROR << "There was an error with running the 'export.sh' script!" << END_COLOUR;
 
-    result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
+    result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << ERROR << "There was an error with the generator when generating the BuildDef.hpp file! Error code: " << result << END_COLOUR << std::endl;
@@ -114,7 +114,7 @@ void generateMacroDefinitions(const std::string& name, const std::string& defini
 void addParsedPlatformConfigToCMakeLists(YAML::Node& config, const InstallDirectories& installDirs, std::string& installs) noexcept
 {
     UTTE::Generator generator{};
-    const auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeInstall.tmpl");
+    const auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/CMakeInstall.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << ERROR << "Invalid location for the CMakeInstall template!\x1b[0m" << std::endl;

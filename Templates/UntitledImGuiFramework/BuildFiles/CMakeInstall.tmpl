@@ -1,4 +1,5 @@
     if (UIMGUI_INSTALL_FRAMEWORK)
+        install(FILES ${PROJECT_BINARY_DIR}/UntitledImGuiFramework.pc DESTINATION lib/pkgconfig/)
         install(TARGETS UntitledImGuiFramework DESTINATION "{{ framework_dir }}")
         multicast(target_compile_definitions PRIVATE UIMGUI_FRAMEWORK_LIBRARY_DIR="${UIMGUI_INSTALL_PREFIX}/{{ framework_dir }}")
     endif()

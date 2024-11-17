@@ -5,7 +5,7 @@
 void UBT::generateMain(const char* gameName) noexcept
 {
     UTTE::Generator generator{};
-    const auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/Sources/main.cpp.tmpl");
+    const auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/Sources/main.cpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << ERROR << "There was an error with the generator when generating main.cpp! Error code: " << result << END_COLOUR << std::endl;
@@ -25,7 +25,7 @@ void UBT::generateMain(const char* gameName) noexcept
 void UBT::generateDef() noexcept
 {
     UTTE::Generator generator{};
-    const auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/BuildDef.hpp.tmpl");
+    const auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/BuildDef.hpp.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << ERROR << "There was an error with the generator when generating the BuildDef.hpp file! Error code: " << result << END_COLOUR << std::endl;

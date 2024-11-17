@@ -6,7 +6,7 @@ void UBT::generateCmake(const YAML::Node& node) noexcept
 {
     {
         UTTE::Generator generator{};
-        const auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/CMakeLists.txt.tmpl");
+        const auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/CMakeLists.txt.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
             std::cout << ERROR << "Error when opening the CMakeLists.txt.tmpl file! Error code: " << result << END_COLOUR << std::endl;
@@ -25,7 +25,7 @@ void UBT::generateCmake(const YAML::Node& node) noexcept
     }
     {
         UTTE::Generator generator{};
-        const auto result = generator.loadFromFile("../Templates/UntitledImGuiFramework/BuildFiles/Modules.cmake.tmpl");
+        const auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/Modules.cmake.tmpl");
         if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
         {
             std::cout << ERROR << "Error when opening the Modules.cmake.tmpl file! Error code: " << result << END_COLOUR << std::endl;

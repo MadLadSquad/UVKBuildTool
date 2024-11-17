@@ -10,9 +10,20 @@ project(UVKBuildTool)
 
 # This option is needed to define a compiler macro and the given source files to be used by the compilation target
 option(UBT_COMPILING_FOR_WEB "If set to ON it will compile with configuration for a web project, otherwise will compile for the UntitledImGuiFramework!" OFF)
+option(UBT_INSTALL "Whether to install the UVKBuildTool" OFF)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
+if (UBT_COMPILING_FOR_WEB)
+    set(UBT_TEMPLATES_DIR "${UBT_INSTALL_PREFIX}/Templates/Web")
+    set(UBT_INSTALL OFF)
+else()
+    if (NOT UBT_INSTALL)
+        set(UBT_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
+    endif ()
+    set(UBT_TEMPLATES_DIR "${UBT_INSTALL_PREFIX}/Templates/UntitledImGuiFramework")
+endif()
 
 if (WIN32)
     set(BUILD_SHARED_LIBS ON)
@@ -38,7 +49,6 @@ else()
         add_subdirectory(ucli/)
     endif()
 endif()
-
 
 if (UBT_COMPILING_FOR_WEB)
     set(BUILD_VARIANT_VENDOR ON)
@@ -66,8 +76,8 @@ add_executable(UVKBuildTool ${HEAD} ${UNI_HEAD} main.cpp)
 set_target_properties(UVKBuildToolLib PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(UVKBuildTool PROPERTIES LINKER_LANGUAGE CXX)
 
-target_compile_definitions(UVKBuildToolLib PRIVATE UTTE_CUSTOM_MAP=phmap::flat_hash_map UTTE_CUSTOM_MAP_INCLUDE=<parallel-hashmap/parallel_hashmap/phmap.h>)
-target_compile_definitions(UVKBuildTool PRIVATE UTTE_CUSTOM_MAP=phmap::flat_hash_map UTTE_CUSTOM_MAP_INCLUDE=<parallel-hashmap/parallel_hashmap/phmap.h>)
+target_compile_definitions(UVKBuildToolLib PRIVATE UBT_TEMPLATES_DIR="${UBT_TEMPLATES_DIR}" UTTE_CUSTOM_MAP=phmap::flat_hash_map UTTE_CUSTOM_MAP_INCLUDE=<parallel-hashmap/parallel_hashmap/phmap.h>)
+target_compile_definitions(UVKBuildTool PRIVATE UBT_TEMPLATES_DIR="${UBT_TEMPLATES_DIR}" UTTE_CUSTOM_MAP=phmap::flat_hash_map UTTE_CUSTOM_MAP_INCLUDE=<parallel-hashmap/parallel_hashmap/phmap.h>)
 if (UBT_COMPILING_FOR_WEB)
     target_compile_definitions(UVKBuildToolLib PRIVATE "UBT_LIB_COMPILE" "MLS_LIB_COMPILE" "YAML_CPP_DLL" "UBT_TARGET_WEB" "MLS_EXPORT_LIBRARY")
     target_compile_definitions(UVKBuildTool PRIVATE "UBT_TARGET_WEB" "MLS_EXPORT_LIBRARY")
@@ -82,3 +92,10 @@ if (UBT_COMPILING_FOR_WEB)
 endif()
 
 target_link_libraries(UVKBuildTool UVKBuildToolLib UntitledCLIParser)
+if (NOT UBT_COMPILING_FOR_WEB AND UBT_INSTALL)
+    install(TARGETS UVKBuildToolLib
+            LIBRARY DESTINATION lib64/
+            ARCHIVE DESTINATION lib64/)
+    install(TARGETS UVKBuildTool DESTINATION bin/)
+    install(DIRECTORY Templates/ DESTINATION share/UVKBuildTool/)
+endif ()
