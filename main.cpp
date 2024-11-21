@@ -16,7 +16,7 @@ void getConfig(YAML::Node& config, std::string& name)
 {
     try
     {
-        std::string tmp = UBT::getPath() + "uvproj.yaml";
+        const std::string tmp = UBT::getPath() + "uvproj.yaml";
         config = YAML::LoadFile(tmp);
     }
     catch (YAML::BadFile&)
@@ -46,7 +46,7 @@ void getConfig(YAML::Node& config, std::string& name)
 #define SETUP_WORKDIR(x) UBT::setPath(x); getConfig(config, name);
 
 #ifdef UBT_TARGET_FRAMEWORK
-int main(int argc, char** argv)
+int main(const int argc, char** argv)
 {
     UBT::setPath("../../");
     UCLI::Parser parser{};
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "generate",
                 .shortType = "g",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, size_t size) -> void {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
                     YAML::Node config;
                     std::string name;
 
@@ -68,21 +68,21 @@ int main(int argc, char** argv)
                     if (config["name"])
                         name = config["name"].as<std::string>();
 
-                    auto path = std::filesystem::path(UBT::getPath());
+                    const auto path = std::filesystem::path(UBT::getPath());
                     if (!std::filesystem::exists(path/"Generated"))
                         std::filesystem::create_directory(path/"Generated");
                     if (!std::filesystem::exists(path/"Framework"))
-                        std::filesystem::create_directory_symlink(std::filesystem::current_path().parent_path().parent_path()/"Framework", path/"Framework");
+                        std::filesystem::create_directory_symlink(std::filesystem::path(UBT_FRAMEWORK_DIR)/"Framework", path/"Framework");
                     if (!std::filesystem::exists(path/"UVKBuildTool"))
-                        std::filesystem::create_directory_symlink(std::filesystem::current_path().parent_path(), path/"UVKBuildTool");
+                        std::filesystem::create_directory_symlink(std::filesystem::path(UBT_DIR), path/"UVKBuildTool");
 
-                    std::filesystem::copy_file(std::filesystem::current_path().parent_path().parent_path()/"export.sh", path/"export.sh", std::filesystem::copy_options::overwrite_existing);
+                    std::filesystem::copy_file(std::filesystem::path(UBT_FRAMEWORK_DIR)/"export.sh", path/"export.sh", std::filesystem::copy_options::overwrite_existing);
 
                     UBT::generateCmake(config);
                     UBT::generateMain(name.c_str());
                     UBT::generateDef();
 
-                    std::filesystem::copy_file(std::filesystem::path("../Templates/UntitledImGuiFramework/Sources/Config.hpp.tmpl"),
+                    std::filesystem::copy_file(std::filesystem::path(UBT_TEMPLATES_DIR"/Sources/Config.hpp.tmpl"),
                                                std::filesystem::path(UBT::getPath())/"Generated/Config.hpp", std::filesystem::copy_options::overwrite_existing);
                     exit(0);
                 },
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "install",
                 .shortType = "i",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, size_t size) -> void {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
                     YAML::Node config;
                     std::string name;
 
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
                     UBT::generateDef();
                     UBT::makeTemplate(static_cast<std::string>(name + std::string("UIInstance")), "Instance", name.c_str());
 
-                    std::filesystem::copy_file(std::filesystem::path("../Templates/UntitledImGuiFramework/Sources/Config.hpp.tmpl"),
+                    std::filesystem::copy_file(std::filesystem::path(UBT_TEMPLATES_DIR"/Sources/Config.hpp.tmpl"),
                                                std::filesystem::path(UBT::getPath())/"Generated/Config.hpp");
                     exit(0);
                 },
@@ -113,7 +113,7 @@ int main(int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "inline",
                 .shortType = "",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, size_t size) -> void {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
                     YAML::Node config;
                     std::string name;
 
@@ -127,7 +127,7 @@ int main(int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "window",
                 .shortType = "",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, size_t size) -> void {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
                     YAML::Node config;
                     std::string name;
 
@@ -141,7 +141,7 @@ int main(int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "title-bar",
                 .shortType = "",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, size_t size) -> void {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
                     YAML::Node config;
                     std::string name;
 
@@ -155,7 +155,7 @@ int main(int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "build",
                 .shortType = "b",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, size_t size) -> void {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
                     YAML::Node config;
                     std::string name;
 
