@@ -58,7 +58,7 @@ int main(const int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "generate",
                 .shortType = "g",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void {
                     YAML::Node config;
                     std::string name;
 
@@ -90,7 +90,7 @@ int main(const int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "install",
                 .shortType = "i",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
                     YAML::Node config;
                     std::string name;
 
@@ -113,7 +113,7 @@ int main(const int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "inline",
                 .shortType = "",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
                     YAML::Node config;
                     std::string name;
 
@@ -127,7 +127,7 @@ int main(const int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "window",
                 .shortType = "",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
                     YAML::Node config;
                     std::string name;
 
@@ -141,7 +141,7 @@ int main(const int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "title-bar",
                 .shortType = "",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
                     YAML::Node config;
                     std::string name;
 
@@ -155,7 +155,7 @@ int main(const int argc, char** argv)
             UCLI::Parser::ArrayFlag{
                 .longType = "build",
                 .shortType = "b",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void [[noreturn]] {
+                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
                     YAML::Node config;
                     std::string name;
 
