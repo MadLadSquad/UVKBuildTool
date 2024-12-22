@@ -7,6 +7,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/Framework/cmake/
 set(APP_LIB_TARGET "{{ name }}Lib")
 set(APP_TARGET "{{ name }}")
 include(Version)
+include(UImGuiHeader)
 
 if (NOT EMSCRIPTEN)
     project(UntitledImGuiFramework VERSION "${UIMGUI_FRAMEWORK_VERSION}")
