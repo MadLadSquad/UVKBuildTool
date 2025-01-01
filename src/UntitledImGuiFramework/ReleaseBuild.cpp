@@ -216,8 +216,13 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
         returns += " -DBUILD_VARIANT_VENDOR=" + (config["build-mode-vendor"].as<bool>() ? std::string("ON") : std::string("OFF"));
     else
         returns += " -DBUILD_VARIANT_VENDOR=ON";
+
     if (config["install-framework"])
-        returns += " -DUIMGUI_INSTALL_FRAMEWORK=" + (config["install-framework"].as<bool>() ? std::string("ON") : std::string("OFF"));
+    {
+        bool bInstallFramework = config["install-framework"].as<bool>();
+        returns += " -DUIMGUI_INSTALL_FRAMEWORK=" + (bInstallFramework ? std::string("ON") : std::string("OFF"));
+        returns += " -DUIMGUI_USE_PKGCONF_FOR_INSTALL=" + (bInstallFramework ? std::string("OFF") : std::string("ON"));
+    }
     else
         returns += " -DUIMGUI_INSTALL_FRAMEWORK=OFF";
     return returns;
