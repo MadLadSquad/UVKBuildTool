@@ -105,5 +105,5 @@ if (NOT UBT_COMPILING_FOR_WEB AND UBT_INSTALL)
             LIBRARY DESTINATION lib64/
             ARCHIVE DESTINATION lib64/)
     install(TARGETS UVKBuildTool DESTINATION bin/)
-    install(DIRECTORY Templates/ DESTINATION share/UVKBuildTool/)
+    install(DIRECTORY Templates/ DESTINATION share/UVKBuildTool/Templates)
 endif ()
