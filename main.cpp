@@ -69,6 +69,8 @@ int main(const int argc, char** argv)
                         name = config["name"].as<std::string>();
 
                     const auto path = std::filesystem::path(UBT::getPath());
+                    if (!std::filesystem::exists(path/"Exported"))
+                        std::filesystem::create_directory(path/"Exported");
                     if (!std::filesystem::exists(path/"Generated"))
                         std::filesystem::create_directory(path/"Generated");
                     if (!std::filesystem::exists(path/"Framework"))
