@@ -40,14 +40,14 @@ jobs:
           ver="${{ github.ref_name }}"
           sed -i "s/project(UVKBuildToolLib.*/project(UVKBuildToolLib VERSION ${ver:1})/g" CMakeLists.txt
           sed -i "s/project(UVKBuildTool .*/project(UVKBuildTool VERSION ${ver:1})/g" CMakeLists.txt
-          git add . && git commit -m "Automatically bump version" && git push origin HEAD:master
+          (git add . && git commit -m "Automatically bump version" && git push origin HEAD:master) || echo "Nothing to commit"
       - name: Create archive
         shell: bash
         run: |
           rm -rf .git/
           tar cfJ uvk-build-tool.tar.xz . || echo "Might have failed"
       - name: Create Release
-        uses: softprops/action-gh-release@master
+        uses: softprops/action-gh-release@v2
         with:
           body: |
             Check our discord for patch notes: https://discord.gg/4kyWu2Vu
