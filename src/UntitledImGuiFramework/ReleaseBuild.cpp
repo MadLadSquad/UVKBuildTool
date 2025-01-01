@@ -54,9 +54,9 @@ void UBT::relBuild(const std::string& name, YAML::Node& config, const std::strin
     if (config["system-wide"] && config["system-wide"].as<bool>())
         systemWide = "--system-wide";
 #ifdef _WIN32
-    std::string str = "cd " + getPath() + " && bash export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs;
+    std::string str = "cd " + getPath() + " && bash " UBT_FRAMEWORK_DIR "/export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs;
 #else
-    std::string str = "cd " + getPath() + " && ./export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs;
+    std::string str = "cd " + getPath() + " && " UBT_FRAMEWORK_DIR "/export.sh " + name + " " + prefix + " " + systemWide + " " + cmakeArgs;
 #endif
     std::cout << str << std::endl;
     if (system(str.c_str()) != 0)
