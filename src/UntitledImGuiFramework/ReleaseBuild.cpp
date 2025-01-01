@@ -221,7 +221,8 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
     {
         bool bInstallFramework = config["install-framework"].as<bool>();
         returns += " -DUIMGUI_INSTALL_FRAMEWORK=" + (bInstallFramework ? std::string("ON") : std::string("OFF"));
-        returns += " -DUIMGUI_USE_PKGCONF_FOR_INSTALL=" + (bInstallFramework ? std::string("OFF") : std::string("ON"));
+        if (!bInstallFramework)
+            returns += " -DUIMGUI_SRC_PREFIX=\"" UBT_FRAMEWORK_DIR "\"";
     }
     else
         returns += " -DUIMGUI_INSTALL_FRAMEWORK=OFF";
