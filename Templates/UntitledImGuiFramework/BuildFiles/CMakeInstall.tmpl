@@ -28,7 +28,7 @@
 
     if (UIMGUI_INSTALL_FRAMEWORK)
         install(DIRECTORY "Framework/" DESTINATION "{{ framework_include_dir }}/Framework" FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-        install(FILES "export.sh" DESTINATION "{{ framework_include_dir }}")
+        install(FILES "export.sh" DESTINATION "{{ framework_include_dir }}" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ WORLD_READ)
         multicast(target_compile_definitions PRIVATE UIMGUI_FRAMEWORK_INCLUDE_DIR="${UIMGUI_INSTALL_PREFIX}/{{ framework_include_dir }}")
     endif()
 
