@@ -207,7 +207,12 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
        addParsedPlatformConfigToCMakeLists(config, unixInstallDirectories, installs);
     installs += "\nendif()\n";
 
-    std::string returns = "-DUIMGUI_INSTALL_PREFIX=" + realInstallDir;
+    std::string returns = "-DUIMGUI_INSTALL_PREFIX=" + realInstallDir
+#ifdef UBT_DO_NOT_BUILD_FRAMEWORK
+    + " -DUIMGUI_SKIP_FRAMEWORK=ON";
+#else
+    ;
+#endif
     if (config["build-mode-static"])
         returns += " -DBUILD_VARIANT_STATIC=" + (config["build-mode-static"].as<bool>() ? std::string("ON") : std::string("OFF"));
     else
