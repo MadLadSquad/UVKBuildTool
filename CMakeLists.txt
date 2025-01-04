@@ -5,7 +5,7 @@ if (WIN32)
     set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
 endif()
 
-project(UVKBuildToolLib)
+project(UVKBuildToolLib VERSION 3.0.0.0)
 project(UVKBuildTool)
 
 # This option is needed to define a compiler macro and the given source files to be used by the compilation target
