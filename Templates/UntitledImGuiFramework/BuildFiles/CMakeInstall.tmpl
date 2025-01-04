@@ -23,11 +23,11 @@
     install(DIRECTORY "Content/" DESTINATION "${UIMGUI_INSTALL_CONTENT_DIR}")
     multicast(target_compile_definitions PRIVATE UIMGUI_CONTENT_DIR="${UIMGUI_INSTALL_PREFIX}/${UIMGUI_INSTALL_CONTENT_DIR}")
 
-    install(DIRECTORY "Source/" DESTINATION "{{ application_include_dir }}" FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.cmake")
+    install(DIRECTORY "Source/" DESTINATION "{{ application_include_dir }}" FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.cmake" PATTERN "*.in")
     multicast(target_compile_definitions PRIVATE UIMGUI_APPLICATION_INCLUDE_DIR="${UIMGUI_INSTALL_PREFIX}/{{ application_include_dir }}")
 
     if (UIMGUI_INSTALL_FRAMEWORK)
-        install(DIRECTORY "Framework/" DESTINATION "{{ framework_include_dir }}/Framework" FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.cmake")
+        install(DIRECTORY "Framework/" DESTINATION "{{ framework_include_dir }}/Framework" FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.cmake" PATTERN "*.in")
         install(FILES "export.sh" DESTINATION "{{ framework_include_dir }}" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
         multicast(target_compile_definitions PRIVATE UIMGUI_FRAMEWORK_INCLUDE_DIR="${UIMGUI_INSTALL_PREFIX}/{{ framework_include_dir }}")
     endif()
