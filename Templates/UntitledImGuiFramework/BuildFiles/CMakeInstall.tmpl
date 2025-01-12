@@ -4,6 +4,14 @@
         multicast(target_compile_definitions PRIVATE UIMGUI_FRAMEWORK_LIBRARY_DIR="${UIMGUI_INSTALL_PREFIX}/{{ framework_dir }}")
     endif()
 
+    if (WIN32)
+        file(GLOB_RECURSE UIMGUI_THIRD_PARTY_LIBS "${PROJECT_BINARY_DIR}/*.dll")
+    elseif (APPLE)
+        file(GLOB_RECURSE UIMGUI_THIRD_PARTY_LIBS "${PROJECT_BINARY_DIR}/*.dylib")
+    elseif (NOT EMSCRIPTEN)
+        file(GLOB_RECURSE UIMGUI_THIRD_PARTY_LIBS "${PROJECT_BINARY_DIR}/*.so")
+    endif()
+
     {{ application_library_dir }}
 
     install(TARGETS {{ name }} DESTINATION "{{ application_dir }}")

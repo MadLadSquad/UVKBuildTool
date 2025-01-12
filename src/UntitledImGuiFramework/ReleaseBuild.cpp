@@ -8,6 +8,14 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
 
 void UBT::relBuild(const std::string& name, YAML::Node& config, const std::string& prefix, const std::string& realInstallDir) noexcept
 {
+#ifdef __APPLE__
+    if (config["build-mode-vendor"] && !config["build-mode-vendor"].as<bool>() && config["macos"] && config["macos"]["bundle"] && config["macos"]["bundle"].as<bool>())
+    {
+        std::cout << ERROR << "You're currently trying to build an application as a macOS application bundle, but with system libraries, which is not possible!\n"
+                                "Application bundles are made to be self-contained, which means that you are forced to vendor all your dependencies, except for OS libraries!" << END_COLOUR << std::endl;
+        return;
+    }
+#endif
     UTTE::Generator generator{};
     UTTE::InitialisationResult result;
 
@@ -128,6 +136,11 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
 {
     auto name = config["name"].as<std::string>();
 
+    // macOS settings. Bundle for whether to ship as an application bundle
+    bool bBundle = false;
+    if (config["macos"] && config["macos"]["bundle"])
+        bBundle = config["macos"]["bundle"].as<bool>();
+
     InstallDirectories windowsInstallDirectories =
     {
         .platform = InstallPlatform::WINDOWS,
@@ -155,16 +168,15 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
     InstallDirectories macosInstallDirectories =
     {
         .platform = InstallPlatform::MACOS,
-        .frameworkDir =                 "lib64/",
-        .applicationLibraryDir =        "lib64/",
-        .applicationDir =               "bin/",
-        .configDir =                    "etc/" + name + "/",
-        .contentDir =                   "share/config/" + name + "/",
-        .frameworkIncludeDir =          "include/UntitledImGuiFramework/",
-        .applicationIncludeDir =        "include/" + name + "/"
+        .frameworkDir =                 bBundle ? name + ".app/Contents/Frameworks/" : "lib64/",
+        .applicationLibraryDir =        bBundle ? name + ".app/Contents/Frameworks/" : "lib64/",
+        .applicationDir =               bBundle ? name + ".app/Contents/MacOS" : "bin/",
+        .configDir =                    bBundle ? name + ".app/Contents/Resources/Config/" : "etc/" + name + "/",
+        .contentDir =                   bBundle ? name + ".app/Contents/Resources/Content/" : "share/config/" + name + "/",
+        .frameworkIncludeDir =          bBundle ? name + ".app/Contents/Frameworks/include/UntitledImGuiFramework" : "include/UntitledImGuiFramework/",
+        .applicationIncludeDir =        bBundle ? name + ".app/Contents/Frameworks/include/" + name + "/" : "include/" + name + "/"
     };
 
-    // TODO: Configure WASM traget installs
     InstallDirectories wasmInstallDirectories =
     {
         .platform = InstallPlatform::WASM,
@@ -222,7 +234,9 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
     else
         returns += " -DBUILD_VARIANT_VENDOR=ON";
 
-    if (config["install-framework"])
+    if (bBundle)
+        returns += " -DUIMGUI_INSTALL_FRAMEWORK=ON"; // Since we're building for a bundle it's important to also install the framework
+    else if (config["install-framework"])
     {
         bool bInstallFramework = config["install-framework"].as<bool>();
         returns += " -DUIMGUI_INSTALL_FRAMEWORK=" + (bInstallFramework ? std::string("ON") : std::string("OFF"));
@@ -255,6 +269,11 @@ void generateInstallStatements(YAML::Node& config, const InstallDirectories& dir
     if (dirs.platform != InstallPlatform::WINDOWS)
     {
         applicationDir += "\n    install(TARGETS " + name + "Lib DESTINATION \"" + dirs.applicationLibraryDir + "\")\n";
+        if (dirs.platform == InstallPlatform::MACOS && config["macos"] && config["macos"]["bundle"] && config["macos"]["bundle"].as<bool>())
+            applicationDir +=   "\n    install(FILES \"Framework/ThirdParty/vulkan/libvulkan.1.dylib\" DESTINATION \"" + dirs.applicationLibraryDir + "\" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)\n"
+                                "\n    install(FILES ${UIMGUI_THIRD_PARTY_LIBS} DESTINATION \"" + dirs.applicationLibraryDir + "\" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)\n"
+                                "\n    install(FILES \"Config/macOS/Info.plist\" DESTINATION \"" + dirs.applicationLibraryDir + "/../\")\n"
+                                "\n    install(FILES \"Config/macOS/Icon.icns\" DESTINATION \"" + dirs.contentDir + "/../\")\n";
         generateMacroDefinitions(name, "UIMGUI_APPLICATION_LIBRARY_DIR", applicationDir, dirs.applicationLibraryDir, dirs.platform);
     }
 

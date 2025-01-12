@@ -5,7 +5,7 @@
 int UBT::showHelp(bool bError) noexcept
 {
     UTTE::Generator generator;
-    auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"../HelpMessage.tmpl");
+    auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/../HelpMessage.tmpl");
     if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
     {
         std::cout << ERROR << "Error when opening the HelpMessage.tmpl file! Error code: " << static_cast<int>(result) << END_COLOUR << std::endl;
