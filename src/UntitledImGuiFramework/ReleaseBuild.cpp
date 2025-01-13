@@ -272,8 +272,8 @@ void generateInstallStatements(YAML::Node& config, const InstallDirectories& dir
         if (dirs.platform == InstallPlatform::MACOS && config["macos"] && config["macos"]["bundle"] && config["macos"]["bundle"].as<bool>())
             applicationDir +=   "\n    install(FILES \"Framework/ThirdParty/vulkan/libvulkan.1.dylib\" DESTINATION \"" + dirs.applicationLibraryDir + "\" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)\n"
                                 "\n    install(FILES ${UIMGUI_THIRD_PARTY_LIBS} DESTINATION \"" + dirs.applicationLibraryDir + "\" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)\n"
-                                "\n    install(FILES \"Config/macOS/Info.plist\" DESTINATION \"" + dirs.applicationLibraryDir + "/../\")\n"
-                                "\n    install(FILES \"Config/macOS/Icon.icns\" DESTINATION \"" + dirs.contentDir + "/../\")\n";
+                                "\n    install(FILES \"Config/Resources/Info.plist\" DESTINATION \"" + dirs.applicationLibraryDir + "/../\")\n"
+                                "\n    install(FILES \"Config/Resources/Icon.icns\" DESTINATION \"" + dirs.contentDir + "/../\")\n";
         generateMacroDefinitions(name, "UIMGUI_APPLICATION_LIBRARY_DIR", applicationDir, dirs.applicationLibraryDir, dirs.platform);
     }
 
