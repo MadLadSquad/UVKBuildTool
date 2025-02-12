@@ -25,7 +25,7 @@ function find_visual_studio_directory()
   return
 }
 
-cpus=$(grep -c processor /proc/cpuinfo) || cpus=$(sysctl -n hw.ncpu)
+cpus=$(grep -c processor /proc/cpuinfo 2> /dev/null) || cpus=$(sysctl -n hw.ncpu)
 
 find_visual_studio_directory
 
