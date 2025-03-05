@@ -36,7 +36,6 @@ void UBT::generateCmake(const YAML::Node& node) noexcept
 
         PUSH_VARIABLE(os);
         PUSH_VARIABLE(uexec);
-        PUSH_VARIABLE(ufont);
         PUSH_VARIABLE(open);
         PUSH_VARIABLE(xdg);
         PUSH_VARIABLE(dbus);
