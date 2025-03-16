@@ -23,13 +23,8 @@
     install(DIRECTORY "Config/" DESTINATION "{{ config_dir }}")
     multicast(target_compile_definitions PRIVATE UIMGUI_CONFIG_DIR="${UIMGUI_INSTALL_PREFIX}/{{ config_dir }}")
 
-    if (NOT WIN32 AND EXISTS "../{{ content_dir }}")
-        set(UIMGUI_INSTALL_CONTENT_DIR "../{{ content_dir }}")
-    else()
-        set(UIMGUI_INSTALL_CONTENT_DIR "{{ content_dir }}")
-    endif()
-    install(DIRECTORY "Content/" DESTINATION "${UIMGUI_INSTALL_CONTENT_DIR}")
-    multicast(target_compile_definitions PRIVATE UIMGUI_CONTENT_DIR="${UIMGUI_INSTALL_PREFIX}/${UIMGUI_INSTALL_CONTENT_DIR}")
+    install(DIRECTORY "Content/" DESTINATION "{{ content_dir }}")
+    multicast(target_compile_definitions PRIVATE UIMGUI_CONTENT_DIR="${UIMGUI_INSTALL_PREFIX}/{{ content_dir }}")
 
     install(DIRECTORY "Source/" DESTINATION "{{ application_include_dir }}" FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.cmake" PATTERN "*.in")
     multicast(target_compile_definitions PRIVATE UIMGUI_APPLICATION_INCLUDE_DIR="${UIMGUI_INSTALL_PREFIX}/{{ application_include_dir }}")

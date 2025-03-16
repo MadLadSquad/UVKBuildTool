@@ -141,16 +141,26 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
     if (config["macos"] && config["macos"]["bundle"])
         bBundle = config["macos"]["bundle"].as<bool>();
 
+    std::string unixConfigDir = "share/config/" + name + "/Config/";
+    std::string unixContentDir = "share/config/" + name + "/Content/";
+    if (realInstallDir == "/")
+    {
+        unixConfigDir = "etc/" + name + "/Config/";
+        unixContentDir = "etc/" + name + "/Content/";
+    }
+    else if (realInstallDir.ends_with(".local/") || realInstallDir.ends_with(".local"))
+        unixConfigDir = "../.config/" + name + "/Config/";
+
     InstallDirectories windowsInstallDirectories =
     {
         .platform = InstallPlatform::WINDOWS,
-        .frameworkDir =                 "Program Files/" + name + "/",
-        .applicationLibraryDir =        "Program Files/" + name + "/",
-        .applicationDir =               "Program Files/" + name + "/",
-        .configDir =                    "Program Files/" + name + "/",
-        .contentDir =                   "Program Files/" + name + "/",
-        .frameworkIncludeDir =          "Program Files/" + name + "/",
-        .applicationIncludeDir =        "Program Files/" + name + "/",
+        .frameworkDir =                 "Program Files/" + name + "/lib/",
+        .applicationLibraryDir =        "Program Files/" + name + "/lib/",
+        .applicationDir =               "Program Files/" + name + "/bin/",
+        .configDir =                    "Program Files/" + name + "/Config/",
+        .contentDir =                   "Program Files/" + name + "/Content/",
+        .frameworkIncludeDir =          "Program Files/" + name + "/include/UntitledImGuiFramework/",
+        .applicationIncludeDir =        "Program Files/" + name + "/include/" + name + "/",
     };
 
     InstallDirectories unixInstallDirectories =
@@ -159,8 +169,8 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
         .frameworkDir =                 "lib64/",
         .applicationLibraryDir =        "lib64/",
         .applicationDir =               "bin/",
-        .configDir =                    "etc/" + name + "/",
-        .contentDir =                   "share/config/" + name + "/",
+        .configDir =                    unixConfigDir,
+        .contentDir =                   unixContentDir,
         .frameworkIncludeDir =          "include/UntitledImGuiFramework/",
         .applicationIncludeDir =        "include/" + name + "/"
     };
@@ -168,13 +178,13 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
     InstallDirectories macosInstallDirectories =
     {
         .platform = InstallPlatform::MACOS,
-        .frameworkDir =                 bBundle ? name + ".app/Contents/Frameworks/" : "lib64/",
-        .applicationLibraryDir =        bBundle ? name + ".app/Contents/Frameworks/" : "lib64/",
-        .applicationDir =               bBundle ? name + ".app/Contents/MacOS" : "bin/",
-        .configDir =                    bBundle ? name + ".app/Contents/Resources/Config/" : "etc/" + name + "/",
-        .contentDir =                   bBundle ? name + ".app/Contents/Resources/Content/" : "share/config/" + name + "/",
-        .frameworkIncludeDir =          bBundle ? name + ".app/Contents/Frameworks/include/UntitledImGuiFramework" : "include/UntitledImGuiFramework/",
-        .applicationIncludeDir =        bBundle ? name + ".app/Contents/Frameworks/include/" + name + "/" : "include/" + name + "/"
+        .frameworkDir =                 bBundle ? name + ".app/Contents/Frameworks/"                                 : "lib64/",
+        .applicationLibraryDir =        bBundle ? name + ".app/Contents/Frameworks/"                                 : "lib64/",
+        .applicationDir =               bBundle ? name + ".app/Contents/MacOS"                                       : "bin/",
+        .configDir =                    bBundle ? name + ".app/Contents/Resources/Config/"                           : unixConfigDir,
+        .contentDir =                   bBundle ? name + ".app/Contents/Resources/Content/"                          : unixContentDir,
+        .frameworkIncludeDir =          bBundle ? name + ".app/Contents/Frameworks/include/UntitledImGuiFramework"   : "include/UntitledImGuiFramework/",
+        .applicationIncludeDir =        bBundle ? name + ".app/Contents/Frameworks/include/" + name + "/"               : "include/" + name + "/"
     };
 
     InstallDirectories wasmInstallDirectories =
@@ -183,8 +193,8 @@ std::string getInstallStatements(YAML::Node& config, std::string& installs, cons
         .frameworkDir =                 "lib64/",
         .applicationLibraryDir =        "lib64/",
         .applicationDir =               "bin/",
-        .configDir =                    "etc/" + name + "/",
-        .contentDir =                   "share/config/" + name + "/",
+        .configDir =                    unixConfigDir,
+        .contentDir =                   unixContentDir,
         .frameworkIncludeDir =          "include/UntitledImGuiFramework/",
         .applicationIncludeDir =        "include/" + name + "/"
     };
