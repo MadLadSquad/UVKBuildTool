@@ -13,15 +13,10 @@ int main(int argc, char** argv)
     {{ name }}::Instance instance{};
     auto* inst = &instance;
 #endif
-    inst->argc = argc;
-    inst->argv = argv;
-    inst->reloadApplicationMetadata();
+    UImGui::FrameworkMain::setupGlobal(&UImGui::Global::get(), &UImGui::AllocatorFuncs::get(), &LoggerInternal::get());
+    UImGui::FrameworkMain::parseArguments(inst, argc, argv);
 
-    inst->arguments.resize(argc);
-    for (int i = 0; i < argc; i++)
-        inst->arguments[i] = argv[i];
-    UImGui::Global::get().instance = inst;
-
+    // Cannot be moved into a function because of emscripten quirks
 #ifdef __EMSCRIPTEN__
     auto* renderer = new UImGui::RendererInternal{};
     renderer->start();
