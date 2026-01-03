@@ -10,7 +10,7 @@
 #endif
 #include <filesystem>
 #include <yaml-cpp/yaml.h>
-#include "ucli/CLIParser.hpp"
+#include "../ucli/CLIParser.hpp"
 #include <exception>
 
 void getConfig(YAML::Node& config, std::string& name)
