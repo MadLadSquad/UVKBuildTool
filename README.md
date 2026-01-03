@@ -4,16 +4,15 @@
 [![Discord](https://img.shields.io/discord/717037253292982315.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/4wgH8ZE)
 
 The universal file generator, build and release tool for the 
-[UntitledImGuiFramework](https://github.com/MadLadSquad/UntitledImGuiFramework) and for web applications like
-[Youyin](https://youyin.madladsquad.com/).
+[UntitledImGuiFramework](https://github.com/MadLadSquad/UntitledImGuiFramework).
 
-For the UntitledImGuiFramework and our web applications, the application does the following:
+For the UntitledImGuiFramework it does the following:
 - Autogenerates build and source files
 - Packages the project for production or testing
 - Installs some core framework components
 - Manages your project files
 
-For web applications like Youyin, it does the following:
+For web applications like our website, it does the following:
 - Allows for a components based architecture by utilising static templates
 - Generates HTML, CSS and JS files and deploys them using your preferred web server
 - Allows for translating a static webpage into multiple languages
@@ -34,7 +33,8 @@ Documentation can be found on the [wiki](https://github.com/MadLadSquad/UVKBuild
 
 ## Dependencies
 - CMake
-- [yaml-cpp](https://github.com/jbeder/yaml-cpp)
+- [rapidyaml](https://github.com/biojppm/rapidyaml)
 - [UntitledTemplatingEngine](https://github.com/MadLadSquad/UntitledTemplatingEngine)
+- [UntitledCLIParser](https://github.com/MadLadSquad/UntitledCLIParser)
 - [UntitledExec](https://github.com/MadLadSquad/UntitledExec)
 - [UntitledI18N](https://github.com/MadLadSquad/UntitledI18N)
