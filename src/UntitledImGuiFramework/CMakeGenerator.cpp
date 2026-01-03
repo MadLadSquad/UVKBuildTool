@@ -1,6 +1,7 @@
 #ifdef UBT_TARGET_FRAMEWORK
 #include "CMakeGenerator.hpp"
 #include <Generator.hpp>
+#include <exception>
 
 void UBT::generateCmake(const YAML::Node& node) noexcept
 {
@@ -13,14 +14,11 @@ void UBT::generateCmake(const YAML::Node& node) noexcept
             std::terminate();
         }
         generator.pushVariable({ .value = node["name"].as<std::string>() }, "name");
-        auto stream = std::ofstream(getPath() + std::string("CMakeLists.txt"));
+        auto stream = std::ofstream(getPath()/"CMakeLists.txt");
 
         // Windows really likes fucking up everything we do. Basically, if you don't call "->c_str()", a lot of null
         // terminators will be added to the end of the file. After that, Windows will shit itself and would not be able
         // to read the file. Other applications will not be able to open it too.
-        //
-        // If you're wondering how they don't get removed, it's because the C++ standard defines std::string as a string
-        // that is terminated by its size, not the null terminator, unline C strings.
         stream << generator.parse().result->c_str();
     }
     {
@@ -42,17 +40,19 @@ void UBT::generateCmake(const YAML::Node& node) noexcept
 
         PUSH_VARIABLE(theming);
         PUSH_VARIABLE(i18n);
-	// Fix up double forms
-	generator.pushVariable({ .value = (modules["undo-redo"] && modules["undo-redo"].as<bool>()) || (modules["undo_redo"] && modules["undo_redo"].as<bool>()) ? "ON" : "OFF" }, "undo-redo");
-	generator.pushVariable({ .value = (modules["cli-parser"] && modules["cli-parser"].as<bool>()) || (modules["cli_parser"] && modules["cli_parser"].as<bool>()) ? "ON" : "OFF" }, "cli-parser");
+
+        // Fix up double forms
+        generator.pushVariable({ .value = (modules["undo-redo"] && modules["undo-redo"].as<bool>()) || (modules["undo_redo"] && modules["undo_redo"].as<bool>()) ? "ON" : "OFF" }, "undo-redo");
+        generator.pushVariable({ .value = (modules["cli-parser"] && modules["cli-parser"].as<bool>()) || (modules["cli_parser"] && modules["cli_parser"].as<bool>()) ? "ON" : "OFF" }, "cli-parser");
 
         PUSH_VARIABLE(plotting);
         PUSH_VARIABLE(knobs);
         PUSH_VARIABLE(spinners);
         PUSH_VARIABLE(toggles);
-	generator.pushVariable({ .value = (modules["text-utils"] && modules["text-utils"].as<bool>()) || (modules["text_utils"] && modules["text_utils"].as<bool>()) ? "ON" : "OFF" }, "text-utils");
 
-        auto stream = std::ofstream(getPath() + "Generated/" + node["name"].as<std::string>() + "Modules.cmake");
+        generator.pushVariable({ .value = (modules["text-utils"] && modules["text-utils"].as<bool>()) || (modules["text_utils"] && modules["text_utils"].as<bool>()) ? "ON" : "OFF" }, "text-utils");
+
+        auto stream = std::ofstream(getPath()/"Generated"/node["name"].as<std::string>()/"Modules.cmake");
         stream << generator.parse().result->c_str();
     }
 }

@@ -12,7 +12,7 @@ project(UVKBuildTool)
 option(UBT_COMPILING_FOR_WEB "If set to ON it will compile with configuration for a web project, otherwise will compile for the UntitledImGuiFramework!" OFF)
 option(UBT_INSTALL "Whether to install the UVKBuildTool" OFF)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 if (UBT_COMPILING_FOR_WEB)

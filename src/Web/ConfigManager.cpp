@@ -2,7 +2,9 @@
 #include "ConfigManager.hpp"
 #include "Functions.hpp"
 #include "UBTCustomFunctions/UBTCustomFunctions.hpp"
+#include <format>
 #include <UI18N.hpp>
+#include <exception>
 
 #define SET_ARRAY(x, y) if (node[y]) x = node[y].as<std::vector<std::string>>()
 
@@ -157,7 +159,7 @@ void buildGeneric(GeneratorData& data,  const std::filesystem::path& ep,
     copyRecursive(ep, projectPath, data.ignoredFiles);
 
     for (auto& a : data.customPreGenerationCommands)
-        system(("cd " + rootDir.string() + " && " + a).c_str());
+        system(std::format("cd {} && {}", rootDir.string(), a).c_str());
 
     // Generate the templates recursively
     generateRecursive(ep, data.allowedExtensions, data.generator);
@@ -205,6 +207,6 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
 
     if (data.bRunLocalhost)
         for (auto& a : data.localhostCommands)
-            system(("cd " + rootDir.string() + " && " + a).c_str());
+            system(std::format("cd {} && {}", rootDir.string(), a).c_str());
 }
 #endif

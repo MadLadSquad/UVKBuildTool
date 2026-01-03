@@ -1,5 +1,7 @@
     if (UIMGUI_INSTALL_FRAMEWORK AND NOT UIMGUI_SKIP_FRAMEWORK)
-        install(FILES ${PROJECT_BINARY_DIR}/UntitledImGuiFramework.pc DESTINATION lib/pkgconfig/)
+        if (NOT UIMGUI_IN_BUNDLE)
+            install(FILES ${PROJECT_BINARY_DIR}/UntitledImGuiFramework.pc DESTINATION lib/pkgconfig/)
+        endif()
         install(TARGETS UntitledImGuiFramework DESTINATION "{{ framework_dir }}")
         multicast(target_compile_definitions PRIVATE UIMGUI_FRAMEWORK_LIBRARY_DIR="${UIMGUI_INSTALL_PREFIX}/{{ framework_dir }}")
     endif()

@@ -1,6 +1,7 @@
 #ifdef UBT_TARGET_FRAMEWORK
 #include "Utility.hpp"
 #include <Generator.hpp>
+#include <exception>
 
 int UBT::showHelp(bool bError) noexcept
 {

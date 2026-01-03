@@ -11,13 +11,13 @@
 #include <filesystem>
 #include <yaml-cpp/yaml.h>
 #include "ucli/CLIParser.hpp"
+#include <exception>
 
 void getConfig(YAML::Node& config, std::string& name)
 {
     try
     {
-        const std::string tmp = UBT::getPath() + "uvproj.yaml";
-        config = YAML::LoadFile(tmp);
+        config = YAML::LoadFile((UBT::getPath()/"uvproj.yaml").string());
     }
     catch (YAML::BadFile&)
     {
@@ -68,7 +68,7 @@ int main(const int argc, char** argv)
                     if (config["name"])
                         name = config["name"].as<std::string>();
 
-                    const auto path = std::filesystem::path(UBT::getPath());
+                    const auto path = UBT::getPath();
                     if (!std::filesystem::exists(path/"Exported"))
                         std::filesystem::create_directory(path/"Exported");
                     if (!std::filesystem::exists(path/"Generated"))
@@ -78,14 +78,21 @@ int main(const int argc, char** argv)
                     if (!std::filesystem::exists(path/"UVKBuildTool"))
                         std::filesystem::create_directory_symlink(std::filesystem::path(UBT_DIR), path/"UVKBuildTool");
 
-                    std::filesystem::copy_file(std::filesystem::path(UBT_FRAMEWORK_DIR)/"export.sh", path/"export.sh", std::filesystem::copy_options::overwrite_existing);
+                    std::filesystem::copy_file(
+                        std::filesystem::path(UBT_FRAMEWORK_DIR)/"export.sh",
+                        path/"export.sh",
+                        std::filesystem::copy_options::overwrite_existing
+                    );
 
                     UBT::generateCmake(config);
                     UBT::generateMain(name.c_str());
                     UBT::generateDef();
 
-                    std::filesystem::copy_file(std::filesystem::path(UBT_TEMPLATES_DIR"/Sources/Config.hpp.tmpl"),
-                                               std::filesystem::path(UBT::getPath())/"Generated/Config.hpp", std::filesystem::copy_options::overwrite_existing);
+                    std::filesystem::copy_file(
+                        std::filesystem::path(UBT_TEMPLATES_DIR"/Sources/Config.hpp.tmpl"),
+                        path/"Generated/Config.hpp",
+                        std::filesystem::copy_options::overwrite_existing
+                        );
                     exit(0);
                 },
             },
@@ -105,10 +112,12 @@ int main(const int argc, char** argv)
                     UBT::generateCmake(config);
                     UBT::generateMain(name.c_str());
                     UBT::generateDef();
-                    UBT::makeTemplate(static_cast<std::string>(name + std::string("UIInstance")), "Instance", name.c_str());
+                    UBT::makeTemplate(name + std::string("UIInstance"), "Instance", name.c_str());
 
-                    std::filesystem::copy_file(std::filesystem::path(UBT_TEMPLATES_DIR"/Sources/Config.hpp.tmpl"),
-                                               std::filesystem::path(UBT::getPath())/"Generated/Config.hpp");
+                    std::filesystem::copy_file(
+                        std::filesystem::path(UBT_TEMPLATES_DIR"/Sources/Config.hpp.tmpl"),
+                        UBT::getPath()/"Generated/Config.hpp"
+                    );
                     exit(0);
                 },
             },

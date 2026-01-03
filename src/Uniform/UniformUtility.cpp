@@ -1,8 +1,9 @@
 #include "UniformUtility.h"
 #include <Generator.hpp>
 
-const std::string& UBT::getPath()
+std::filesystem::path& UBT::getPath()
 {
+    static std::filesystem::path path("../../");
     return path;
 }
 
@@ -14,7 +15,7 @@ void UBT::setPath(std::string pt)
     for (auto& a : pt)
         if (a == '\\')
             a = '/';
-    path = pt;
+    getPath() = std::filesystem::path(pt);
 }
 
 void UBT::sanitisePath(std::string& s) noexcept
@@ -34,6 +35,21 @@ std::string UBT::toUpper(std::string str)
 {
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
     return str;
+}
+
+std::string UBT::loadFileToString(const std::string& p)
+{
+    std::ifstream in(p);
+
+    in.seekg(0, std::ios::end);
+    const size_t size = in.tellg();
+
+    std::string buffer(size, ' ');
+
+    in.seekg(0);
+    in.read(buffer.data(), static_cast<std::streamsize>(size));
+    in.close();
+    return buffer;
 }
 
 std::string UBT::toLower(std::string str)

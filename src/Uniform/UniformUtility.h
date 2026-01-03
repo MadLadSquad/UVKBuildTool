@@ -5,6 +5,7 @@
 #include <fstream>
 #include <ostream>
 #include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include <filesystem>
 #ifdef _WIN32
     #ifdef UBT_LIB_COMPILE
         #define UBT_PUBLIC_API __declspec(dllexport)
@@ -52,13 +53,13 @@ namespace YAML
 
 namespace UBT
 {
-    inline std::string path = "../../";
-
-    UBT_PUBLIC_API const std::string& getPath();
+    UBT_PUBLIC_API std::filesystem::path& getPath();
     UBT_PUBLIC_API void setPath(std::string pt);
 
     UBT_PUBLIC_API void sanitisePath(std::string& s) noexcept;
 
     UBT_PUBLIC_API std::string toLower(std::string str);
     UBT_PUBLIC_API std::string toUpper(std::string str);
+
+    UBT_PUBLIC_API std::string loadFileToString(const std::string& p);
 }

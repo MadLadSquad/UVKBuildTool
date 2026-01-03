@@ -1,6 +1,7 @@
 #ifdef UBT_TARGET_FRAMEWORK
 #include "SourceGenerator.hpp"
 #include <Generator.hpp>
+#include <exception>
 
 void UBT::generateMain(const char* gameName) noexcept
 {
@@ -18,7 +19,7 @@ void UBT::generateMain(const char* gameName) noexcept
 
     generator.pushVariable({ .value = prjnm }, "name");
 
-    auto main = std::ofstream(path + static_cast<std::string>("Generated/main.cpp"));
+    auto main = std::ofstream(getPath()/"Generated/main.cpp");
     main << generator.parse().result->c_str();
 }
 
@@ -34,7 +35,7 @@ void UBT::generateDef() noexcept
     generator.pushVariable({ .value = "#undef" }, "define_or_undefine");
     generator.pushVariable({ .value = "#undef" }, "define_or_undefine_dev");
 
-    std::ofstream out(path + "Generated/BuildDef.hpp");
+    std::ofstream out(getPath()/"Generated/BuildDef.hpp");
     out << generator.parse().result->c_str();
 }
 #endif

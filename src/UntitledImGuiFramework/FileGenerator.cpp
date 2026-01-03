@@ -1,9 +1,12 @@
 #ifdef UBT_TARGET_FRAMEWORK
 #include "FileGenerator.hpp"
 #include <Generator.hpp>
+#include <exception>
 
 void UBT::makeTemplate(const std::string& name, const std::string& type, const char* prjname) noexcept
 {
+    const auto path = getPath();
+
 	bool bInstance = false;
     UTTE::Generator generator{};
 
@@ -25,7 +28,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
         }
         generator.pushVariable({ .value = prjnm }, "name");
 
-        auto stream = std::ofstream(path + "Source/Instance.hpp");
+        auto stream = std::ofstream(path/"Source/Instance.hpp");
         stream << generator.parse().result->c_str();
         stream.close();
 
@@ -36,7 +39,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
             std::terminate();
         }
 
-        stream = std::ofstream(path + "Source/Instance.cpp");
+        stream = std::ofstream(path/"Source/Instance.cpp");
         stream << generator.parse().result->c_str();
         return;
     }
@@ -51,7 +54,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
     generator.pushVariable({ .value = name }, "classname");
     generator.pushVariable({ .value = type }, "type");
 
-    auto stream = std::ofstream(path + "Source/" + name + ".hpp");
+    auto stream = std::ofstream(path/"Source"/(name + ".hpp"));
     stream << generator.parse().result->c_str();
     stream.close();
 
@@ -62,7 +65,7 @@ void UBT::makeTemplate(const std::string& name, const std::string& type, const c
         std::terminate();
     }
 
-    stream = std::ofstream(path + "Source/" + name + ".cpp");
+    stream = std::ofstream(path/"Source"/(name + ".cpp"));
     stream << generator.parse().result->c_str();
 }
 #endif
