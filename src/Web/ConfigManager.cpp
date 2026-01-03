@@ -67,6 +67,10 @@ void getConfig(const char* path, GeneratorData& data)
     SET_ARRAY(data.localhostCommands,            "localhost-commands"            );
     SET_ARRAY(data.customPreGenerationCommands,  "custom-pre-generation-commands");
 
+    data.ignoredFiles.push_back("UBTCustomFunctions");
+    data.ignoredFiles.push_back(".git");
+    data.ignoredFiles.push_back("UVKBuildTool");
+
     if (node["run-localhost-automatically"])
         data.bRunLocalhost = node["run-localhost-automatically"].as<bool>();
 
