@@ -52,7 +52,7 @@ void UBT::generateCmake(const YAML::Node& node) noexcept
 
         generator.pushVariable({ .value = (modules["text-utils"] && modules["text-utils"].as<bool>()) || (modules["text_utils"] && modules["text_utils"].as<bool>()) ? "ON" : "OFF" }, "text-utils");
 
-        auto stream = std::ofstream(getPath()/"Generated"/node["name"].as<std::string>()/"Modules.cmake");
+        auto stream = std::ofstream(getPath()/"Generated"/(node["name"].as<std::string>()+"Modules.cmake"));
         stream << generator.parse().result->c_str();
     }
 }
