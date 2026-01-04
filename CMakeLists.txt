@@ -5,7 +5,6 @@ if (WIN32)
     set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
 endif()
 
-project(UVKBuildToolLib VERSION 4.3.1.0)
 project(UVKBuildTool)
 
 # This option is needed to define a compiler macro and the given source files to be used by the compilation target
@@ -33,17 +32,7 @@ else()
     get_filename_component(UBT_FRAMEWORK_DIR "${UBT_FRAMEWORK_DIR}" REALPATH "${CMAKE_BINARY_DIR}")
 endif()
 
-if (WIN32)
-    set(BUILD_SHARED_LIBS ON)
-    add_subdirectory(yaml-cpp)
-    set(BUILD_SHARED_LIBS OFF)
-else()
-    include(FindYamlCpp)
-    find_package(YamlCpp REQUIRED)
-    include_directories(${YamlCpp_INCLUDE_PATH})
-    cmake_path(GET YamlCpp_LIBRARY PARENT_PATH YAML_PARENT_DIR)
-    link_directories(${YAML_PARENT_DIR})
-endif()
+add_subdirectory(rapidyaml)
 
 if (WIN32)
     add_subdirectory(ucli/)
@@ -60,12 +49,10 @@ endif()
 
 if (UBT_COMPILING_FOR_WEB)
     set(BUILD_VARIANT_VENDOR ON)
-    set(USE_PRECONFIGURED_YAML ON)
     add_subdirectory(ui18n)
 endif()
 
-set(YAML_CPP_INCLUDE_DIRS_T "yaml-cpp/include" "yaml-cpp/include/yaml-cpp")
-include_directories(${YAML_CPP_INCLUDE_DIRS_T} utg/src/ src/ ui18n/)
+include_directories(utg/src/ src/ ui18n/)
 
 if (UBT_COMPILING_FOR_WEB)
     file(GLOB_RECURSE SRC "src/Web/*.cpp" )
@@ -78,36 +65,26 @@ file(GLOB_RECURSE UNI_HEAD "src/Uniform/*.h" "utg/src/*.hpp" "utg/src/*.h" "ui18
 file(GLOB_RECURSE UNI_SRC "src/Uniform/*.cpp")
 file(GLOB_RECURSE UTG_SRC "utg/src/*.cpp")
 
-add_library(UVKBuildToolLib SHARED ${SRC} ${HEAD} ${UNI_SRC} ${UNI_HEAD} ${UTG_SRC})
-add_executable(UVKBuildTool ${HEAD} ${UNI_HEAD} src/main.cpp)
+add_executable(UVKBuildTool ${SRC} ${UNI_SRC} ${UTG_SRC} ${HEAD} ${UNI_HEAD} src/main.cpp)
 
-set_target_properties(UVKBuildToolLib PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(UVKBuildTool PROPERTIES LINKER_LANGUAGE CXX)
 
-target_compile_definitions(UVKBuildToolLib PRIVATE UBT_TEMPLATES_DIR="${UBT_TEMPLATES_DIR}" UBT_FRAMEWORK_DIR="${UBT_FRAMEWORK_DIR}" UBT_DIR="${UBT_DIR}" UTTE_CUSTOM_MAP=phmap::flat_hash_map UTTE_CUSTOM_MAP_INCLUDE=<parallel-hashmap/parallel_hashmap/phmap.h>)
 target_compile_definitions(UVKBuildTool PRIVATE UBT_TEMPLATES_DIR="${UBT_TEMPLATES_DIR}" UBT_FRAMEWORK_DIR="${UBT_FRAMEWORK_DIR}" UBT_DIR="${UBT_DIR}" UTTE_CUSTOM_MAP=phmap::flat_hash_map UTTE_CUSTOM_MAP_INCLUDE=<parallel-hashmap/parallel_hashmap/phmap.h>)
 if (UBT_COMPILING_FOR_WEB)
-    target_compile_definitions(UVKBuildToolLib PRIVATE "UBT_LIB_COMPILE" "MLS_LIB_COMPILE" "YAML_CPP_DLL" "UBT_TARGET_WEB" "MLS_EXPORT_LIBRARY")
-    target_compile_definitions(UVKBuildTool PRIVATE "UBT_TARGET_WEB" "MLS_EXPORT_LIBRARY")
+    target_compile_definitions(UVKBuildTool PRIVATE "UBT_TARGET_WEB")
 else()
-    target_compile_definitions(UVKBuildToolLib PRIVATE "UBT_LIB_COMPILE" "MLS_LIB_COMPILE" "YAML_CPP_DLL" "UBT_TARGET_FRAMEWORK" "MLS_EXPORT_LIBRARY")
-    target_compile_definitions(UVKBuildTool PRIVATE "UBT_TARGET_FRAMEWORK" "MLS_EXPORT_LIBRARY")
+    target_compile_definitions(UVKBuildTool PRIVATE "UBT_TARGET_FRAMEWORK")
     if (UBT_INSTALL)
-        target_compile_definitions(UVKBuildToolLib PRIVATE "UBT_DO_NOT_BUILD_FRAMEWORK")
         target_compile_definitions(UVKBuildTool PRIVATE "UBT_DO_NOT_BUILD_FRAMEWORK")
     endif()
 endif()
 
-target_link_libraries(UVKBuildToolLib yaml-cpp)
 if (UBT_COMPILING_FOR_WEB)
-    target_link_libraries(UVKBuildToolLib UntitledI18N)
+    target_link_libraries(UVKBuildTool UntitledI18N)
 endif()
 
-target_link_libraries(UVKBuildTool UVKBuildToolLib UntitledCLIParser)
+target_link_libraries(UVKBuildTool UntitledCLIParser ryml c4core)
 if (NOT UBT_COMPILING_FOR_WEB AND UBT_INSTALL)
-    install(TARGETS UVKBuildToolLib
-            LIBRARY DESTINATION lib64/
-            ARCHIVE DESTINATION lib64/)
     install(TARGETS UVKBuildTool DESTINATION bin/)
     install(DIRECTORY Templates/ DESTINATION share/UVKBuildTool/Templates)
 endif ()

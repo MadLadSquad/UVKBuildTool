@@ -6,7 +6,7 @@
 #include <format>
 #include <exception>
 
-void UBT::relBuild(const std::string& name, YAML::Node& config, const std::string& prefix, const std::string& realInstallDir) noexcept
+void UBT::relBuild(const std::string& name, ryml::NodeRef config, const std::string& prefix, const std::string& realInstallDir) noexcept
 {
     // Error for conflicting prod export settings
     if (!ReleaseBuildInternal::checkBundleCompatibility(config))

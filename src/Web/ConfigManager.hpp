@@ -4,6 +4,6 @@
 
 namespace UBT
 {
-    UBT_PUBLIC_API void buildMain(const char* exportPath, const char* projectPath) noexcept;
+    void buildMain(const char* exportPath, const char* projectPath) noexcept;
 }
 #endif

@@ -4,7 +4,7 @@
 
 namespace UBT
 {
-    UBT_PUBLIC_API void generateMain(const char* gameName) noexcept;
-    UBT_PUBLIC_API void generateDef() noexcept;
+    void generateMain(const char* gameName) noexcept;
+    void generateDef() noexcept;
 }
 #endif

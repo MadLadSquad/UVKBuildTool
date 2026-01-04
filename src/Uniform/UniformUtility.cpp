@@ -7,15 +7,16 @@ std::filesystem::path& UBT::getPath()
     return path;
 }
 
-void UBT::setPath(std::string pt)
+void UBT::setPath(const char* pt)
 {
-    if (pt.back() != '/')
-        pt += "/";
+    std::string str = pt;
+    if (str.back() != '/')
+        str += "/";
     // Cleanup if some stupid Windows user decides to use this
-    for (auto& a : pt)
+    for (auto& a : str)
         if (a == '\\')
             a = '/';
-    getPath() = std::filesystem::path(pt);
+    getPath() = std::move(std::filesystem::path(str));
 }
 
 void UBT::sanitisePath(std::string& s) noexcept
@@ -43,6 +44,8 @@ std::string UBT::loadFileToString(const std::string& p)
 
     in.seekg(0, std::ios::end);
     const size_t size = in.tellg();
+    if (size == -1)
+        return "";
 
     std::string buffer(size, ' ');
 
@@ -56,4 +59,14 @@ std::string UBT::toLower(std::string str)
 {
     std::transform(str.begin(), str.end(), str.begin(), ::tolower);
     return str;
+}
+
+bool ryml::keyValid(NodeRef ref) noexcept
+{
+    return !ref.invalid() && ref.readable() && !ref.empty();
+}
+
+bool ryml::keyValid(const ConstNodeRef ref) noexcept
+{
+    return !ref.invalid() && ref.readable() && !ref.empty();
 }

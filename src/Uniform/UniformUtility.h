@@ -1,29 +1,28 @@
 #pragma once
 #include <iostream>
-#include <yaml-cpp/yaml.h>
+#include <ryml.hpp>
+#include <ryml_std.hpp>
 #include <algorithm>
 #include <fstream>
 #include <ostream>
 #include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include <filesystem>
-#ifdef _WIN32
-    #ifdef UBT_LIB_COMPILE
-        #define UBT_PUBLIC_API __declspec(dllexport)
-    #else
-        #define UBT_PUBLIC_API __declspec(dllimport)
-    #endif
-#else
-    #define UBT_PUBLIC_API
-#endif
 
 #define ERROR "\x1b[31m"
 #define WARNING "\x1b[33m"
 #define SUCCESS "\x1b[32m"
 #define END_COLOUR "\x1b[0m"
 
+namespace ryml
+{
+    bool keyValid(NodeRef ref) noexcept;
+    bool keyValid(ConstNodeRef ref) noexcept;
+}
+
 namespace YAML
 {
     // utte_map
+    /* TODO:
     template <typename K, typename V>
     struct convert<phmap::flat_hash_map<K, V>> {
         static Node encode(const phmap::flat_hash_map<K, V>& rhs) {
@@ -48,18 +47,19 @@ namespace YAML
             return true;
         }
     };
+    */
 }
 
 
 namespace UBT
 {
-    UBT_PUBLIC_API std::filesystem::path& getPath();
-    UBT_PUBLIC_API void setPath(std::string pt);
+    std::filesystem::path& getPath();
+    void setPath(const char* pt);
 
-    UBT_PUBLIC_API void sanitisePath(std::string& s) noexcept;
+    void sanitisePath(std::string& s) noexcept;
 
-    UBT_PUBLIC_API std::string toLower(std::string str);
-    UBT_PUBLIC_API std::string toUpper(std::string str);
+    std::string toLower(std::string str);
+    std::string toUpper(std::string str);
 
-    UBT_PUBLIC_API std::string loadFileToString(const std::string& p);
+    std::string loadFileToString(const std::string& p);
 }

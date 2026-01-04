@@ -4,6 +4,6 @@
 
 namespace UBT
 {
-    UBT_PUBLIC_API int showHelp(bool bError) noexcept;
+    int showHelp(bool bError) noexcept;
 }
 #endif

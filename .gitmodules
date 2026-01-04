@@ -10,3 +10,6 @@
 [submodule "ucli"]
 	path = ucli
 	url = https://github.com/MadLadSquad/UntitledCLIParser.git
+[submodule "rapidyaml"]
+	path = rapidyaml
+	url = https://github.com/MadLadSquad/rapidyaml.git

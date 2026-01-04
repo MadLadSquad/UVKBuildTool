@@ -3,8 +3,36 @@
 #include <Generator.hpp>
 #include <exception>
 
-void UBT::generateCmake(const YAML::Node& node) noexcept
+#define PUSH_NONE_VARIABLE(x) generator.pushVariable({ .value = "OFF" }, x)
+
+static void pushVariable(UTTE::Generator& generator, const char* name, const char* alias, ryml::NodeRef node)
 {
+    auto n = node[name];
+    bool bResult{};
+    if (ryml::keyValid(n))
+        n >> bResult;
+    else if (alias != nullptr)
+    {
+        auto nn = node[alias];
+        if (!ryml::keyValid(nn))
+        {
+            PUSH_NONE_VARIABLE(name);
+            return;
+        }
+        nn >> bResult;
+    }
+    else
+    {
+        PUSH_NONE_VARIABLE(name);
+        return;
+    }
+    generator.pushVariable({ .value = bResult ? "ON" : "OFF" }, name);
+}
+
+void UBT::generateCmake(ryml::NodeRef node) noexcept
+{
+    std::string name{};
+    node["name"] >> name;
     {
         UTTE::Generator generator{};
         const auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/CMakeLists.txt.tmpl");
@@ -13,7 +41,8 @@ void UBT::generateCmake(const YAML::Node& node) noexcept
             std::cout << ERROR << "Error when opening the CMakeLists.txt.tmpl file! Error code: " << result << END_COLOUR << std::endl;
             std::terminate();
         }
-        generator.pushVariable({ .value = node["name"].as<std::string>() }, "name");
+
+        generator.pushVariable({ .value = name }, "name");
         auto stream = std::ofstream(getPath()/"CMakeLists.txt");
 
         // Windows really likes fucking up everything we do. Basically, if you don't call "->c_str()", a lot of null
@@ -29,30 +58,46 @@ void UBT::generateCmake(const YAML::Node& node) noexcept
             std::cout << ERROR << "Error when opening the Modules.cmake.tmpl file! Error code: " << result << END_COLOUR << std::endl;
             std::terminate();
         }
+
         auto modules = node["enabled-modules"];
-#define PUSH_VARIABLE(x) generator.pushVariable({ .value = (modules[#x] && modules[#x].as<bool>()) ? "ON" : "OFF" }, #x)
+        if (ryml::keyValid(modules))
+        {
+#define PUSH_VARIABLE(x, y) pushVariable(generator, x, y, modules)
 
-        PUSH_VARIABLE(os);
-        PUSH_VARIABLE(uexec);
-        PUSH_VARIABLE(open);
-        PUSH_VARIABLE(xdg);
-        PUSH_VARIABLE(dbus);
+            PUSH_VARIABLE("os", nullptr);
+            PUSH_VARIABLE("uexec", nullptr);
+            PUSH_VARIABLE("open", nullptr);
+            PUSH_VARIABLE("xdg", nullptr);
+            PUSH_VARIABLE("dbus", nullptr);
+            PUSH_VARIABLE("theming", nullptr);
+            PUSH_VARIABLE("i18n", nullptr);
+            PUSH_VARIABLE("plotting", nullptr);
+            PUSH_VARIABLE("knobs", nullptr);
+            PUSH_VARIABLE("spinners", nullptr);
+            PUSH_VARIABLE("toggles", nullptr);
+            PUSH_VARIABLE("undo-redo", "undo_redo");
+            PUSH_VARIABLE("cli-parser", "cli_parser");
+            PUSH_VARIABLE("text-utils", "text_utils");
+        }
+        else
+        {
+            PUSH_NONE_VARIABLE("os");
+            PUSH_NONE_VARIABLE("uexec");
+            PUSH_NONE_VARIABLE("open");
+            PUSH_NONE_VARIABLE("xdg");
+            PUSH_NONE_VARIABLE("dbus");
+            PUSH_NONE_VARIABLE("theming");
+            PUSH_NONE_VARIABLE("i18n");
+            PUSH_NONE_VARIABLE("plotting");
+            PUSH_NONE_VARIABLE("knobs");
+            PUSH_NONE_VARIABLE("spinners");
+            PUSH_NONE_VARIABLE("toggles");
+            PUSH_NONE_VARIABLE("undo-redo");
+            PUSH_NONE_VARIABLE("cli-parser");
+            PUSH_NONE_VARIABLE("text-utils");
+        }
 
-        PUSH_VARIABLE(theming);
-        PUSH_VARIABLE(i18n);
-
-        // Fix up double forms
-        generator.pushVariable({ .value = (modules["undo-redo"] && modules["undo-redo"].as<bool>()) || (modules["undo_redo"] && modules["undo_redo"].as<bool>()) ? "ON" : "OFF" }, "undo-redo");
-        generator.pushVariable({ .value = (modules["cli-parser"] && modules["cli-parser"].as<bool>()) || (modules["cli_parser"] && modules["cli_parser"].as<bool>()) ? "ON" : "OFF" }, "cli-parser");
-
-        PUSH_VARIABLE(plotting);
-        PUSH_VARIABLE(knobs);
-        PUSH_VARIABLE(spinners);
-        PUSH_VARIABLE(toggles);
-
-        generator.pushVariable({ .value = (modules["text-utils"] && modules["text-utils"].as<bool>()) || (modules["text_utils"] && modules["text_utils"].as<bool>()) ? "ON" : "OFF" }, "text-utils");
-
-        auto stream = std::ofstream(getPath()/"Generated"/(node["name"].as<std::string>()+"Modules.cmake"));
+        auto stream = std::ofstream(getPath()/"Generated"/(name + "Modules.cmake"));
         stream << generator.parse().result->c_str();
     }
 }

@@ -37,9 +37,9 @@ static void generateMacroDefinitions(const std::string& definition, std::string&
     installs += std::format("    multicast(target_compile_definitions PRIVATE {}=\"${{UIMGUI_INSTALL_PREFIX}}/{}\")\n", definition, dir);
 }
 
-static void findInstallDirs(YAML::Node& config, InstallDirectories& dirs) noexcept
+static void findInstallDirs(ryml::NodeRef config, InstallDirectories& dirs) noexcept
 {
-#define addToDir(x, y) if (config[y]) dirs.x = config[y].as<std::string>()
+#define addToDir(x, y) if (ryml::keyValid(config[y])) config[y] >> dirs.x
 
     addToDir(frameworkDir,              "framework-library-dir");
     addToDir(applicationLibraryDir,     "framework-application-library-dir");
@@ -50,22 +50,38 @@ static void findInstallDirs(YAML::Node& config, InstallDirectories& dirs) noexce
     addToDir(applicationIncludeDir,     "application-include-dir");
 }
 
-static void generateInstallStatements(YAML::Node& config, const InstallDirectories& dirs, UTTE::Generator& generator) noexcept
+static void generateInstallStatements(ryml::NodeRef config, const InstallDirectories& dirs, UTTE::Generator& generator) noexcept
 {
-    const auto name = config["name"].as<std::string>();
+    std::string name{};
+    config["name"] >> name;
 
     std::string applicationDir;
     if (dirs.platform != InstallPlatform::WINDOWS)
     {
         applicationDir += std::format("\n    install(TARGETS {}Lib DESTINATION \"{}\")\n", name, dirs.applicationLibraryDir);
-        if (dirs.platform == InstallPlatform::MACOS && config["macos"] && config["macos"]["bundle"] && config["macos"]["bundle"].as<bool>())
+
+        if (dirs.platform == InstallPlatform::MACOS)
         {
-            applicationDir += std::format(R"(
+            auto macos = config["macos"];
+            if (ryml::keyValid(macos))
+            {
+                auto bundle = macos["bundle"];
+                if (ryml::keyValid(bundle))
+                {
+                    bool bBundle{};
+                    bundle >> bBundle;
+
+                    if (bBundle)
+                    {
+                        applicationDir += std::format(R"(
     install(FILES "Framework/ThirdParty/vulkan/libvulkan.1.dylib" DESTINATION "{}" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
     install(FILES ${{UIMGUI_THIRD_PARTY_LIBS}} DESTINATION "{}" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
     install(FILES "${{PROJECT_BINARY_DIR}}/Info.plist" DESTINATION "{}/../")
     install(FILES "Config/Resources/Icon.icns" DESTINATION "{}/../")
 )", dirs.applicationLibraryDir, dirs.applicationLibraryDir, dirs.applicationLibraryDir, dirs.contentDir);
+                    }
+                }
+            }
         }
         generateMacroDefinitions("UIMGUI_APPLICATION_LIBRARY_DIR", applicationDir, dirs.applicationLibraryDir);
     }
@@ -88,7 +104,7 @@ static void generateInstallStatements(YAML::Node& config, const InstallDirectori
     generator.pushVariable({ .value = customDirs                    }, "custom_installs"            );
 }
 
-static void addParsedPlatformConfigToCMakeLists(YAML::Node& config, const InstallDirectories& installDirs, std::string& installs) noexcept
+static void addParsedPlatformConfigToCMakeLists(ryml::NodeRef config, const InstallDirectories& installDirs, std::string& installs) noexcept
 {
     UTTE::Generator generator{};
     const auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/CMakeInstall.tmpl");
@@ -101,9 +117,10 @@ static void addParsedPlatformConfigToCMakeLists(YAML::Node& config, const Instal
     installs += *generator.parse().result;
 }
 
-static void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs) noexcept
+static void gatherCustomInstalls(ryml::NodeRef config, InstallDirectories& dirs) noexcept
 {
-    if (config["additional-installs"])
+    auto additionalInstalls = config["additional-installs"];
+    if (ryml::keyValid(additionalInstalls))
     {
         std::string platform;
         switch (dirs.platform)
@@ -121,28 +138,50 @@ static void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs) n
             return;
         }
 
-        const auto installs = config["additional-installs"][platform];
-        if (installs)
+        auto installs = additionalInstalls[platform.c_str()];
+        if (ryml::keyValid(installs) && installs.is_seq())
         {
-            for (const YAML::Node& a : installs)
+            for (auto a : installs.children())
             {
-                if (a["file"] && a["directory"] && a["macro-name"])
-                {
-                    dirs.customInstalls.push_back(
-                    {
-                        .fileDir = a["file"].as<std::string>(),
-                        .installDir = a["directory"].as<std::string>(),
-                        .macroName = a["macro-name"].as<std::string>(),
-                        .type = a["is-directory"].as<bool>() ? "DIRECTORY" : "FILES"
-                    });
-                }
-                else
-                {
-                    std::string filename;
-                    if (a["file"])
-                        filename = " File in question: " + a["file"].as<std::string>();
+                if (ryml::keyValid(a))
+                    continue;
 
-                    std::cout << WARNING << "Warning: There was a problem with generating a custom install." << filename << END_COLOUR << std::endl;
+                auto file = a["file"];
+                auto directory = a["directory"];
+                auto macroName = a["macro-name"];
+
+                if (ryml::keyValid(file))
+                {
+                    if (ryml::keyValid(directory) && ryml::keyValid(macroName))
+                    {
+                        auto isDirectory = a["is-directory"];
+                        if (ryml::keyValid(isDirectory))
+                        {
+                            std::string filename;
+                            std::string dirname;
+                            std::string macro;
+                            bool bDirectory;
+
+                            file >> filename;
+                            directory >> dirname;
+                            macroName >> macro;
+                            isDirectory >> bDirectory;
+
+                            dirs.customInstalls.push_back({
+                                .fileDir = filename,
+                                .installDir = dirname,
+                                .macroName = macro,
+                                .type = bDirectory ? "DIRECTORY" : "FILES"
+                            });
+                        }
+                    }
+                    else
+                    {
+                        std::string filename;
+                        file >> filename;
+
+                        std::cout << WARNING << "Warning: There was a problem with generating a custom install. File in question: " << filename << END_COLOUR << std::endl;
+                    }
                 }
             }
         }
@@ -150,14 +189,22 @@ static void gatherCustomInstalls(YAML::Node& config, InstallDirectories& dirs) n
 }
 
 // Returns the CMake arguments and adds install statements to the "install" std::string&
-static std::string getInstallStatements(YAML::Node& config, std::string& installs, const std::string& realInstallDir) noexcept
+static std::string getInstallStatements(ryml::NodeRef config, std::string& installs, const std::string& realInstallDir) noexcept
 {
-    auto name = config["name"].as<std::string>();
+    std::string name{};
+    config["name"] >> name;
 
     // macOS settings. Bundle for whether to ship as an application bundle
     bool bBundle = false;
-    if (config["macos"] && config["macos"]["bundle"])
-        bBundle = config["macos"]["bundle"].as<bool>();
+    {
+        auto macos = config["macos"];
+        if (ryml::keyValid(macos))
+        {
+            auto bundle = macos["bundle"];
+            if (ryml::keyValid(bundle))
+                bundle >> bBundle;
+        }
+    }
 
     std::string unixConfigDir = std::format("share/config/{}/Config/", name);
     std::string unixContentDir = std::format("share/config/{}/Content/", name);
@@ -205,18 +252,23 @@ static std::string getInstallStatements(YAML::Node& config, std::string& install
         .applicationIncludeDir =        bBundle ? name + ".app/Contents/Frameworks/include/" + name + "/"               : "include/" + name + "/"
     };
 
-    if (config["install-override"])
     {
-        auto unixDirs = config["install-override"]["unix"];
-        auto windowsDirs = config["install-override"]["windows"];
-        auto macosDirs = config["install-override"]["macos"];
-        if (unixDirs)
-            findInstallDirs(unixDirs, unixInstallDirectories);
-        if (windowsDirs)
-            findInstallDirs(windowsDirs, windowsInstallDirectories);
-        if (macosDirs)
-            findInstallDirs(macosDirs, macosInstallDirectories);
+        auto installOverride = config["install-override"];
+        if (ryml::keyValid(installOverride))
+        {
+            auto unixDirs = installOverride["unix"];
+            auto windowsDirs = installOverride["windows"];
+            auto macosDirs = installOverride["macos"];
+
+            if (ryml::keyValid(unixDirs))
+                findInstallDirs(unixDirs, unixInstallDirectories);
+            if (ryml::keyValid(windowsDirs))
+                findInstallDirs(windowsDirs, windowsInstallDirectories);
+            if (ryml::keyValid(macosDirs))
+                findInstallDirs(macosDirs, macosInstallDirectories);
+        }
     }
+
     gatherCustomInstalls(config, windowsInstallDirectories);
     gatherCustomInstalls(config, unixInstallDirectories);
     gatherCustomInstalls(config, macosInstallDirectories);
@@ -230,16 +282,27 @@ static std::string getInstallStatements(YAML::Node& config, std::string& install
     installs += "\nendif()\n";
 
     std::string buildStatic = "OFF";
-    if (config["build-mode-static"] && config["build-mode-static"].as<bool>())
-        buildStatic = "ON";
+    {
+        auto buildModeStatic = config["build-mode-static"];
+        if (ryml::keyValid(buildModeStatic))
+        {
+            bool bBuildModeStatic{};
+            buildModeStatic >> bBuildModeStatic;
+            if (bBuildModeStatic)
+                buildStatic = "ON";
+        }
+    }
 
     std::string buildVendor = "ON";
-    if (config["build-mode-vendor"])
     {
-        if (config["build-mode-vendor"].as<bool>())
-            buildVendor = "ON";
-        else
-            buildVendor = "OFF";
+        auto buildModeVendor = config["build-mode-vendor"];
+        if (ryml::keyValid(buildModeVendor))
+        {
+            bool bBuildModeVendor{};
+            buildModeVendor >> bBuildModeVendor;
+
+            buildVendor = bBuildModeVendor ? "ON" : "OFF";
+        }
     }
 
     std::string installFramework = "OFF";
@@ -251,13 +314,19 @@ static std::string getInstallStatements(YAML::Node& config, std::string& install
         installFramework = "ON";
         srcPrefix = "-DUIMGUI_IN_BUNDLE=ON";
     }
-    else if (config["install-framework"])
+    else
     {
-        bool bShouldInstall = config["install-framework"].as<bool>();
-        installFramework = bShouldInstall ? "ON" : "OFF";
+        auto f = config["install-framework"];
+        if (ryml::keyValid(f))
+        {
+            bool bShouldInstall{};
+            f >> bShouldInstall;
 
-        if (!bShouldInstall)
-            srcPrefix = "-DUIMGUI_SRC_PREFIX=\"" UBT_FRAMEWORK_DIR "\"";
+            installFramework = bShouldInstall ? "ON" : "OFF";
+
+            if (!bShouldInstall)
+                srcPrefix = "-DUIMGUI_SRC_PREFIX=\"" UBT_FRAMEWORK_DIR "\"";
+        }
     }
 
 
@@ -277,7 +346,7 @@ static std::string getInstallStatements(YAML::Node& config, std::string& install
     return returns;
 }
 
-std::string UBT::ReleaseBuildInternal::generateCMake(const std::filesystem::path& currentPath, YAML::Node& config, const std::string& realInstallDir) noexcept
+std::string UBT::ReleaseBuildInternal::generateCMake(const std::filesystem::path& currentPath, ryml::NodeRef config, const std::string& realInstallDir) noexcept
 {
     copy((currentPath/"CMakeLists.txt"), currentPath/"CMakeLists.txt.old");
 

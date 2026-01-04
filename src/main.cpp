@@ -9,28 +9,41 @@
     #include <Web/Functions.hpp>
 #endif
 #include <filesystem>
-#include <yaml-cpp/yaml.h>
+#include <ryml.hpp>
 #include "../ucli/CLIParser.hpp"
 #include <exception>
 
-void getConfig(YAML::Node& config, std::string& name)
+static ryml::NodeRef getConfig(std::string& name)
 {
-    try
+    const std::string string = UBT::loadFileToString((UBT::getPath()/"uvproj.yaml").string().c_str());
+    if (string.empty())
     {
-        config = YAML::LoadFile((UBT::getPath()/"uvproj.yaml").string());
-    }
-    catch (YAML::BadFile&)
-    {
-        std::cout << ERROR << "Could not locate file" << END_COLOUR << std::endl;
+        std::cout << ERROR << "Could not load uvproj.yaml" << END_COLOUR << std::endl;
         std::terminate();
     }
 
-    if (config["name"])
-        name = config["name"].as<std::string>();
+    static auto tree = ryml::parse_in_arena(string.c_str());
+    if (tree.empty())
+    {
+        std::cout << ERROR << "Could not parse uvproj.yaml" << std::endl;
+        std::terminate();
+    }
+
+    static auto root = tree.rootref();
+    auto n = root["name"];
+    if (ryml::keyValid(n))
+        n >> name;
+    return root;
+}
+
+static ryml::NodeRef setupWorkdir(const char* x, std::string& name)
+{
+    UBT::setPath(x);
+    return getConfig(name);
 }
 
 /**
- * @brief Check if an arguments is withing bounds and that the args array is not null
+ * @brief Check if an arguments is within bounds and that the args array is not null
  * @arg x - boolean expression to use to check
  * @arg y - Error message
  */
@@ -59,14 +72,10 @@ int main(const int argc, char** argv)
                 .longType = "generate",
                 .shortType = "g",
                 .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void {
-                    YAML::Node config;
-                    std::string name;
+                    std::string name{};
 
                     CHECK_BOUNDS(size == 0, "Invalid argument, generate requires a path to a UVKBuildTool project!");
-                    SETUP_WORKDIR(args[0]);
-
-                    if (config["name"])
-                        name = config["name"].as<std::string>();
+                    auto config = setupWorkdir(args[0], name);
 
                     const auto path = UBT::getPath();
                     if (!std::filesystem::exists(path/"Exported"))
@@ -92,7 +101,7 @@ int main(const int argc, char** argv)
                         std::filesystem::path(UBT_TEMPLATES_DIR"/Sources/Config.hpp.tmpl"),
                         path/"Generated/Config.hpp",
                         std::filesystem::copy_options::overwrite_existing
-                        );
+                    );
                     exit(0);
                 },
             },
@@ -100,14 +109,10 @@ int main(const int argc, char** argv)
                 .longType = "install",
                 .shortType = "i",
                 .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
-                    YAML::Node config;
-                    std::string name;
+                    std::string name{};
 
                     CHECK_BOUNDS(size == 0, "Invalid argument, generate requires a path to a UVKBuildTool project!");
-                    SETUP_WORKDIR(args[0]);
-
-                    if (config["name"])
-                        name = config["name"].as<std::string>();
+                    auto config = setupWorkdir(args[0], name);
 
                     UBT::generateCmake(config);
                     UBT::generateMain(name.c_str());
@@ -125,11 +130,10 @@ int main(const int argc, char** argv)
                 .longType = "inline",
                 .shortType = "",
                 .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
-                    YAML::Node config;
-                    std::string name;
+                    std::string name{};
 
                     CHECK_BOUNDS(size < 2, "Invalid argument, inline requires a class name path to a UVKBuildTool project!");
-                    SETUP_WORKDIR(args[1]);
+                    setupWorkdir(args[1], name);
 
                     UBT::makeTemplate(std::string(args[0]), "InlineComponent", name.c_str());
                     exit(0);
@@ -139,11 +143,10 @@ int main(const int argc, char** argv)
                 .longType = "window",
                 .shortType = "",
                 .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
-                    YAML::Node config;
-                    std::string name;
+                    std::string name{};
 
                     CHECK_BOUNDS(size < 2, "Invalid argument, window requires a class name path to a UVKBuildTool project!");
-                    SETUP_WORKDIR(args[1]);
+                    setupWorkdir(args[1], name);
 
                     UBT::makeTemplate(std::string(args[0]), "WindowComponent", name.c_str());
                     exit(0);
@@ -153,11 +156,10 @@ int main(const int argc, char** argv)
                 .longType = "title-bar",
                 .shortType = "",
                 .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
-                    YAML::Node config;
-                    std::string name;
+                    std::string name{};
 
                     CHECK_BOUNDS(size < 2, "Invalid argument, title-bar requires a class name path to a UVKBuildTool project!");
-                    SETUP_WORKDIR(args[1]);
+                    setupWorkdir(args[1], name);
 
                     UBT::makeTemplate(std::string(args[0]), "TitlebarComponent", name.c_str());
                     exit(0);
@@ -167,13 +169,12 @@ int main(const int argc, char** argv)
                 .longType = "build",
                 .shortType = "b",
                 .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
-                    YAML::Node config;
-                    std::string name;
+                    std::string name{};
 
                     CHECK_BOUNDS(size < 3, "Invalid argument, build requires a staging path, installation path and a path to a UVKBuildTool project!");
-                    SETUP_WORKDIR(args[2]);
+                    auto config = setupWorkdir(args[2], name);
 
-                    UBT::relBuild(config["name"].as<std::string>(), config, args[0], args[1]);
+                    UBT::relBuild(name, config, args[0], args[1]);
                     exit(0);
                 },
             },

@@ -2,29 +2,46 @@
 #include <format>
 #ifdef UBT_TARGET_FRAMEWORK
 
-bool UBT::ReleaseBuildInternal::checkBundleCompatibility(YAML::Node& config) noexcept
+bool UBT::ReleaseBuildInternal::checkBundleCompatibility(ryml::NodeRef config) noexcept
 {
 #ifdef __APPLE__
-    if (
-        config["build-mode-vendor"]                 &&
-        !config["build-mode-vendor"].as<bool>()     &&
-        config["macos"]                             &&
-        config["macos"]["bundle"]                   &&
-        config["macos"]["bundle"].as<bool>())
+    auto buildModeVendor = config["build-mode-vendor"];
+    auto macos = config["macos"];
+
+    if (ryml::keyValid(buildModeVendor) && ryml::keyValid(macos))
     {
-        std::cout << ERROR << "You're currently trying to build an application as a macOS application bundle, but with system libraries, which is not possible!\n"
+        auto bundle = macos["bundle"];
+        if (ryml::keyValid(bundle))
+        {
+            bool vendor{};
+            buildModeVendor >> vendor;
+
+            bool mac{};
+            bundle >> mac;
+
+            if (!vendor && mac)
+            {
+                std::cout << ERROR << "You're currently trying to build an application as a macOS application bundle, but with system libraries, which is not possible!\n"
                                 "Application bundles are made to be self-contained, which means that you are forced to vendor all your dependencies, except for OS libraries!" << END_COLOUR << std::endl;
-        return false;
+                return false;
+            }
+        }
     }
 #endif
     return true;
 }
 
-void UBT::ReleaseBuildInternal::runBuildCommand(YAML::Node& config, const std::filesystem::path& currentPath, const std::string& name, const std::string& prefix, const std::string& realInstallDir) noexcept
+void UBT::ReleaseBuildInternal::runBuildCommand(ryml::NodeRef config, const std::filesystem::path& currentPath, const std::string& name, const std::string& prefix, const std::string& realInstallDir) noexcept
 {
     std::string systemWide = "--local";
-    if (config["system-wide"] && config["system-wide"].as<bool>())
-        systemWide = "--system-wide";
+    auto sw = config["system-wide"];
+    if (ryml::keyValid(sw))
+    {
+        bool val{};
+        sw >> val;
+        if (val)
+            systemWide = "--system-wide";
+    }
 
     const std::string command =     std::format(
                                         "cd {} && {} " UBT_FRAMEWORK_DIR "/export.sh {} {} {} {}",
