@@ -31,7 +31,7 @@ UI18N::TranslationEngine* getUI18NContext(UTTE::Generator* generator)
         if (a.name == "ui18n_internal_ctx")
         {
             std::vector<UTTE::Variable> tmp = { { .value = "ui18n_internal_ctx" } };
-            engine = (UI18N::TranslationEngine*)std::stoll(a.function(tmp, generator).value);
+            engine = reinterpret_cast<UI18N::TranslationEngine*>(std::stoll(a.function(tmp, generator).value));
             break;
         }
     }

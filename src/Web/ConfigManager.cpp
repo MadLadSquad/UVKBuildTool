@@ -6,7 +6,7 @@
 #include <UI18N.hpp>
 #include <exception>
 
-#define SET_ARRAY(x, y) if (node[y]) x = node[y].as<std::vector<std::string>>()
+#define SET_ARRAY(x, y) if (ryml::keyValid(root[y])) root[y] >> x
 
 struct GeneratorData
 {
@@ -24,40 +24,64 @@ struct GeneratorData
 
 void getConfig(const char* path, GeneratorData& data)
 {
-    YAML::Node node;
-    try
+    const auto string = UBT::loadFileToString(std::string(path) + "/uvproj.yaml");
+    if (string.empty())
     {
-        node = YAML::LoadFile(std::string(path) + "/uvproj.yaml");
-    }
-    catch (YAML::BadFile&)
-    {
-        std::cout << ERROR <<  "Error: Bad config file!" << END_COLOUR << std::endl;
+        std::cout << ERROR << "Error: Couldn't load/find the uvproj.yaml file!" << END_COLOUR << std::endl;
         std::terminate();
     }
 
-    const auto& variables = node["variables"];
-    if (variables)
+    auto tree = ryml::parse_in_arena(string.c_str());
+    if (tree.empty())
     {
-        for (auto& a : variables)
-        {
-            if (a["var"] && a["val"])
-            {
-                auto name = a["var"].as<utte_string>();
+        std::cout << ERROR << "Error: Couldn't parse uvproj.yaml file!" << END_COLOUR << std::endl;
+        std::terminate();
+    }
 
-                if (a["val"].IsSequence())
+    auto root = tree.rootref();
+
+    auto variables = root["variables"];
+    if (ryml::keyValid(variables) && variables.is_seq())
+    {
+        for (auto a : variables.children())
+        {
+            auto var = a["var"];
+            auto val = a["val"];
+            if (ryml::keyValid(var) && ryml::keyValid(val))
+            {
+                utte_string name;
+                var >> name;
+
+                if (val.is_seq())
                 {
-                    auto& string = data.generator.requestArrayWithGC();
-                    string = a["val"].as<std::vector<utte_string>>();
-                    data.generator.pushVariable(UTTE::Generator::makeArray(string), name);
+                    auto& array = data.generator.requestArrayWithGC();
+                    val >> array;
+                    data.generator.pushVariable(UTTE::Generator::makeArray(array), name);
                 }
-                else if (a["val"].IsMap())
+                else if (val.is_map())
                 {
                     auto& map = data.generator.requestMapWithGC();
-                    map = a["val"].as<utte_map<utte_string, utte_string>>();
+                    for (auto c : val.children())
+                    {
+                        utte_string k{};
+                        utte_string v{};
+
+                        auto realkey = c.key();
+                        k.resize(realkey.len);
+                        memcpy(k.data(), realkey.data(), realkey.len);
+
+                        c >> v;
+
+                        map.insert({k, v});
+                    }
                     data.generator.pushVariable(UTTE::Generator::makeMap(map), name);
                 }
                 else
-                    data.generator.pushVariable({ .value = a["val"].as<utte_string>(), .type = UTTE_VARIABLE_TYPE_HINT_NORMAL }, name);
+                {
+                    utte_string v{};
+                    val >> v;
+                    data.generator.pushVariable({ .value = v, .type = UTTE_VARIABLE_TYPE_HINT_NORMAL }, name);
+                }
             }
         }
     }
@@ -67,12 +91,13 @@ void getConfig(const char* path, GeneratorData& data)
     SET_ARRAY(data.localhostCommands,            "localhost-commands"            );
     SET_ARRAY(data.customPreGenerationCommands,  "custom-pre-generation-commands");
 
-    data.ignoredFiles.push_back("UBTCustomFunctions");
-    data.ignoredFiles.push_back(".git");
-    data.ignoredFiles.push_back("UVKBuildTool");
+    data.ignoredFiles.emplace_back("UBTCustomFunctions");
+    data.ignoredFiles.emplace_back(".git");
+    data.ignoredFiles.emplace_back("UVKBuildTool");
 
-    if (node["run-localhost-automatically"])
-        data.bRunLocalhost = node["run-localhost-automatically"].as<bool>();
+    auto localhostAuto = root["run-localhost-automatically"];
+    if (ryml::keyValid(localhostAuto))
+        localhostAuto >> data.bRunLocalhost;
 
     data.generator.pushFunction({ .name = "include", .function = UBT::funcInclude });
     if (data.bCanUseTranslations)
@@ -192,7 +217,7 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
     // Add custom variables from the user
     UBT::funcExportMain(data.generator);
 
-    std::filesystem::path pp(projectPath);
+    const std::filesystem::path pp(projectPath);
     for (auto& a : engine.getExistingLocales())
     {
         engine.setCurrentLocale(a);
@@ -205,7 +230,7 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
 
         buildGeneric(data, ep, ep, pp);
     }
-    std::filesystem::path ep(exportPath);
+    const std::filesystem::path ep(exportPath);
     rootDir = ep;
     buildGeneric(data, exportPath, exportPath, pp, false);
 
