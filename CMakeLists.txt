@@ -49,6 +49,9 @@ endif()
 
 if (UBT_COMPILING_FOR_WEB)
     set(BUILD_VARIANT_VENDOR ON)
+    set(USE_PRECONFIGURED_YAML ON)
+    set(RYML_INCLUDE_DIRS_T "rapidyaml/src/")
+
     add_subdirectory(ui18n)
 endif()
 
@@ -68,6 +71,7 @@ file(GLOB_RECURSE UTG_SRC "utg/src/*.cpp")
 add_executable(UVKBuildTool ${SRC} ${UNI_SRC} ${UTG_SRC} ${HEAD} ${UNI_HEAD} src/main.cpp)
 
 set_target_properties(UVKBuildTool PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(ryml PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_compile_definitions(UVKBuildTool PRIVATE UBT_TEMPLATES_DIR="${UBT_TEMPLATES_DIR}" UBT_FRAMEWORK_DIR="${UBT_FRAMEWORK_DIR}" UBT_DIR="${UBT_DIR}" UTTE_CUSTOM_MAP=phmap::flat_hash_map UTTE_CUSTOM_MAP_INCLUDE=<parallel-hashmap/parallel_hashmap/phmap.h>)
 if (UBT_COMPILING_FOR_WEB)
