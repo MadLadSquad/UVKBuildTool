@@ -143,7 +143,7 @@ static void gatherCustomInstalls(ryml::NodeRef config, InstallDirectories& dirs)
         {
             for (auto a : installs.children())
             {
-                if (ryml::keyValid(a))
+                if (!ryml::keyValid(a))
                     continue;
 
                 auto file = a["file"];
