@@ -36,7 +36,7 @@ jobs:
         run: |
           git config --global user.name "Madman10K"
           git config --global user.email "contact@madladsquad.com"
-          git submodule update --remote --rebase --init --recursive
+          git submodule update --remote --init --recursive
           ver="${{ github.ref_name }}"
           echo "out=uvk-build-tool-${ver:1}" >> $GITHUB_OUTPUT
           sed -i "s/project(UVKBuildToolLib.*/project(UVKBuildToolLib VERSION ${ver:1})/g" CMakeLists.txt
