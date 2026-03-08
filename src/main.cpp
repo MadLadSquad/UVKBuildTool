@@ -1,9 +1,5 @@
 #ifdef UBT_TARGET_FRAMEWORK
-    #include <UntitledImGuiFramework/Utility.hpp>
-    #include <UntitledImGuiFramework/CMakeGenerator.hpp>
-    #include <UntitledImGuiFramework/FileGenerator.hpp>
-    #include <UntitledImGuiFramework/SourceGenerator.hpp>
-    #include <UntitledImGuiFramework/ReleaseBuild.hpp>
+    #include <UntitledImGuiFramework/Commands.hpp>
 #elif UBT_TARGET_WEB
     #include <Web/ConfigManager.hpp>
     #include <Web/Functions.hpp>
@@ -12,35 +8,6 @@
 #include <ryml.hpp>
 #include "../ucli/CLIParser.hpp"
 #include <exception>
-
-static ryml::NodeRef getConfig(std::string& name)
-{
-    const std::string string = UBT::loadFileToString((UBT::getPath()/"uvproj.yaml").string().c_str());
-    if (string.empty())
-    {
-        std::cout << ERROR << "Could not load uvproj.yaml" << END_COLOUR << std::endl;
-        std::terminate();
-    }
-
-    static auto tree = ryml::parse_in_arena(string.c_str());
-    if (tree.empty())
-    {
-        std::cout << ERROR << "Could not parse uvproj.yaml" << std::endl;
-        std::terminate();
-    }
-
-    static auto root = tree.rootref();
-    auto n = root["name"];
-    if (ryml::keyValid(n))
-        n >> name;
-    return root;
-}
-
-static ryml::NodeRef setupWorkdir(const char* x, std::string& name)
-{
-    UBT::setPath(x);
-    return getConfig(name);
-}
 
 /**
  * @brief Check if an arguments is within bounds and that the args array is not null
@@ -62,162 +29,313 @@ static ryml::NodeRef setupWorkdir(const char* x, std::string& name)
 int main(const int argc, char** argv)
 {
     UBT::setPath("../../");
+
+    const char* projectPaths[] = { "<path to project>" };
+    const char* componentPaths[] = { "<component name>, <path to project>" };
+    const char* buildHint[] = { "<staging path>", "<install path>", "<path to project>" };
+
     UCLI::Parser parser{};
-    parser.setUnknownArgumentCallback([](const char* name, void* data) -> void {
-        std::cout << ERROR << "Unknown argument error: " << name << END_COLOUR << std::endl;
-        exit(UBT::showHelp(false));
-    }, nullptr);
-    parser.parse(argc, argv, {
-            UCLI::Parser::ArrayFlag{
-                .longType = "generate",
-                .shortType = "g",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void {
-                    std::string name{};
+    parser
+        .setHelpHeader("UVKBuildTol - The universal file generator for the UntitledImGuiFramework")
+        .setHelpFooter("Copyright (c) MadLadSquad")
+        .pushCommand({
+            .longName = "generate",
+            .shortName = 'g',
+            .description = "Regenerates all required files for the given project",
 
-                    CHECK_BOUNDS(size == 0, "Invalid argument, generate requires a path to a UVKBuildTool project!");
-                    auto config = setupWorkdir(args[0], name);
+            .defaultValues = projectPaths,
+            .defaultValuesCount = SIZE_MAX,
 
-                    const auto path = UBT::getPath();
-                    if (!std::filesystem::exists(path/"Exported"))
-                        std::filesystem::create_directory(path/"Exported");
-                    if (!std::filesystem::exists(path/"Generated"))
-                        std::filesystem::create_directory(path/"Generated");
-                    if (!std::filesystem::exists(path/"Framework"))
-                        std::filesystem::create_directory_symlink(std::filesystem::path(UBT_FRAMEWORK_DIR)/"Framework", path/"Framework");
-                    if (!std::filesystem::exists(path/"UVKBuildTool"))
-                        std::filesystem::create_directory_symlink(std::filesystem::path(UBT_DIR), path/"UVKBuildTool");
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_STRING,
 
-                    std::filesystem::copy_file(
-                        std::filesystem::path(UBT_FRAMEWORK_DIR)/"export.sh",
-                        path/"export.sh",
-                        std::filesystem::copy_options::overwrite_existing
-                    );
+            .subcommands = nullptr,
+            .subcommandsCount = 0,
 
-                    UBT::generateCmake(config);
-                    UBT::generateMain(name.c_str());
-                    UBT::generateDef();
+            .flags = nullptr,
+            .flagsCount = 0,
 
-                    std::filesystem::copy_file(
-                        std::filesystem::path(UBT_TEMPLATES_DIR"/Sources/Config.hpp.tmpl"),
-                        path/"Generated/Config.hpp",
-                        std::filesystem::copy_options::overwrite_existing
-                    );
-                    exit(0);
-                },
-            },
-            UCLI::Parser::ArrayFlag{
-                .longType = "install",
-                .shortType = "i",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
-                    std::string name{};
+            .callback = UBT::generateCommand,
+            .context = &parser,
 
-                    CHECK_BOUNDS(size == 0, "Invalid argument, generate requires a path to a UVKBuildTool project!");
-                    auto config = setupWorkdir(args[0], name);
+            .useLiteralFlags = false
+        })
+        .pushCommand({
+            .longName = "install",
+            .shortName = 'i',
+            .description = "Generates the project files when installing for the first time",
 
-                    UBT::generateCmake(config);
-                    UBT::generateMain(name.c_str());
-                    UBT::generateDef();
-                    UBT::makeTemplate(name + std::string("UIInstance"), "Instance", name.c_str());
+            .defaultValues = projectPaths,
+            .defaultValuesCount = SIZE_MAX,
 
-                    std::filesystem::copy_file(
-                        std::filesystem::path(UBT_TEMPLATES_DIR"/Sources/Config.hpp.tmpl"),
-                        UBT::getPath()/"Generated/Config.hpp"
-                    );
-                    exit(0);
-                },
-            },
-            UCLI::Parser::ArrayFlag{
-                .longType = "inline",
-                .shortType = "",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
-                    std::string name{};
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_STRING,
 
-                    CHECK_BOUNDS(size < 2, "Invalid argument, inline requires a class name path to a UVKBuildTool project!");
-                    setupWorkdir(args[1], name);
+            .subcommands = nullptr,
+            .subcommandsCount = 0,
 
-                    UBT::makeTemplate(std::string(args[0]), "InlineComponent", name.c_str());
-                    exit(0);
-                },
-            },
-            UCLI::Parser::ArrayFlag{
-                .longType = "window",
-                .shortType = "",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
-                    std::string name{};
+            .flags = nullptr,
+            .flagsCount = 0,
 
-                    CHECK_BOUNDS(size < 2, "Invalid argument, window requires a class name path to a UVKBuildTool project!");
-                    setupWorkdir(args[1], name);
+            .callback = UBT::installCommand,
+            .context = &parser,
 
-                    UBT::makeTemplate(std::string(args[0]), "WindowComponent", name.c_str());
-                    exit(0);
-                },
-            },
-            UCLI::Parser::ArrayFlag{
-                .longType = "title-bar",
-                .shortType = "",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
-                    std::string name{};
+            .useLiteralFlags = false
+        })
+        .pushCommand({
+            .longName = "build",
+            .shortName = 'b',
+            .description = "Bundles the application and compiles it for production",
 
-                    CHECK_BOUNDS(size < 2, "Invalid argument, title-bar requires a class name path to a UVKBuildTool project!");
-                    setupWorkdir(args[1], name);
+            .defaultValues = buildHint,
+            .defaultValuesCount = SIZE_MAX,
 
-                    UBT::makeTemplate(std::string(args[0]), "TitlebarComponent", name.c_str());
-                    exit(0);
-                },
-            },
-            UCLI::Parser::ArrayFlag{
-                .longType = "build",
-                .shortType = "b",
-                .func = [](UCLI::Parser::ArrayFlag*, char** args, const size_t size) -> void  {
-                    std::string name{};
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_ARRAY,
 
-                    CHECK_BOUNDS(size < 3, "Invalid argument, build requires a staging path, installation path and a path to a UVKBuildTool project!");
-                    auto config = setupWorkdir(args[2], name);
+            .subcommands = nullptr,
+            .subcommandsCount = 0,
 
-                    UBT::relBuild(name, config, args[0], args[1]);
-                    exit(0);
-                },
-            },
-        }, {}, {
-            UCLI::Parser::BooleanFlagWithFunc{
-                .longType = "help",
-                .shortType = "h",
-                .func = [](UCLI::Parser::BooleanFlagWithFunc*) -> void {
-                    exit(UBT::showHelp(false));
-                },
-            },
-        }
-    );
+            .flags = nullptr,
+            .flagsCount = 0,
+
+            .callback = UBT::buildCommand,
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .pushCommand({
+            .longName = "inline",
+            .shortName = 0,
+            .description = "Generates an inline component",
+
+            .defaultValues = componentPaths,
+            .defaultValuesCount = SIZE_MAX,
+
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_ARRAY,
+
+            .subcommands = nullptr,
+            .subcommandsCount = 0,
+
+            .flags = nullptr,
+            .flagsCount = 0,
+
+            .callback = UBT::inlineCommand,
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .pushCommand({
+            .longName = "window",
+            .shortName = 0,
+            .description = "Generates a window component",
+
+            .defaultValues = componentPaths,
+            .defaultValuesCount = SIZE_MAX,
+
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_ARRAY,
+
+            .subcommands = nullptr,
+            .subcommandsCount = 0,
+
+            .flags = nullptr,
+            .flagsCount = 0,
+
+            .callback = UBT::windowCommand,
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .pushCommand({
+            .longName = "title-bar",
+            .shortName = 0,
+            .description = "Generates a title bar component",
+
+            .defaultValues = componentPaths,
+            .defaultValuesCount = SIZE_MAX,
+
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_ARRAY,
+
+            .subcommands = nullptr,
+            .subcommandsCount = 0,
+
+            .flags = nullptr,
+            .flagsCount = 0,
+
+            .callback = UBT::titlebarCommand,
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .pushFlag({
+            .longName = "generate",
+            .shortName = 'g',
+            .description = "Compatibility: Regenerates all required files for the given project",
+
+            .defaultValues = projectPaths,
+            .defaultValuesCount = SIZE_MAX,
+
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_STRING,
+
+            .callback = UBT::generateCommand,
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .pushFlag({
+            .longName = "install",
+            .shortName = 'i',
+            .description = "Compatibility: Generates the project files when installing for the first time",
+
+            .defaultValues = projectPaths,
+            .defaultValuesCount = SIZE_MAX,
+
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_STRING,
+
+            .callback = UBT::installCommand,
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .pushFlag({
+            .longName = "build",
+            .shortName = 'b',
+            .description = "Compatibility: Bundles the application and compiles it for production",
+
+            .defaultValues = buildHint,
+            .defaultValuesCount = SIZE_MAX,
+
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_ARRAY,
+
+            .callback = UBT::buildCommand,
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .pushFlag({
+            .longName = "inline",
+            .shortName = 0,
+            .description = "Compatibility: Generates an inline component",
+
+            .defaultValues = componentPaths,
+            .defaultValuesCount = SIZE_MAX,
+
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_ARRAY,
+
+            .callback = UBT::inlineCommand,
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .pushFlag({
+            .longName = "window",
+            .shortName = 0,
+            .description = "Compatibility: Generates a window component",
+
+            .defaultValues = componentPaths,
+            .defaultValuesCount = SIZE_MAX,
+
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_ARRAY,
+
+            .callback = UBT::windowCommand,
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .pushFlag({
+            .longName = "title-bar",
+            .shortName = 0,
+            .description = "Compatibility: Generates a title bar component",
+
+            .defaultValues = componentPaths,
+            .defaultValuesCount = SIZE_MAX,
+
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_ARRAY,
+
+            .callback = UBT::titlebarCommand,
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .parse(argc, argv);
+
     return 0;
 }
 #elif UBT_TARGET_WEB
 int main(int argc, char** argv)
 {
     UBT::setPath("../../");
+
+    const char* defaultValues[] = { "<output directory>", "<project path>" };
     UCLI::Parser parser{};
-    parser.setUnknownArgumentCallback([](const char* name, void* data) -> void {
-        std::cout << ERROR << "Unknown argument error: " << name << END_COLOUR << std::endl;
-        exit(UBT::showHelp(false));
-    }, nullptr);
-    parser.parse(argc, argv, {
-        UCLI::Parser::ArrayFlag {
-            .longType = "build",
-            .shortType = "b",
-            .func = [](UCLI::Parser::ArrayFlag*, char** args, size_t size) -> void {
-                CHECK_BOUNDS(size < 2, "Invalid argument, build requires an export path and a UVKBuildTool project path!");
-                UBT::buildMain(args[0], args[1]);
-                exit(0);
-            }
-        },
-    }, {}, {
-        UCLI::Parser::BooleanFlagWithFunc {
-            .longType = "help",
-            .shortType = "h",
-            .func = [](UCLI::Parser::BooleanFlagWithFunc*) -> void {
-                exit(UBT::showHelp(false));
-            }
-        }
-    });
-    return 0;
+    parser
+        .setHelpHeader("UVKBuildTol - The universal file generator for static websites")
+        .setHelpFooter("Copyright (c) MadLadSquad")
+        .pushCommand(UCLI::Command{
+            .longName = "build",
+            .shortName = 'b',
+            .description = "Builds the project to the specified output directory",
+
+            .defaultValues = defaultValues,
+            .defaultValuesCount = SIZE_MAX,
+
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_ARRAY,
+
+            .subcommands = nullptr,
+            .subcommandsCount = 0,
+
+            .flags = nullptr,
+            .flagsCount = 0,
+
+            .callback = [](const UCLI::Command* command) -> UCLI::CallbackResult
+            {
+                if (command->stringValues.stringValues == nullptr || command->stringValues.stringValuesCount < 2 || command->stringValues.stringValuesCount == SIZE_MAX)
+                {
+                    std::cout << ERROR << "Invalid argument, generate requires a path to a UVKBuildTool project!" << END_COLOUR << std::endl << std::endl;
+                    return UCLI::Parser::helpCommand(command);
+                }
+                UBT::buildMain(command->stringValues.stringValues[0], command->stringValues.stringValues[1]);
+                return UCLI_CALLBACK_RESULT_OK;
+            },
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .pushFlag(UCLI::Flag{
+            .longName = "build",
+            .shortName = 'b',
+            .description = "Builds the project to the specified output directory",
+
+            .defaultValues = defaultValues,
+            .defaultValuesCount = SIZE_MAX,
+
+            .boolValue = nullptr,
+            .type = UCLI_COMMAND_TYPE_ARRAY,
+
+            .callback = [](const UCLI::Flag* command) -> UCLI::CallbackResult
+            {
+                if (command->stringValues.stringValues == nullptr || command->stringValues.stringValuesCount < 2 || command->stringValues.stringValuesCount == SIZE_MAX)
+                {
+                    std::cout << ERROR << "Invalid argument, generate requires a path to a UVKBuildTool project!" << END_COLOUR << std::endl << std::endl;
+                    return UCLI::Parser::helpCommand(command);
+                }
+                UBT::buildMain(command->stringValues.stringValues[0], command->stringValues.stringValues[1]);
+                return UCLI_CALLBACK_RESULT_OK;
+            },
+            .context = &parser,
+
+            .useLiteralFlags = false
+        })
+        .parse(argc, argv);
 }
 #endif

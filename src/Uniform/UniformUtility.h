@@ -53,13 +53,17 @@ namespace YAML
 
 namespace UBT
 {
-    std::filesystem::path& getPath();
-    void setPath(const char* pt);
+    std::filesystem::path& getPath() noexcept;
+    void setPath(const char* pt) noexcept;
 
     void sanitisePath(std::string& s) noexcept;
 
-    std::string toLower(std::string str);
-    std::string toUpper(std::string str);
+    std::string toLower(std::string str) noexcept;
+    std::string toUpper(std::string str) noexcept;
 
-    std::string loadFileToString(const std::string& p);
+    std::string loadFileToString(const std::string& p) noexcept;
+
+    ryml::NodeRef setupWorkdir(const char* x, std::string& name) noexcept;
+
+    ryml::NodeRef getConfig(std::string& name) noexcept;
 }

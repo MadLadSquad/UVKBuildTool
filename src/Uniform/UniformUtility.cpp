@@ -1,13 +1,14 @@
 #include "UniformUtility.h"
 #include <Generator.hpp>
+#include <exception>
 
-std::filesystem::path& UBT::getPath()
+std::filesystem::path& UBT::getPath() noexcept
 {
     static std::filesystem::path path("../../");
     return path;
 }
 
-void UBT::setPath(const char* pt)
+void UBT::setPath(const char* pt) noexcept
 {
     std::string str = pt;
     if (str.back() != '/')
@@ -32,13 +33,13 @@ void UBT::sanitisePath(std::string& s) noexcept
 #endif
 }
 
-std::string UBT::toUpper(std::string str)
+std::string UBT::toUpper(std::string str) noexcept
 {
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
     return str;
 }
 
-std::string UBT::loadFileToString(const std::string& p)
+std::string UBT::loadFileToString(const std::string& p) noexcept
 {
     std::ifstream in(p);
 
@@ -55,7 +56,36 @@ std::string UBT::loadFileToString(const std::string& p)
     return buffer;
 }
 
-std::string UBT::toLower(std::string str)
+ryml::NodeRef UBT::setupWorkdir(const char* x, std::string& name) noexcept
+{
+    setPath(x);
+    return getConfig(name);
+}
+
+ryml::NodeRef UBT::getConfig(std::string& name) noexcept
+{
+    const std::string string = UBT::loadFileToString((UBT::getPath()/"uvproj.yaml").string().c_str());
+    if (string.empty())
+    {
+        std::cout << ERROR << "Could not load uvproj.yaml" << END_COLOUR << std::endl;
+        std::terminate();
+    }
+
+    static auto tree = ryml::parse_in_arena(string.c_str());
+    if (tree.empty())
+    {
+        std::cout << ERROR << "Could not parse uvproj.yaml" << std::endl;
+        std::terminate();
+    }
+
+    static auto root = tree.rootref();
+    auto n = root["name"];
+    if (ryml::keyValid(n))
+        n >> name;
+    return root;
+}
+
+std::string UBT::toLower(std::string str) noexcept
 {
     std::transform(str.begin(), str.end(), str.begin(), ::tolower);
     return str;
