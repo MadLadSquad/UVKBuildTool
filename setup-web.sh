@@ -13,13 +13,16 @@ function find_visual_studio_directory()
     wd=$(pwd)
     cd "C:/Program Files (x86)/Microsoft Visual Studio/Installer/" || exit
     find "vswhere.exe" -maxdepth 0 &> /dev/null || (cd "${wd}" && download_vswhere)
+    vs_path=$(./vswhere.exe | grep "installationPath")
+    vs_path="${vs_path:18}"
 
-    VSShortVer=$(./vswhere.exe | grep "catalog_productLine: Dev17")
-    VSShortVer="${VSShortVer:24}"
+    VSShortVerLine=$(./vswhere.exe | grep "catalog_productLine: Dev")
+    VSShortVerLine="${VSShortVerLine#*Dev}"
+    VSShortVer="${VSShortVerLine%%[[:space:]]*}"
 
-    VSVer=$(./vswhere.exe | grep "catalog_productLineVersion:")
-    VSVer="${VSVer:28}"
+    VSVer=$(cmake --help 2>&1 | grep "Visual Studio ${VSShortVer} " | grep -oE '[0-9]{4}' | head -1)
 
+    setx PATH "${vs_path}/MSBuild/Current/Bin/amd64/;%PATH%" 2> /dev/null
     cd "${wd}" || exit
   fi
   return
