@@ -19,7 +19,7 @@ cp "$1/UBTCustomFunctions" src/Web/ -r || exit
 
 mkdir build &> /dev/null
 cd build || exit
-cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DUBT_COMPILING_FOR_WEB=ON || exit
+cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DUBT_COMPILING_FOR_WEB="${web}" || exit
 MSBuild.exe UVKBuildTool.sln* -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="${cpus}" || make -j "${cpus}" || exit
 
 cp Release/UVKBuildTool.exe . 2> /dev/null || echo -n " " || exit
