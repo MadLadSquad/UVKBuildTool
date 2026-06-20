@@ -14,10 +14,10 @@ bool UBT::ReleaseBuildInternal::checkBundleCompatibility(ryml::NodeRef config) n
         if (ryml::keyValid(bundle))
         {
             bool vendor{};
-            buildModeVendor >> vendor;
+            buildModeVendor.load(&vendor);
 
             bool mac{};
-            bundle >> mac;
+            bundle.load(&mac);
 
             if (!vendor && mac)
             {
@@ -38,7 +38,7 @@ void UBT::ReleaseBuildInternal::runBuildCommand(ryml::NodeRef config, const std:
     if (ryml::keyValid(sw))
     {
         bool val{};
-        sw >> val;
+        sw.load(&val);
         if (val)
             systemWide = "--system-wide";
     }

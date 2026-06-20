@@ -39,7 +39,7 @@ static void generateMacroDefinitions(const std::string& definition, std::string&
 
 static void findInstallDirs(ryml::NodeRef config, InstallDirectories& dirs) noexcept
 {
-#define addToDir(x, y) if (ryml::keyValid(config[y])) config[y] >> dirs.x
+#define addToDir(x, y) if (ryml::keyValid(config[y])) config[y].load(&dirs.x)
 
     addToDir(frameworkDir,              "framework-library-dir");
     addToDir(applicationLibraryDir,     "framework-application-library-dir");
@@ -53,7 +53,7 @@ static void findInstallDirs(ryml::NodeRef config, InstallDirectories& dirs) noex
 static void generateInstallStatements(ryml::NodeRef config, const InstallDirectories& dirs, UTTE::Generator& generator) noexcept
 {
     std::string name{};
-    config["name"] >> name;
+    config["name"].load(&name);
 
     std::string applicationDir;
     if (dirs.platform != InstallPlatform::WINDOWS)
@@ -69,7 +69,7 @@ static void generateInstallStatements(ryml::NodeRef config, const InstallDirecto
                 if (ryml::keyValid(bundle))
                 {
                     bool bBundle{};
-                    bundle >> bBundle;
+                    bundle.load(&bBundle);
 
                     if (bBundle)
                     {
@@ -162,10 +162,10 @@ static void gatherCustomInstalls(ryml::NodeRef config, InstallDirectories& dirs)
                             std::string macro;
                             bool bDirectory;
 
-                            file >> filename;
-                            directory >> dirname;
-                            macroName >> macro;
-                            isDirectory >> bDirectory;
+                            file.load(&filename);
+                            directory.load(&dirname);
+                            macroName.load(&macro);
+                            isDirectory.load(&bDirectory);
 
                             dirs.customInstalls.push_back({
                                 .fileDir = filename,
@@ -178,7 +178,7 @@ static void gatherCustomInstalls(ryml::NodeRef config, InstallDirectories& dirs)
                     else
                     {
                         std::string filename;
-                        file >> filename;
+                        file.load(&filename);
 
                         std::cout << WARNING << "Warning: There was a problem with generating a custom install. File in question: " << filename << END_COLOUR << std::endl;
                     }
@@ -192,7 +192,7 @@ static void gatherCustomInstalls(ryml::NodeRef config, InstallDirectories& dirs)
 static std::string getInstallStatements(ryml::NodeRef config, std::string& installs, const std::string& realInstallDir) noexcept
 {
     std::string name{};
-    config["name"] >> name;
+    config["name"].load(&name);
 
     // macOS settings. Bundle for whether to ship as an application bundle
     bool bBundle = false;
@@ -202,7 +202,7 @@ static std::string getInstallStatements(ryml::NodeRef config, std::string& insta
         {
             auto bundle = macos["bundle"];
             if (ryml::keyValid(bundle))
-                bundle >> bBundle;
+                bundle.load(&bBundle);
         }
     }
 
@@ -287,7 +287,7 @@ static std::string getInstallStatements(ryml::NodeRef config, std::string& insta
         if (ryml::keyValid(buildModeStatic))
         {
             bool bBuildModeStatic{};
-            buildModeStatic >> bBuildModeStatic;
+            buildModeStatic.load(&bBuildModeStatic);
             if (bBuildModeStatic)
                 buildStatic = "ON";
         }
@@ -299,7 +299,7 @@ static std::string getInstallStatements(ryml::NodeRef config, std::string& insta
         if (ryml::keyValid(buildModeVendor))
         {
             bool bBuildModeVendor{};
-            buildModeVendor >> bBuildModeVendor;
+            buildModeVendor.load(&bBuildModeVendor);
 
             buildVendor = bBuildModeVendor ? "ON" : "OFF";
         }
@@ -320,7 +320,7 @@ static std::string getInstallStatements(ryml::NodeRef config, std::string& insta
         if (ryml::keyValid(f))
         {
             bool bShouldInstall{};
-            f >> bShouldInstall;
+            f.load(&bShouldInstall);
 
             installFramework = bShouldInstall ? "ON" : "OFF";
 

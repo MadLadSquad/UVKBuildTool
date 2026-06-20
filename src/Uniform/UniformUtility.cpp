@@ -81,7 +81,7 @@ ryml::NodeRef UBT::getConfig(std::string& name) noexcept
     static auto root = tree.rootref();
     auto n = root["name"];
     if (ryml::keyValid(n))
-        n >> name;
+        n.load(&name);
     return root;
 }
 

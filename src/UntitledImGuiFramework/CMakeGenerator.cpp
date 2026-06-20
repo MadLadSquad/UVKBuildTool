@@ -10,7 +10,7 @@ static void pushVariable(UTTE::Generator& generator, const char* name, const cha
     auto n = node[name];
     bool bResult{};
     if (ryml::keyValid(n))
-        n >> bResult;
+        n.load(&bResult);
     else if (alias != nullptr)
     {
         auto nn = node[alias];
@@ -19,7 +19,7 @@ static void pushVariable(UTTE::Generator& generator, const char* name, const cha
             PUSH_NONE_VARIABLE(name);
             return;
         }
-        nn >> bResult;
+        nn.load(&bResult);
     }
     else
     {
@@ -32,7 +32,7 @@ static void pushVariable(UTTE::Generator& generator, const char* name, const cha
 void UBT::generateCmake(ryml::NodeRef node) noexcept
 {
     std::string name{};
-    node["name"] >> name;
+    node["name"].load(&name);
     {
         UTTE::Generator generator{};
         const auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/CMakeLists.txt.tmpl");

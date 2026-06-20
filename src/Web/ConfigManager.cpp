@@ -6,7 +6,7 @@
 #include <UI18N.hpp>
 #include <exception>
 
-#define SET_ARRAY(x, y) if (ryml::keyValid(root[y])) root[y] >> x
+#define SET_ARRAY(x, y) if (ryml::keyValid(root[y])) root[y].load(&(x))
 
 struct GeneratorData
 {
@@ -50,12 +50,12 @@ void getConfig(const char* path, GeneratorData& data)
             if (ryml::keyValid(var) && ryml::keyValid(val))
             {
                 utte_string name;
-                var >> name;
+                var.load(&name);
 
                 if (val.is_seq())
                 {
                     auto& array = data.generator.requestArrayWithGC();
-                    val >> array;
+                    val.load(&array);
                     data.generator.pushVariable(UTTE::Generator::makeArray(array), name);
                 }
                 else if (val.is_map())
@@ -70,7 +70,7 @@ void getConfig(const char* path, GeneratorData& data)
                         k.resize(realkey.len);
                         memcpy(k.data(), realkey.data(), realkey.len);
 
-                        c >> v;
+                        c.load(&v);
 
                         map.insert({k, v});
                     }
@@ -79,7 +79,7 @@ void getConfig(const char* path, GeneratorData& data)
                 else
                 {
                     utte_string v{};
-                    val >> v;
+                    val.load(&v);
                     data.generator.pushVariable({ .value = v, .type = UTTE_VARIABLE_TYPE_HINT_NORMAL }, name);
                 }
             }
@@ -97,7 +97,7 @@ void getConfig(const char* path, GeneratorData& data)
 
     auto localhostAuto = root["run-localhost-automatically"];
     if (ryml::keyValid(localhostAuto))
-        localhostAuto >> data.bRunLocalhost;
+        localhostAuto.load(&data.bRunLocalhost);
 
     data.generator.pushFunction({ .name = "include", .function = UBT::funcInclude });
     if (data.bCanUseTranslations)
