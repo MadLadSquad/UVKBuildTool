@@ -87,7 +87,7 @@ if (UBT_COMPILING_FOR_WEB)
     target_link_libraries(UVKBuildTool UntitledI18N)
 endif()
 
-target_link_libraries(UVKBuildTool UntitledCLIParser ryml c4core)
+target_link_libraries(UVKBuildTool UntitledCLIParser ryml)
 if (NOT UBT_COMPILING_FOR_WEB AND UBT_INSTALL)
     install(TARGETS UVKBuildTool DESTINATION bin/)
     install(DIRECTORY Templates/ DESTINATION share/UVKBuildTool/Templates)
