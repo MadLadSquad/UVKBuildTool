@@ -36,7 +36,7 @@ int main(const int argc, char** argv)
 
     UCLI::Parser parser{};
     parser
-        .setHelpHeader("UVKBuildTol - The universal file generator for the UntitledImGuiFramework")
+        .setHelpHeader("UVKBuildTool - The universal file generator for the UntitledImGuiFramework")
         .setHelpFooter("Copyright (c) MadLadSquad")
         .pushCommand({
             .longName = "generate",
@@ -278,7 +278,7 @@ int main(int argc, char** argv)
     const char* defaultValues[] = { "<output directory>", "<project path>" };
     UCLI::Parser parser{};
     parser
-        .setHelpHeader("UVKBuildTol - The universal file generator for static websites")
+        .setHelpHeader("UVKBuildTool - The universal file generator for static websites")
         .setHelpFooter("Copyright (c) MadLadSquad")
         .pushCommand(UCLI::Command{
             .longName = "build",
