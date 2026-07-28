@@ -17,3 +17,6 @@ build/
 
 src/Web/UBTCustomFunctions/
 src/Web/UBTCustomFunctions
+graphify-out/
+.agents/
+.claude/
