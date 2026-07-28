@@ -107,14 +107,17 @@ static void generateInstallStatements(ryml::NodeRef config, const InstallDirecto
 static void addParsedPlatformConfigToCMakeLists(ryml::NodeRef config, const InstallDirectories& installDirs, std::string& installs) noexcept
 {
     UTTE::Generator generator{};
-    const auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/CMakeInstall.tmpl");
-    if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
-    {
-        std::cout << ERROR << "Invalid location for the CMakeInstall template!\x1b[0m" << std::endl;
-        std::terminate();
-    }
+    UBT::loadTemplate(generator, UBT_TEMPLATES_DIR"/BuildFiles/CMakeInstall.tmpl");
+
     generateInstallStatements(config, installDirs, generator);
-    installs += *generator.parse().result;
+
+    const auto* parsed = UBT::tryParseTemplate(generator, UBT_TEMPLATES_DIR"/BuildFiles/CMakeInstall.tmpl");
+    if (parsed == nullptr)
+        std::exit(EXIT_FAILURE);
+
+    // Appended whole rather than through c_str(): the NUL padding UTTE leaves behind is scrubbed out of the
+    // buffer further down, in generateCMake
+    installs += *parsed;
 }
 
 static void gatherCustomInstalls(ryml::NodeRef config, InstallDirectories& dirs) noexcept
@@ -180,7 +183,7 @@ static void gatherCustomInstalls(ryml::NodeRef config, InstallDirectories& dirs)
                         std::string filename;
                         file.load(&filename);
 
-                        std::cout << WARNING << "Warning: There was a problem with generating a custom install. File in question: " << filename << END_COLOUR << std::endl;
+                        std::cout << UBT_COL_WARNING << "Warning: There was a problem with generating a custom install. File in question: " << filename << UBT_COL_END << std::endl;
                     }
                 }
             }
@@ -348,7 +351,18 @@ static std::string getInstallStatements(ryml::NodeRef config, std::string& insta
 
 std::string UBT::ReleaseBuildInternal::generateCMake(const std::filesystem::path& currentPath, ryml::NodeRef config, const std::string& realInstallDir) noexcept
 {
-    copy((currentPath/"CMakeLists.txt"), currentPath/"CMakeLists.txt.old");
+    // The install statements below are appended to the project's CMakeLists.txt, so it is backed up first.
+    // Note that this fails if a backup is already present from an earlier build - it is left in place on
+    // purpose, as it is the only way back to the original file
+    std::error_code code;
+    copy(currentPath/"CMakeLists.txt", currentPath/"CMakeLists.txt.old", code);
+    if (code)
+    {
+        std::cout << UBT_COL_ERROR << "Could not back up '" << (currentPath/"CMakeLists.txt").string() << "' to '"
+                  << (currentPath/"CMakeLists.txt.old").string() << "': " << code.message()
+                  << "\nIf a CMakeLists.txt.old from a previous build is still there, restore or remove it before building again." << UBT_COL_END << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
 
     std::string installs;
 
@@ -364,8 +378,23 @@ std::string UBT::ReleaseBuildInternal::generateCMake(const std::filesystem::path
                 buffer[i] = ' ';
 
         std::ofstream file(currentPath/"CMakeLists.txt");
+        if (!file.is_open())
+        {
+            std::cout << UBT_COL_ERROR << "Could not open '" << (currentPath/"CMakeLists.txt").string()
+                      << "' for writing. The original file is still available as CMakeLists.txt.old." << UBT_COL_END << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+
         file << buffer.c_str() << std::endl; // Convert to C string because this fucks up on Windows and adds some random data
         file.close();
+
+        // A truncated CMakeLists.txt would be handed straight to export.sh, so it is worth failing loudly here
+        if (!file)
+        {
+            std::cout << UBT_COL_ERROR << "Could not write '" << (currentPath/"CMakeLists.txt").string()
+                      << "'. The original file is still available as CMakeLists.txt.old." << UBT_COL_END << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
     }
     return cmakeArgs;
 }

@@ -1,6 +1,7 @@
 #ifdef UBT_TARGET_FRAMEWORK
 #include "ReleaseBuild.hpp"
 #include "ReleaseBuild/ReleaseBuildInternal.hpp"
+#include "SourceGenerator.hpp"
 #include <Generator.hpp>
 #include <filesystem>
 #include <format>
@@ -14,13 +15,11 @@ void UBT::relBuild(const std::string& name, ryml::NodeRef config, const std::str
 
     const auto currentPath = std::filesystem::path(getPath().c_str());
 
-    UTTE::Generator generator{};
-    UTTE::InitialisationResult result;
-
-    UTTE::Function* define_or_undefine = nullptr;
-    UTTE::Function* define_or_undefine_dev = nullptr;
-
-    ReleaseBuildInternal::generateTemporaryBuildDef(currentPath, generator, result, &define_or_undefine, &define_or_undefine_dev);
+    // Flip Generated/BuildDef.hpp to a production build for the duration of the build, then put it back.
+    // Both directions go through the same generator that --generate uses, so the restored file is byte for
+    // byte the development one - the previous version kept raw pointers into the generator's registry
+    // across a reload of the template to do this, which was only ever a reallocation away from breaking
+    generateDef(true);
     ReleaseBuildInternal::runBuildCommand(
         config,
         currentPath,
@@ -28,6 +27,6 @@ void UBT::relBuild(const std::string& name, ryml::NodeRef config, const std::str
         prefix,
         realInstallDir
     );
-    ReleaseBuildInternal::restoreBuildDef(currentPath, generator, result, define_or_undefine, define_or_undefine_dev);
+    generateDef(false);
 }
 #endif

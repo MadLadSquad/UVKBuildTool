@@ -12,7 +12,6 @@ option(UBT_COMPILING_FOR_WEB "If set to ON it will compile with configuration fo
 option(UBT_INSTALL "Whether to install the UVKBuildTool" OFF)
 
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 if (UBT_COMPILING_FOR_WEB)
     set(UBT_TEMPLATES_DIR "${CMAKE_SOURCE_DIR}/Templates/Web")
@@ -23,13 +22,21 @@ else()
         set(UBT_DIR "${CMAKE_SOURCE_DIR}")
         set(UBT_TEMPLATES_DIR "${UBT_DATA_INSTALL_PREFIX}/Templates/UntitledImGuiFramework")
     else()
+        if (NOT DEFINED UBT_DATA_INSTALL_PREFIX)
+            message(FATAL_ERROR "UBT_INSTALL is ON but UBT_DATA_INSTALL_PREFIX was not set. Pass the system "
+                                "install prefix with -DUBT_DATA_INSTALL_PREFIX=<prefix>, otherwise the paths "
+                                "baked into the binary would resolve to '/UVKBuildTool'.")
+        endif()
         set(UBT_DIR "${UBT_DATA_INSTALL_PREFIX}/UVKBuildTool")
         set(UBT_TEMPLATES_DIR "${UBT_DIR}/Templates/UntitledImGuiFramework")
     endif ()
     if (NOT DEFINED UBT_FRAMEWORK_DIR)
         set(UBT_FRAMEWORK_DIR "../")
     endif()
-    get_filename_component(UBT_FRAMEWORK_DIR "${UBT_FRAMEWORK_DIR}" REALPATH "${CMAKE_BINARY_DIR}")
+    # BASE_DIR is spelled out because without the keyword the trailing argument is silently ignored and
+    # relative paths resolve against the source directory anyway. That is the behaviour we want - the
+    # default "../" is the framework root only relative to this directory, not to the build directory
+    get_filename_component(UBT_FRAMEWORK_DIR "${UBT_FRAMEWORK_DIR}" REALPATH BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
 add_subdirectory(rapidyaml)
@@ -58,15 +65,15 @@ endif()
 include_directories(utg/src/ src/ ui18n/)
 
 if (UBT_COMPILING_FOR_WEB)
-    file(GLOB_RECURSE SRC "src/Web/*.cpp" )
-    file(GLOB_RECURSE HEAD "src/Web/*.hpp" )
+    file(GLOB_RECURSE SRC CONFIGURE_DEPENDS "src/Web/*.cpp" )
+    file(GLOB_RECURSE HEAD CONFIGURE_DEPENDS "src/Web/*.hpp" )
 else()
-    file(GLOB_RECURSE SRC "src/UntitledImGuiFramework/*.cpp")
-    file(GLOB_RECURSE HEAD "src/UntitledImGuiFramework/*.hpp")
+    file(GLOB_RECURSE SRC CONFIGURE_DEPENDS "src/UntitledImGuiFramework/*.cpp")
+    file(GLOB_RECURSE HEAD CONFIGURE_DEPENDS "src/UntitledImGuiFramework/*.hpp")
 endif()
-file(GLOB_RECURSE UNI_HEAD "src/Uniform/*.h" "utg/src/*.hpp" "utg/src/*.h" "ui18n/parallel-hashmap/*.h")
-file(GLOB_RECURSE UNI_SRC "src/Uniform/*.cpp")
-file(GLOB_RECURSE UTG_SRC "utg/src/*.cpp")
+file(GLOB_RECURSE UNI_HEAD CONFIGURE_DEPENDS "src/Uniform/*.h" "utg/src/*.hpp" "utg/src/*.h" "ui18n/parallel-hashmap/*.h")
+file(GLOB_RECURSE UNI_SRC CONFIGURE_DEPENDS "src/Uniform/*.cpp")
+file(GLOB_RECURSE UTG_SRC CONFIGURE_DEPENDS "utg/src/*.cpp")
 
 add_executable(UVKBuildTool ${SRC} ${UNI_SRC} ${UTG_SRC} ${HEAD} ${UNI_HEAD} src/main.cpp)
 

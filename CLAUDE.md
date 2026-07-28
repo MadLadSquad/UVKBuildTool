@@ -58,7 +58,7 @@ Every verb is registered **twice** in `src/main.cpp` — once via `pushCommand` 
 `CMakeLists.txt` bakes absolute paths into the binary:
 
 - `UBT_TEMPLATES_DIR` — templates are read from disk **at runtime**, so editing a `.tmpl` needs no rebuild.
-- `UBT_FRAMEWORK_DIR` — realpath of `../` relative to the build dir unless overridden with `-DUBT_FRAMEWORK_DIR=`. Used
+- `UBT_FRAMEWORK_DIR` — realpath of `../` relative to the UVKBuildTool source dir (i.e. the framework root) unless overridden with `-DUBT_FRAMEWORK_DIR=`. Used
   to symlink `Framework/` into a project and to invoke the framework's `export.sh`.
 - `UBT_DIR` — where the tool itself lives; symlinked into projects as `UVKBuildTool/`.
 - `-DUBT_INSTALL=ON` switches these to `UBT_DATA_INSTALL_PREFIX` (system install: `bin/` + `share/UVKBuildTool/Templates`)
@@ -103,12 +103,15 @@ in `CMakeGenerator.cpp`; `ReleaseBuild/CMake.cpp` additionally scrubs embedded `
 `UBT::relBuild` (ReleaseBuild.cpp) orchestrates a deliberately reversible sequence:
 
 1. `checkBundleCompatibility` — rejects macOS `bundle: true` together with `build-mode-vendor: false`.
-2. `generateTemporaryBuildDef` — rewrites `Generated/BuildDef.hpp` to `#define PRODUCTION`.
+2. `generateDef(true)` (SourceGenerator) — rewrites `Generated/BuildDef.hpp` to `#define PRODUCTION`.
 3. `runBuildCommand` → `generateCMake`, which **backs up `CMakeLists.txt` to `CMakeLists.txt.old`** and appends
    generated `if (APPLE)/elseif (WIN32)/else()` install blocks rendered from `CMakeInstall.tmpl`; then shells out to
    the framework's `export.sh` with the computed `-DUIMGUI_INSTALL_PREFIX/-DBUILD_VARIANT_STATIC/-DBUILD_VARIANT_VENDOR/
-   -DUIMGUI_INSTALL_FRAMEWORK/-DUIMGUI_SRC_PREFIX` arguments.
-4. `restoreBuildDef` — puts `BuildDef.hpp` back to the development (`#undef`) state.
+   -DUIMGUI_INSTALL_FRAMEWORK/-DUIMGUI_SRC_PREFIX` arguments. The backup is **not** overwritten: if a
+   `CMakeLists.txt.old` is still present from an earlier build the run aborts, since that file is the only way back
+   to the original.
+4. `generateDef(false)` — puts `BuildDef.hpp` back to the development (`#undef`) state, through the very same
+   generator `--generate` uses.
 
 Per-platform install directories are hardcoded structs in `CMake.cpp::getInstallStatements` (Unix `lib64/`+`bin/`,
 Windows `Program Files/<name>/…`, macOS `.app` bundle layout when `macos.bundle`), each overridable from the

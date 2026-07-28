@@ -21,8 +21,8 @@ bool UBT::ReleaseBuildInternal::checkBundleCompatibility(ryml::NodeRef config) n
 
             if (!vendor && mac)
             {
-                std::cout << ERROR << "You're currently trying to build an application as a macOS application bundle, but with system libraries, which is not possible!\n"
-                                "Application bundles are made to be self-contained, which means that you are forced to vendor all your dependencies, except for OS libraries!" << END_COLOUR << std::endl;
+                std::cout << UBT_COL_ERROR << "You're currently trying to build an application as a macOS application bundle, but with system libraries, which is not possible!\n"
+                                "Application bundles are made to be self-contained, which means that you are forced to vendor all your dependencies, except for OS libraries!" << UBT_COL_END << std::endl;
                 return false;
             }
         }
@@ -59,6 +59,6 @@ void UBT::ReleaseBuildInternal::runBuildCommand(ryml::NodeRef config, const std:
 
     std::cout << command << std::endl;
     if (system(command.c_str()) != 0)
-        std::cout << ERROR << "There was an error with running the 'export.sh' script!" << END_COLOUR;
+        std::cout << UBT_COL_ERROR << "There was an error with running the 'export.sh' script!" << UBT_COL_END << std::endl;
 }
 #endif

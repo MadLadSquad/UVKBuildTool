@@ -2,6 +2,8 @@
 #include "Functions.hpp"
 #include <UI18N.hpp>
 #include <cstring>
+#include <charconv>
+#include <cstdint>
 
 UTTE::Variable UBT::funcInclude(std::vector<UTTE::Variable>& args, UTTE::Generator* generator) noexcept
 {
@@ -15,15 +17,21 @@ UTTE::Variable UBT::funcInclude(std::vector<UTTE::Variable>& args, UTTE::Generat
     gen.getFunctionsRegistry() = generator->getFunctionsRegistry();
     for (size_t i = 1; i < args.size(); i++)
     {
-        std::string dt;
-        if (gen.loadFromFile((rootDir/args[i].value).string()) == UTTE_INITIALISATION_RESULT_SUCCESS)
-            // Note: Your linter is lying to you, this is not redundant. Check out UntitledImGuiFramework/CMakeGenerator.cpp for more info
-            result.value += std::string("\n") + gen.parse().result->c_str();
+        const auto included = (rootDir/args[i].value).string();
+        if (gen.loadFromFile(included) == UTTE_INITIALISATION_RESULT_SUCCESS)
+        {
+            // An included page that fails to parse is skipped with a diagnostic naming it, rather than
+            // pasting the half expanded buffer UTTE hands back on failure into the including page
+            const auto* parsed = UBT::tryParseTemplate(gen, included);
+            if (parsed != nullptr)
+                // Note: Your linter is lying to you, this is not redundant. Check out UntitledImGuiFramework/CMakeGenerator.cpp for more info
+                result.value += std::string("\n") + parsed->c_str();
+        }
     }
     return result;
 }
 
-UI18N::TranslationEngine* getUI18NContext(UTTE::Generator* generator)
+UI18N::TranslationEngine* getUI18NContext(UTTE::Generator* generator) noexcept
 {
     UI18N::TranslationEngine* engine = nullptr;
     for (auto& a : generator->getFunctionsRegistry())
@@ -31,7 +39,15 @@ UI18N::TranslationEngine* getUI18NContext(UTTE::Generator* generator)
         if (a.name == "ui18n_internal_ctx")
         {
             std::vector<UTTE::Variable> tmp = { { .value = "ui18n_internal_ctx" } };
-            engine = reinterpret_cast<UI18N::TranslationEngine*>(std::stoll(a.function(tmp, generator).value));
+            const auto address = a.function(tmp, generator).value;
+
+            // std::from_chars instead of std::stoll: the value round-trips a std::uintptr_t, which a signed
+            // conversion would throw on above INT64_MAX - out of a call chain that is entirely noexcept
+            std::uintptr_t pointer = 0;
+            if (std::from_chars(address.data(), address.data() + address.size(), pointer).ec != std::errc{})
+                break;
+
+            engine = reinterpret_cast<UI18N::TranslationEngine*>(pointer);
             break;
         }
     }

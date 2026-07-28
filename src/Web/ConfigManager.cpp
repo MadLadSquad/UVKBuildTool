@@ -27,15 +27,15 @@ void getConfig(const char* path, GeneratorData& data)
     const auto string = UBT::loadFileToString(std::string(path) + "/uvproj.yaml");
     if (string.empty())
     {
-        std::cout << ERROR << "Error: Couldn't load/find the uvproj.yaml file!" << END_COLOUR << std::endl;
-        std::terminate();
+        std::cout << UBT_COL_ERROR << "Error: Couldn't load/find the uvproj.yaml file!" << UBT_COL_END << std::endl;
+        std::exit(EXIT_FAILURE);
     }
 
     auto tree = ryml::parse_in_arena(string.c_str());
     if (tree.empty())
     {
-        std::cout << ERROR << "Error: Couldn't parse uvproj.yaml file!" << END_COLOUR << std::endl;
-        std::terminate();
+        std::cout << UBT_COL_ERROR << "Error: Couldn't parse uvproj.yaml file!" << UBT_COL_END << std::endl;
+        std::exit(EXIT_FAILURE);
     }
 
     auto root = tree.rootref();
@@ -108,37 +108,54 @@ void getConfig(const char* path, GeneratorData& data)
 
 }
 
+// Checks whether a file carries one of the extensions configured in the project. Config entries may be
+// written with or without the leading dot("html" and ".html" both work). Matching against the normalised,
+// dot-prefixed suffix of the filename is what keeps ".html" from also matching "page.xhtml", which a raw
+// ends_with() over the whole path would do, while still allowing multi-part suffixes like ".tmpl.html"
+static bool matchesExtension(const std::filesystem::path& path, const std::string& extension) noexcept
+{
+    if (extension.empty())
+        return false;
+
+    const std::string filename = path.filename().string();
+    const std::string suffix = extension.front() == '.' ? extension : "." + extension;
+
+    return filename.size() > suffix.size() && filename.ends_with(suffix);
+}
+
 void generateRecursive(const std::filesystem::path& path, const std::vector<std::string>& allowedExtensions, UTTE::Generator& generator)
 {
-    for (auto& a : std::filesystem::recursive_directory_iterator(path, std::filesystem::directory_options::follow_directory_symlink))
+    std::error_code code;
+    for (auto& a : std::filesystem::recursive_directory_iterator(path, std::filesystem::directory_options::follow_directory_symlink, code))
     {
         for (auto& f : allowedExtensions)
         {
-            if (a.path().string().ends_with(f))
+            if (matchesExtension(a.path(), f))
             {
-                auto result = generator.loadFromFile(a.path().string());
-                if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
-                {
-                    std::cout << WARNING << "Warning: Couldn't generate the following file due to it being invalid: " << a.path().string() << END_COLOUR << std::endl;
+                // A page that fails to load, parse or write is only a warning: one broken page should not
+                // take down the render of an entire site
+                if (!UBT::tryLoadTemplate(generator, a.path().string()))
                     goto skip_this_file_3;
-                }
-                std::ofstream out(a.path());
-                out << generator.parse().result->c_str();
-                out.close();
+
+                UBT::tryWriteTemplate(generator, a.path(), a.path().string());
                 goto skip_this_file_3;
             }
         }
 skip_this_file_3:;
     }
+    if (code)
+        std::cout << UBT_COL_WARNING << "Warning: Couldn't walk '" << path.string() << "': " << code.message() << UBT_COL_END << std::endl;
 }
 
 // Copy recursively without copying blacklisted files. std::filesystem::recursive_directory_iterator does not work here
 // btw :D
 void copyRecursive(const std::filesystem::path& dest, const std::filesystem::path& path, const std::vector<std::string>& ignoredFiles)
 {
-    if (!exists(dest))
-        std::filesystem::create_directory(dest);
-    for (auto& a : std::filesystem::directory_iterator(path))
+    if (!UBT::tryCreateDirectory(dest))
+        return;
+
+    std::error_code iterationCode;
+    for (auto& a : std::filesystem::directory_iterator(path, iterationCode))
     {
         for (auto& f : ignoredFiles)
             if (a.path().filename() == f)
@@ -154,27 +171,38 @@ void copyRecursive(const std::filesystem::path& dest, const std::filesystem::pat
         {
             std::error_code code;
             std::filesystem::copy_file(a.path(), dest/a.path().filename(), std::filesystem::copy_options::overwrite_existing, code);
+            if (code)
+                std::cout << UBT_COL_WARNING << "Warning: Couldn't copy '" << a.path().string() << "' to '"
+                          << (dest/a.path().filename()).string() << "': " << code.message() << UBT_COL_END << std::endl;
         }
 skip_this_file:;
     }
+    if (iterationCode)
+        std::cout << UBT_COL_WARNING << "Warning: Couldn't read the directory '" << path.string() << "': " << iterationCode.message() << UBT_COL_END << std::endl;
 }
 
 // Delete intermediate files recursively
 void deleteIntermediateRecursive(const std::filesystem::path& path, const std::vector<std::string>& intermediateFiles)
 {
-    for (auto& a : std::filesystem::recursive_directory_iterator(path, std::filesystem::directory_options::follow_directory_symlink))
+    std::error_code iterationCode;
+    for (auto& a : std::filesystem::recursive_directory_iterator(path, std::filesystem::directory_options::follow_directory_symlink, iterationCode))
     {
         for (auto& f : intermediateFiles)
         {
-            if (a.path().string().ends_with(f))
+            if (matchesExtension(a.path(), f))
             {
                 std::error_code code;
                 std::filesystem::remove(a.path(), code);
+                if (code)
+                    std::cout << UBT_COL_WARNING << "Warning: Couldn't remove the intermediate file '" << a.path().string() << "': "
+                              << code.message() << UBT_COL_END << std::endl;
                 goto skip_this_file_2;
             }
         }
 skip_this_file_2:;
     }
+    if (iterationCode)
+        std::cout << UBT_COL_WARNING << "Warning: Couldn't walk '" << path.string() << "': " << iterationCode.message() << UBT_COL_END << std::endl;
 }
 
 void buildGeneric(GeneratorData& data,  const std::filesystem::path& ep,
@@ -206,7 +234,7 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
     auto result = engine.init((std::string(projectPath) + "/Translations").c_str());
     if (result != UI18N_INIT_RESULT_SUCCESS)
     {
-        std::cout << WARNING << "UI18N Warning: Couldn't initialise the translation engine. Error code: " << result << END_COLOUR << std::endl;
+        std::cout << UBT_COL_WARNING << "UI18N Warning: Couldn't initialise the translation engine. Error code: " << result << UBT_COL_END << std::endl;
         data.bCanUseTranslations = false;
     }
     else
@@ -226,7 +254,7 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
         ep /= UI18N::languageCodeToString(a);
         rootDir = ep;
 
-        std::filesystem::create_directory(ep);      // Create directory because it will probably not exist
+        UBT::createDirectory(ep);      // Create directory because it will probably not exist
 
         buildGeneric(data, ep, ep, pp);
     }

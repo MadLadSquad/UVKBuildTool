@@ -35,29 +35,14 @@ void UBT::generateCmake(ryml::NodeRef node) noexcept
     node["name"].load(&name);
     {
         UTTE::Generator generator{};
-        const auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/CMakeLists.txt.tmpl");
-        if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
-        {
-            std::cout << ERROR << "Error when opening the CMakeLists.txt.tmpl file! Error code: " << result << END_COLOUR << std::endl;
-            std::terminate();
-        }
+        loadTemplate(generator, UBT_TEMPLATES_DIR"/BuildFiles/CMakeLists.txt.tmpl");
 
         generator.pushVariable({ .value = name }, "name");
-        auto stream = std::ofstream(getPath()/"CMakeLists.txt");
-
-        // Windows really likes fucking up everything we do. Basically, if you don't call "->c_str()", a lot of null
-        // terminators will be added to the end of the file. After that, Windows will shit itself and would not be able
-        // to read the file. Other applications will not be able to open it too.
-        stream << generator.parse().result->c_str();
+        writeTemplate(generator, getPath()/"CMakeLists.txt", UBT_TEMPLATES_DIR"/BuildFiles/CMakeLists.txt.tmpl");
     }
     {
         UTTE::Generator generator{};
-        const auto result = generator.loadFromFile(UBT_TEMPLATES_DIR"/BuildFiles/Modules.cmake.tmpl");
-        if (result == UTTE_INITIALISATION_RESULT_INVALID_FILE)
-        {
-            std::cout << ERROR << "Error when opening the Modules.cmake.tmpl file! Error code: " << result << END_COLOUR << std::endl;
-            std::terminate();
-        }
+        loadTemplate(generator, UBT_TEMPLATES_DIR"/BuildFiles/Modules.cmake.tmpl");
 
         auto modules = node["enabled-modules"];
         if (ryml::keyValid(modules))
@@ -97,8 +82,7 @@ void UBT::generateCmake(ryml::NodeRef node) noexcept
             PUSH_NONE_VARIABLE("text-utils");
         }
 
-        auto stream = std::ofstream(getPath()/"Generated"/(name + "Modules.cmake"));
-        stream << generator.parse().result->c_str();
+        writeTemplate(generator, getPath()/"Generated"/(name + "Modules.cmake"), UBT_TEMPLATES_DIR"/BuildFiles/Modules.cmake.tmpl");
     }
 }
 #endif

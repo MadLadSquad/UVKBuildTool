@@ -14,7 +14,7 @@ namespace UBT
     {
         if (command->stringValues.stringValues == nullptr || command->stringValues.stringValuesCount < 1 || command->stringValues.stringValuesCount == SIZE_MAX)
         {
-            std::cout << ERROR << "Invalid argument, generate requires a path to a UVKBuildTool project!" << END_COLOUR << std::endl << std::endl;
+            std::cout << UBT_COL_ERROR << "Invalid argument, generate requires a path to a UVKBuildTool project!" << UBT_COL_END << std::endl << std::endl;
             return UCLI::Parser::helpCommand(command);
         }
 
@@ -22,16 +22,16 @@ namespace UBT
 
         auto config = setupWorkdir(command->stringValues.stringValues[0], name);
         const auto path = getPath();
-        if (!std::filesystem::exists(path/"Exported"))
-            std::filesystem::create_directory(path/"Exported");
-        if (!std::filesystem::exists(path/"Generated"))
-            std::filesystem::create_directory(path/"Generated");
-        if (!std::filesystem::exists(path/"Framework"))
-            std::filesystem::create_directory_symlink(std::filesystem::path(UBT_FRAMEWORK_DIR)/"Framework", path/"Framework");
-        if (!std::filesystem::exists(path/"UVKBuildTool"))
-            std::filesystem::create_directory_symlink(std::filesystem::path(UBT_DIR), path/"UVKBuildTool");
 
-        std::filesystem::copy_file(
+        createDirectory(path/"Exported");
+        createDirectory(path/"Generated");
+
+        if (!std::filesystem::exists(path/"Framework"))
+            createDirectorySymlink(std::filesystem::path(UBT_FRAMEWORK_DIR)/"Framework", path/"Framework");
+        if (!std::filesystem::exists(path/"UVKBuildTool"))
+            createDirectorySymlink(std::filesystem::path(UBT_DIR), path/"UVKBuildTool");
+
+        copyFile(
             std::filesystem::path(UBT_FRAMEWORK_DIR)/"export.sh",
             path/"export.sh",
             std::filesystem::copy_options::overwrite_existing
@@ -41,7 +41,7 @@ namespace UBT
         generateMain(name.c_str());
         generateDef();
 
-        std::filesystem::copy_file(
+        copyFile(
             std::filesystem::path(UBT_TEMPLATES_DIR"/Sources/Config.hpp.tmpl"),
             path/"Generated/Config.hpp",
             std::filesystem::copy_options::overwrite_existing
@@ -55,7 +55,7 @@ namespace UBT
     {
         if (command->stringValues.stringValues == nullptr || command->stringValues.stringValuesCount < 1 || command->stringValues.stringValuesCount == SIZE_MAX)
         {
-            std::cout << ERROR << "Invalid argument, install requires a path to a UVKBuildTool project!" << END_COLOUR << std::endl << std::endl;
+            std::cout << UBT_COL_ERROR << "Invalid argument, install requires a path to a UVKBuildTool project!" << UBT_COL_END << std::endl << std::endl;
             return UCLI::Parser::helpCommand(command);
         }
 
@@ -68,7 +68,7 @@ namespace UBT
         generateDef();
         makeTemplate(name + std::string("UIInstance"), "Instance", name.c_str());
 
-        std::filesystem::copy_file(
+        copyFile(
             std::filesystem::path(UBT_TEMPLATES_DIR"/Sources/Config.hpp.tmpl"),
             getPath()/"Generated/Config.hpp"
         );
@@ -81,7 +81,7 @@ namespace UBT
     {
         if (command->stringValues.stringValues == nullptr || command->stringValues.stringValuesCount < 3 || command->stringValues.stringValuesCount == SIZE_MAX)
         {
-            std::cout << ERROR << "Invalid argument, build requires a staging path, installation path and a path to a UVKBuildTool project!" << END_COLOUR << std::endl << std::endl;
+            std::cout << UBT_COL_ERROR << "Invalid argument, build requires a staging path, installation path and a path to a UVKBuildTool project!" << UBT_COL_END << std::endl << std::endl;
             return UCLI::Parser::helpCommand(command);
         }
         std::string name{};
@@ -95,7 +95,7 @@ namespace UBT
     {
         if (command->stringValues.stringValues == nullptr || command->stringValues.stringValuesCount < 2 || command->stringValues.stringValuesCount == SIZE_MAX)
         {
-            std::cout << ERROR << "Invalid argument, inline requires a component name and a path to a UVKBuildTol project!" << END_COLOUR << std::endl << std::endl;
+            std::cout << UBT_COL_ERROR << "Invalid argument, inline requires a component name and a path to a UVKBuildTool project!" << UBT_COL_END << std::endl << std::endl;
             return UCLI::Parser::helpCommand(command);
         }
         std::string name{};
@@ -110,7 +110,7 @@ namespace UBT
     {
         if (command->stringValues.stringValues == nullptr || command->stringValues.stringValuesCount < 2 || command->stringValues.stringValuesCount == SIZE_MAX)
         {
-            std::cout << ERROR << "Invalid argument, window requires a component name and a path to a UVKBuildTol project!" << END_COLOUR << std::endl << std::endl;
+            std::cout << UBT_COL_ERROR << "Invalid argument, window requires a component name and a path to a UVKBuildTool project!" << UBT_COL_END << std::endl << std::endl;
             return UCLI::Parser::helpCommand(command);
         }
         std::string name{};
@@ -126,7 +126,7 @@ namespace UBT
     {
         if (command->stringValues.stringValues == nullptr || command->stringValues.stringValuesCount < 2 || command->stringValues.stringValuesCount == SIZE_MAX)
         {
-            std::cout << ERROR << "Invalid argument, title-bar requires a component name and a path to a UVKBuildTol project!" << END_COLOUR << std::endl << std::endl;
+            std::cout << UBT_COL_ERROR << "Invalid argument, title-bar requires a component name and a path to a UVKBuildTool project!" << UBT_COL_END << std::endl << std::endl;
             return UCLI::Parser::helpCommand(command);
         }
         std::string name{};
