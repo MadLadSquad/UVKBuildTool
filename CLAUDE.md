@@ -49,6 +49,14 @@ cd build
 ./UVKBuildTool --build     <output dir> <project path>          # web variant: renders the site
 ```
 
+**`--install` is a create-project-time verb, not a maintenance one.** It is run once, by the framework's
+`create-project.sh`, against a directory that script has just made — which is why it may write
+`Source/Instance.{hpp,cpp}` unconditionally (there is nothing there to overwrite) and why it does not create
+`Generated/`/`Exported/` itself (`create-project.sh` already did: it pre-makes `Source/`, `Generated/`, `build/`
+and `Exported/`). Running it by hand against a project you have since written code in **will** overwrite that
+project's `Instance.{hpp,cpp}`, and running it against a bare directory fails on the missing `Generated/`. Use
+`--generate` to refresh an existing project — that verb is idempotent and creates what it needs.
+
 Every verb is registered **twice** in `src/main.cpp` — once via `pushCommand` (`generate ...`) and once via `pushFlag`
 (`--generate ...`, "Compatibility:"). Both point at the *same* callback, which is why the callbacks in
 `Commands.hpp` are templates over `T` (= `UCLI::Command` or `UCLI::Flag`). Adding a verb means adding both.
@@ -107,11 +115,16 @@ in `CMakeGenerator.cpp`; `ReleaseBuild/CMake.cpp` additionally scrubs embedded `
 3. `runBuildCommand` → `generateCMake`, which **backs up `CMakeLists.txt` to `CMakeLists.txt.old`** and appends
    generated `if (APPLE)/elseif (WIN32)/else()` install blocks rendered from `CMakeInstall.tmpl`; then shells out to
    the framework's `export.sh` with the computed `-DUIMGUI_INSTALL_PREFIX/-DBUILD_VARIANT_STATIC/-DBUILD_VARIANT_VENDOR/
-   -DUIMGUI_INSTALL_FRAMEWORK/-DUIMGUI_SRC_PREFIX` arguments. The backup is **not** overwritten: if a
-   `CMakeLists.txt.old` is still present from an earlier build the run aborts, since that file is the only way back
-   to the original.
-4. `generateDef(false)` — puts `BuildDef.hpp` back to the development (`#undef`) state, through the very same
+   -DUIMGUI_INSTALL_FRAMEWORK/-DUIMGUI_SRC_PREFIX` arguments. It first calls `restoreCMake` to recover from an
+   interrupted earlier run: a leftover `CMakeLists.txt.old` means the `CMakeLists.txt` beside it still carries that
+   run's install statements, which would otherwise be baked into this run's backup and appended to twice.
+4. `restoreCMake` — renames `CMakeLists.txt.old` back over `CMakeLists.txt`, so the project is left exactly as it
+   was found and a second `--build` behaves like the first.
+5. `generateDef(false)` — puts `BuildDef.hpp` back to the development (`#undef`) state, through the very same
    generator `--generate` uses.
+
+Steps 4 and 5 run whether or not `export.sh` succeeded — a failed build must not leave a production `BuildDef.hpp`
+or a `CMakeLists.txt` full of install statements behind.
 
 Per-platform install directories are hardcoded structs in `CMake.cpp::getInstallStatements` (Unix `lib64/`+`bin/`,
 Windows `Program Files/<name>/…`, macOS `.app` bundle layout when `macos.bundle`), each overridable from the
@@ -130,9 +143,14 @@ argument exists because some keys accept both `undo-redo` and `undo_redo` spelli
 
 `UBT::buildMain(exportPath, projectPath)`: initialises `UI18N::TranslationEngine` from `<project>/Translations`, then
 for **each existing locale** copies the project into `<exportPath>/<locale>/` and renders it, and finally renders once
-more at `<exportPath>/` root (the untranslated version). Rendering = copy (skipping `filename-blacklist` +
+more at `<exportPath>/` root. Rendering = copy (skipping `filename-blacklist` +
 `UBTCustomFunctions`/`.git`/`UVKBuildTool`) → run `custom-pre-generation-commands` → run UTTE over every file matching
 `allowed-extensions` **in place** → delete `intermediate-extensions` → optionally run `localhost-commands`.
+
+The root render resets the engine to the locale `init` was given (`en_US`) first — the per-locale loop leaves the
+engine on whichever locale it finished on, and without the reset the "untranslated" root came out as a copy of that
+one. The blacklist each render passes to the copy step is a **local copy**: the output directory's own name is added
+to it as a recursion guard, and mutating the shared list would leak locale names into every later render.
 
 Template functions available to pages: `include` (recursive parse, resolved relative to the global `UBT::rootDir`),
 `_` (gettext-style lookup) and `ui18n_push_global_variable`. The i18n engine pointer is smuggled through the generator

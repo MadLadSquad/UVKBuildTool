@@ -26,10 +26,8 @@ namespace UBT
         createDirectory(path/"Exported");
         createDirectory(path/"Generated");
 
-        if (!std::filesystem::exists(path/"Framework"))
-            createDirectorySymlink(std::filesystem::path(UBT_FRAMEWORK_DIR)/"Framework", path/"Framework");
-        if (!std::filesystem::exists(path/"UVKBuildTool"))
-            createDirectorySymlink(std::filesystem::path(UBT_DIR), path/"UVKBuildTool");
+        ensureDirectorySymlink(std::filesystem::path(UBT_FRAMEWORK_DIR)/"Framework", path/"Framework");
+        ensureDirectorySymlink(std::filesystem::path(UBT_DIR), path/"UVKBuildTool");
 
         copyFile(
             std::filesystem::path(UBT_FRAMEWORK_DIR)/"export.sh",

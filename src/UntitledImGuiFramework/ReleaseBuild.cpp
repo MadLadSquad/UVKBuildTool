@@ -27,6 +27,11 @@ void UBT::relBuild(const std::string& name, ryml::NodeRef config, const std::str
         prefix,
         realInstallDir
     );
+
+    // Both of these undo what the steps above did to the project, so they run whether or not export.sh
+    // succeeded: leaving a production BuildDef.hpp or a CMakeLists.txt full of install statements behind
+    // would quietly change what the next development build produces
+    ReleaseBuildInternal::restoreCMake(currentPath);
     generateDef(false);
 }
 #endif

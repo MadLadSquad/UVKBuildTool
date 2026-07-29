@@ -26,17 +26,25 @@ void UBT::setPath(const char* pt) noexcept
 
 std::string UBT::loadFileToString(const std::string& p) noexcept
 {
-    std::ifstream in(p);
-
-    in.seekg(0, std::ios::end);
-    const size_t size = in.tellg();
-    if (size == -1)
+    // Opened in binary mode on purpose. In text mode Windows collapses every CRLF on the way in, so read()
+    // returns fewer bytes than the tellg() size the buffer was sized from and the tail of the string stays
+    // filled with padding - which is where a good part of the "Windows adds random data to our files"
+    // folklore comes from. Sizing the result to what was actually read keeps that honest on every platform
+    std::ifstream in(p, std::ios::binary);
+    if (!in.is_open())
         return "";
 
-    std::string buffer(size, ' ');
+    in.seekg(0, std::ios::end);
+    const std::streampos size = in.tellg();
+    if (size < 0)
+        return "";
+
+    std::string buffer(static_cast<size_t>(size), '\0');
 
     in.seekg(0);
-    in.read(buffer.data(), static_cast<std::streamsize>(size));
+    in.read(buffer.data(), size);
+    buffer.resize(static_cast<size_t>(in.gcount()));
+
     in.close();
     return buffer;
 }
@@ -190,6 +198,30 @@ void UBT::createDirectorySymlink(const std::filesystem::path& target, const std:
                   << "\nOn Windows this usually means that the account is missing the 'Create symbolic links' privilege." << UBT_COL_END << std::endl;
         std::exit(EXIT_FAILURE);
     }
+}
+
+void UBT::ensureDirectorySymlink(const std::filesystem::path& target, const std::filesystem::path& link) noexcept
+{
+    // symlink_status() does not follow the link, unlike exists(). A dangling link - which is what is left
+    // behind when the framework is moved or the tree is copied without its target - looks absent to exists()
+    // and the creation below would then fail with "file exists", so it gets replaced instead
+    const auto status = std::filesystem::symlink_status(link);
+    if (std::filesystem::exists(status))
+    {
+        // Something real is there: either a working link or a directory the user put there on purpose
+        if (!std::filesystem::is_symlink(status) || std::filesystem::exists(link))
+            return;
+
+        std::error_code code;
+        std::filesystem::remove(link, code);
+        if (code)
+        {
+            std::cout << UBT_COL_ERROR << "Could not remove the broken symlink '" << link.string() << "': " << code.message() << UBT_COL_END << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+        std::cout << UBT_COL_WARNING << "Replaced the broken symlink '" << link.string() << "'" << UBT_COL_END << std::endl;
+    }
+    createDirectorySymlink(target, link);
 }
 
 void UBT::copyFile(const std::filesystem::path& from, const std::filesystem::path& to, const std::filesystem::copy_options options) noexcept

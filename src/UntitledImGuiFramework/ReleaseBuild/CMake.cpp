@@ -349,18 +349,38 @@ static std::string getInstallStatements(ryml::NodeRef config, std::string& insta
     return returns;
 }
 
+void UBT::ReleaseBuildInternal::restoreCMake(const std::filesystem::path& currentPath, const bool bRecovering) noexcept
+{
+    const auto backup = currentPath/"CMakeLists.txt.old";
+    if (!std::filesystem::exists(backup))
+        return;
+
+    if (bRecovering)
+        std::cout << UBT_COL_WARNING << "Found a CMakeLists.txt.old from an interrupted build, restoring it before continuing" << UBT_COL_END << std::endl;
+
+    // rename() replaces the destination and drops the backup in one step, so the project is never left with
+    // both a mutated CMakeLists.txt and a stale copy of the original
+    std::error_code code;
+    std::filesystem::rename(backup, currentPath/"CMakeLists.txt", code);
+    if (code)
+        std::cout << UBT_COL_ERROR << "Could not restore '" << (currentPath/"CMakeLists.txt").string() << "' from '" << backup.string()
+                  << "': " << code.message() << "\nThe file still holds the install statements added for this build - restore it by hand." << UBT_COL_END << std::endl;
+}
+
 std::string UBT::ReleaseBuildInternal::generateCMake(const std::filesystem::path& currentPath, ryml::NodeRef config, const std::string& realInstallDir) noexcept
 {
-    // The install statements below are appended to the project's CMakeLists.txt, so it is backed up first.
-    // Note that this fails if a backup is already present from an earlier build - it is left in place on
-    // purpose, as it is the only way back to the original file
+    // A leftover backup means an earlier build was interrupted before it could put the file back, so the
+    // CMakeLists.txt sitting next to it still carries that run's install statements. Recover from it first,
+    // otherwise those statements would be baked into this run's backup and appended to a second time
+    restoreCMake(currentPath, true);
+
+    // The install statements below are appended to the project's CMakeLists.txt, so it is backed up first
     std::error_code code;
-    copy(currentPath/"CMakeLists.txt", currentPath/"CMakeLists.txt.old", code);
+    copy_file(currentPath/"CMakeLists.txt", currentPath/"CMakeLists.txt.old", std::filesystem::copy_options::overwrite_existing, code);
     if (code)
     {
         std::cout << UBT_COL_ERROR << "Could not back up '" << (currentPath/"CMakeLists.txt").string() << "' to '"
-                  << (currentPath/"CMakeLists.txt.old").string() << "': " << code.message()
-                  << "\nIf a CMakeLists.txt.old from a previous build is still there, restore or remove it before building again." << UBT_COL_END << std::endl;
+                  << (currentPath/"CMakeLists.txt.old").string() << "': " << code.message() << UBT_COL_END << std::endl;
         std::exit(EXIT_FAILURE);
     }
 

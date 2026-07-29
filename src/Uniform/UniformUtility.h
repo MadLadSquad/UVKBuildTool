@@ -60,5 +60,8 @@ namespace UBT
     void createDirectory(const std::filesystem::path& dir) noexcept;
 
     void createDirectorySymlink(const std::filesystem::path& target, const std::filesystem::path& link) noexcept;
+
+    // Creates the link only if it is not already there, replacing it when it is present but dangling
+    void ensureDirectorySymlink(const std::filesystem::path& target, const std::filesystem::path& link) noexcept;
     void copyFile(const std::filesystem::path& from, const std::filesystem::path& to, std::filesystem::copy_options options = std::filesystem::copy_options::none) noexcept;
 }

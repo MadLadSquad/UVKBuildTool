@@ -207,13 +207,16 @@ skip_this_file_2:;
 
 void buildGeneric(GeneratorData& data,  const std::filesystem::path& ep,
                                         const std::filesystem::path& rootDir,
-                                        const std::filesystem::path& projectPath, bool bDeleteIntermediate = false) noexcept
+                                        const std::filesystem::path& projectPath) noexcept
 {
-    // To prevent file copying with infinite recursion
-    data.ignoredFiles.push_back(ep.filename().string());
+    // To prevent file copying with infinite recursion. Kept local to this render: pushing the output
+    // directory's name into the shared list made it stick around for every later render, so once a locale
+    // called "en" had been built, any project file or directory named "en" was silently skipped from then on
+    auto ignoredFiles = data.ignoredFiles;
+    ignoredFiles.push_back(ep.filename().string());
 
     // Copy the files to the new directory
-    copyRecursive(ep, projectPath, data.ignoredFiles);
+    copyRecursive(ep, projectPath, ignoredFiles);
 
     for (auto& a : data.customPreGenerationCommands)
         system(std::format("cd {} && {}", rootDir.string(), a).c_str());
@@ -221,17 +224,21 @@ void buildGeneric(GeneratorData& data,  const std::filesystem::path& ep,
     // Generate the templates recursively
     generateRecursive(ep, data.allowedExtensions, data.generator);
 
-    // Remove any intermediate files
-    if (bDeleteIntermediate)
-        deleteIntermediateRecursive(ep, data.intermediateFiles);
+    // Remove any intermediate files. This used to sit behind a flag that no caller ever set, so partials and
+    // other build-only files were published along with the site
+    deleteIntermediateRecursive(ep, data.intermediateFiles);
 }
 
 void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
 {
     GeneratorData data{};
 
+    // Spelled out rather than left to the default argument, because the root render below has to go back to
+    // it once the per locale renders are done
+    constexpr auto defaultLocale = en_US;
+
     UI18N::TranslationEngine engine{};
-    auto result = engine.init((std::string(projectPath) + "/Translations").c_str());
+    auto result = engine.init((std::string(projectPath) + "/Translations").c_str(), defaultLocale);
     if (result != UI18N_INIT_RESULT_SUCCESS)
     {
         std::cout << UBT_COL_WARNING << "UI18N Warning: Couldn't initialise the translation engine. Error code: " << result << UBT_COL_END << std::endl;
@@ -246,6 +253,11 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
     UBT::funcExportMain(data.generator);
 
     const std::filesystem::path pp(projectPath);
+
+    // The per locale directories below are created inside this one, so it has to exist first. Without it a
+    // project that actually has translations could only ever be built into an already existing directory
+    UBT::createDirectory(exportPath);
+
     for (auto& a : engine.getExistingLocales())
     {
         engine.setCurrentLocale(a);
@@ -258,9 +270,13 @@ void UBT::buildMain(const char* exportPath, const char* projectPath) noexcept
 
         buildGeneric(data, ep, ep, pp);
     }
+    // The render at the root is the untranslated one, so the locale the loop happened to finish on must not
+    // leak into it - without this it silently came out as a copy of whichever locale was rendered last
+    engine.setCurrentLocale(defaultLocale);
+
     const std::filesystem::path ep(exportPath);
     rootDir = ep;
-    buildGeneric(data, exportPath, exportPath, pp, false);
+    buildGeneric(data, exportPath, exportPath, pp);
 
     if (data.bRunLocalhost)
         for (auto& a : data.localhostCommands)
