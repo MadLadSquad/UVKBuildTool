@@ -138,7 +138,11 @@ bool UBT::tryWriteTemplate(UTTE::Generator& generator, const std::filesystem::pa
     if (parsed == nullptr)
         return false;
 
-    std::ofstream stream(destination);
+    // std::ios::binary is required, not cosmetic. loadFromFile reads templates in binary mode, so a checkout with
+    // core.autocrlf=true hands us content that already has CRLF endings. Writing that back in text mode makes Windows
+    // expand the LF of every pair again, producing CRCRLF, which MSVC then reports as "Mac file format detected"(C4335)
+    // on the generated headers. In binary mode the template's endings are reproduced verbatim, whichever they are
+    std::ofstream stream(destination, std::ios::binary);
     if (!stream.is_open())
     {
         std::cout << UBT_COL_ERROR << "Could not open the following file for writing: " << destination.string() << UBT_COL_END << std::endl;

@@ -397,7 +397,10 @@ std::string UBT::ReleaseBuildInternal::generateCMake(const std::filesystem::path
             if (buffer[i] == '\0' && i < (buffer.size() - 1))
                 buffer[i] = ' ';
 
-        std::ofstream file(currentPath/"CMakeLists.txt");
+        // Binary, to match the binary read in loadFileToString above. In text mode the LF of every CRLF that came out
+        // of the file would be expanded a second time on Windows, so every round trip through here would grow the
+        // file another CR per line
+        std::ofstream file(currentPath/"CMakeLists.txt", std::ios::binary);
         if (!file.is_open())
         {
             std::cout << UBT_COL_ERROR << "Could not open '" << (currentPath/"CMakeLists.txt").string()
